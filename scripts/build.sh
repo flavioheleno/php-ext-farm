@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Build script for PHP extensions
-# Usage: ./build.sh <extension> <php_version> <platform> <platform_version> [extension_version]
+# Usage: ./build.sh <extension> <php_version> <platform> <platform_version> <extension_version>
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
@@ -14,9 +14,9 @@ PLATFORM="${3:-}"
 PLATFORM_VERSION="${4:-}"
 EXTENSION_VERSION="${5:-}"
 
-if [[ -z "$EXTENSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" ]]; then
-    echo "Usage: $0 <extension> <php_version> <platform> <platform_version> [extension_version]"
-    echo "Example: $0 redis 8.3 alpine 3.20"
+if [[ -z "$EXTENSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" || -z "$EXTENSION_VERSION" ]]; then
+    echo "Usage: $0 <extension> <php_version> <platform> <platform_version> <extension_version>"
+    echo "Example: $0 redis 8.3 alpine 3.20 6.0.2"
     exit 1
 fi
 
@@ -97,7 +97,7 @@ cat > "${OUTPUT_DIR}/metadata.json" <<EOF
 {
   "extension": "${EXTENSION}",
   "pecl_name": "${PECL_NAME}",
-  "extension_version": "${EXTENSION_VERSION:-latest}",
+  "extension_version": "${EXTENSION_VERSION}",
   "php_version": "${PHP_VERSION}",
   "platform": "${PLATFORM}",
   "platform_version": "${PLATFORM_VERSION}",

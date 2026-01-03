@@ -8,8 +8,8 @@ on:
         required: true
         type: string
       extension_version:
-        description: 'Extension version (leave empty for latest)'
-        required: false
+        description: 'Extension version/tag (e.g., 6.0.2, v3.8.0)'
+        required: true
         type: string
       php_versions:
         description: 'PHP versions (comma-separated, e.g., 8.2,8.3,8.4 or "all")'
@@ -32,7 +32,7 @@ on:
         required: true
         type: string
       extension_version:
-        required: false
+        required: true
         type: string
       create_release:
         required: false
@@ -127,7 +127,6 @@ jobs:
       - name: Create artifact archive
         run: |
           EXT_VERSION="${{ inputs.extension_version }}"
-          EXT_VERSION="${EXT_VERSION:-latest}"
           ARTIFACT_NAME="${{ inputs.extension }}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}"
           cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}
           tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
@@ -171,7 +170,7 @@ jobs:
         if: steps.prepare.outputs.has_artifacts == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.extension }}-${{ inputs.extension_version || 'latest' }}-all-builds
+          name: ${{ inputs.extension }}-${{ inputs.extension_version }}-all-builds
           path: release/
           retention-days: 90
 
@@ -182,7 +181,6 @@ jobs:
         run: |
           EXT="${{ inputs.extension }}"
           VERSION="${{ inputs.extension_version }}"
-          VERSION="${VERSION:-latest}"
           RELEASE_TAG="${EXT}-${VERSION}"
           
           # Delete existing release if it exists
