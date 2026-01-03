@@ -21,6 +21,11 @@ on:
         required: false
         default: 'all'
         type: string
+      create_release:
+        description: 'Create a GitHub release with artifacts'
+        required: false
+        type: boolean
+        default: true
   workflow_call:
     inputs:
       extension:
@@ -29,6 +34,13 @@ on:
       extension_version:
         required: false
         type: string
+      create_release:
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
 
 jobs:
   prepare:
@@ -114,16 +126,19 @@ jobs:
 
       - name: Create artifact archive
         run: |
-          ARTIFACT_NAME="${{ inputs.extension }}-${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}"
+          EXT_VERSION="${{ inputs.extension_version }}"
+          EXT_VERSION="${EXT_VERSION:-latest}"
+          ARTIFACT_NAME="${{ inputs.extension }}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}"
           cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}
           tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
           mv "${ARTIFACT_NAME}.tar.gz" "${{ github.workspace }}/"
+          echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.extension }}-${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}
-          path: ${{ inputs.extension }}-${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}.tar.gz
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.ARTIFACT_NAME }}.tar.gz
           retention-days: 90
 
   collect-artifacts:
@@ -139,20 +154,68 @@ jobs:
           path: artifacts/
 
       - name: Prepare release artifacts
+        id: prepare
         run: |
           mkdir -p release
           find artifacts/ -name "*.tar.gz" -exec cp {} release/ \; 2>/dev/null || true
           if [ -d release ] && [ "$(ls -A release 2>/dev/null)" ]; then
             echo "Collected artifacts:"
             ls -la release/
+            echo "has_artifacts=true" >> $GITHUB_OUTPUT
           else
             echo "No artifacts collected"
+            echo "has_artifacts=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload combined artifacts
-        if: hashFiles('release/*.tar.gz') != ''
+        if: steps.prepare.outputs.has_artifacts == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.extension }}-all-builds
+          name: ${{ inputs.extension }}-${{ inputs.extension_version || 'latest' }}-all-builds
           path: release/
           retention-days: 90
+
+      - name: Create GitHub Release
+        if: steps.prepare.outputs.has_artifacts == 'true' && inputs.create_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXT="${{ inputs.extension }}"
+          VERSION="${{ inputs.extension_version }}"
+          VERSION="${VERSION:-latest}"
+          RELEASE_TAG="${EXT}-${VERSION}"
+          
+          # Delete existing release if it exists
+          gh release delete "$RELEASE_TAG" --yes 2>/dev/null || true
+          git push origin --delete "$RELEASE_TAG" 2>/dev/null || true
+          
+          # Create release notes
+          cat > release_notes.md << EOF
+          # ${EXT} ${VERSION}
+          
+          Pre-compiled PHP extension binaries.
+          
+          ## Supported Configurations
+          
+          - **PHP Versions**: $(jq -r '.php_versions | join(", ")' extensions.json)
+          - **Alpine Linux**: $(jq -r '.platforms.alpine.versions | join(", ")' extensions.json)
+          - **Debian**: $(jq -r '.platforms.debian.versions | join(", ")' extensions.json)
+          
+          ## Installation
+          
+          \`\`\`bash
+          tar -xzf ${EXT}-${VERSION}-php<version>-<platform>-<platform_version>.tar.gz
+          cp ${EXT}.so \$(php -r "echo ini_get('extension_dir');")
+          echo "extension=${EXT}.so" >> \$(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
+          \`\`\`
+          
+          Check \`metadata.json\` inside each archive for runtime dependencies.
+          
+          Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          EOF
+          
+          # Create release with artifacts
+          gh release create "$RELEASE_TAG" \
+            --title "${EXT} ${VERSION}" \
+            --notes-file release_notes.md \
+            release/*.tar.gz
