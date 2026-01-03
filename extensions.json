@@ -806,6 +806,321 @@
           "runtime": ["libzstd1"]
         }
       }
+    },
+    "apfd": {
+      "type": "git",
+      "pecl_name": "apfd",
+      "track_url": "https://github.com/m6w6/ext-apfd",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "bitset": {
+      "type": "git",
+      "pecl_name": "bitset",
+      "track_url": "https://github.com/php/pecl-numbers-bitset",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "dio": {
+      "type": "git",
+      "pecl_name": "dio",
+      "track_url": "https://github.com/php/pecl-system-dio",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "ev": {
+      "type": "git",
+      "pecl_name": "ev",
+      "track_url": "https://github.com/osmanov/pecl-ev",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libev-dev"],
+          "runtime": ["libev"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libev-dev"],
+          "runtime": ["libev4"]
+        }
+      }
+    },
+    "geospatial": {
+      "type": "git",
+      "pecl_name": "geospatial",
+      "track_url": "https://github.com/php-geospatial/geospatial",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "gpio": {
+      "type": "git",
+      "pecl_name": "gpio",
+      "track_url": "https://github.com/embedded-php/ext-gpio",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "i2c": {
+      "type": "git",
+      "pecl_name": "i2c",
+      "track_url": "https://github.com/embedded-php/ext-i2c",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "linux-headers"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "linux-libc-dev"],
+          "runtime": []
+        }
+      }
+    },
+    "jsonpath": {
+      "type": "git",
+      "pecl_name": "jsonpath",
+      "track_url": "https://github.com/supermetrics-public/pecl-jsonpath",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "mcrypt": {
+      "type": "git",
+      "pecl_name": "mcrypt",
+      "track_url": "https://github.com/php/pecl-encryption-mcrypt",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmcrypt-dev"],
+          "runtime": ["libmcrypt"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmcrypt-dev"],
+          "runtime": ["libmcrypt4"]
+        }
+      }
+    },
+    "opentelemetry": {
+      "type": "git",
+      "pecl_name": "opentelemetry",
+      "track_url": "https://github.com/open-telemetry/opentelemetry-php-instrumentation",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "parallel": {
+      "type": "git",
+      "pecl_name": "parallel",
+      "track_url": "https://github.com/krakjoe/parallel",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "relay": {
+      "type": "git",
+      "pecl_name": "relay",
+      "track_url": "https://github.com/cachewerk/relay",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "rpminfo": {
+      "type": "git",
+      "pecl_name": "rpminfo",
+      "track_url": "https://github.com/remicollet/php-rpminfo",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "rpm-dev"],
+          "runtime": ["rpm"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "librpm-dev"],
+          "runtime": ["librpm9"]
+        }
+      }
+    },
+    "selinux": {
+      "type": "git",
+      "pecl_name": "selinux",
+      "track_url": "https://github.com/php/pecl-security-selinux",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libselinux-dev"],
+          "runtime": ["libselinux"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libselinux1-dev"],
+          "runtime": ["libselinux1"]
+        }
+      }
+    },
+    "spi": {
+      "type": "git",
+      "pecl_name": "spi",
+      "track_url": "https://github.com/embedded-php/ext-spi",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "linux-headers"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "linux-libc-dev"],
+          "runtime": []
+        }
+      }
+    },
+    "timezonedb": {
+      "type": "git",
+      "pecl_name": "timezonedb",
+      "track_url": "https://github.com/php/pecl-datetime-timezonedb",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "translit": {
+      "type": "git",
+      "pecl_name": "translit",
+      "track_url": "https://github.com/derickr/pecl-translit",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "uart": {
+      "type": "git",
+      "pecl_name": "uart",
+      "track_url": "https://github.com/embedded-php/ext-uart",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "xattr": {
+      "type": "git",
+      "pecl_name": "xattr",
+      "track_url": "https://github.com/php/pecl-file_system-xattr",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "attr-dev"],
+          "runtime": ["attr"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libattr1-dev"],
+          "runtime": ["libattr1"]
+        }
+      }
+    },
+    "xlswriter": {
+      "type": "git",
+      "pecl_name": "xlswriter",
+      "track_url": "https://github.com/viest/php-ext-xlswriter",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib-dev"],
+          "runtime": ["zlib"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib1g-dev"],
+          "runtime": ["zlib1g"]
+        }
+      }
+    },
+    "xpass": {
+      "type": "git",
+      "pecl_name": "xpass",
+      "track_url": "https://github.com/remicollet/php-xpass",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libxcrypt-dev"],
+          "runtime": ["libxcrypt"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libcrypt-dev"],
+          "runtime": ["libcrypt1"]
+        }
+      }
     }
   }
 }

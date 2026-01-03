@@ -4,63 +4,84 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (53)
+## 📦 Supported Extensions (74)
 
-| Extension | Type | Repository |
-|-----------|------|------------|
-| amqp | git | [php-amqp/php-amqp](https://github.com/php-amqp/php-amqp) |
-| apcu | pecl | [krakjoe/apcu](https://github.com/krakjoe/apcu) |
-| apcu_bc | pecl | [krakjoe/apcu-bc](https://github.com/krakjoe/apcu-bc) |
-| ast | pecl | [nikic/php-ast](https://github.com/nikic/php-ast) |
-| brotli | git | [kjdev/php-ext-brotli](https://github.com/kjdev/php-ext-brotli) |
-| csv | git | [Girgias/csv-php-extension](https://gitlab.com/Girgias/csv-php-extension) |
-| decimal | pecl | [php-decimal/ext-decimal](https://github.com/php-decimal/ext-decimal) |
-| ds | pecl | [php-ds/ext-ds](https://github.com/php-ds/ext-ds) |
-| event | pecl | [osmanov/pecl-event](https://bitbucket.org/osmanov/pecl-event) |
-| excimer | pecl | [wikimedia/php-excimer](https://github.com/wikimedia/php-excimer) |
-| gnupg | pecl | [php-gnupg/php-gnupg](https://github.com/php-gnupg/php-gnupg) |
-| grpc | pecl | [grpc/grpc](https://github.com/grpc/grpc) |
-| igbinary | pecl | [igbinary/igbinary](https://github.com/igbinary/igbinary) |
-| imagick | pecl | [Imagick/imagick](https://github.com/Imagick/imagick) |
-| inotify | pecl | [arnaud-lb/php-inotify](https://github.com/arnaud-lb/php-inotify) |
-| lz4 | git | [kjdev/php-ext-lz4](https://github.com/kjdev/php-ext-lz4) |
-| lzf | pecl | [php/pecl-file_formats-lzf](https://github.com/php/pecl-file_formats-lzf) |
-| mailparse | pecl | [php/pecl-mail-mailparse](https://github.com/php/pecl-mail-mailparse) |
-| maxminddb | git | [maxmind/MaxMind-DB-Reader-php](https://github.com/maxmind/MaxMind-DB-Reader-php) |
-| memcache | pecl | [websupport-sk/pecl-memcache](https://github.com/websupport-sk/pecl-memcache) |
-| memcached | pecl | [php-memcached-dev/php-memcached](https://github.com/php-memcached-dev/php-memcached) |
-| memprof | pecl | [arnaud-lb/php-memory-profiler](https://github.com/arnaud-lb/php-memory-profiler) |
-| mongodb | pecl | [mongodb/mongo-php-driver](https://github.com/mongodb/mongo-php-driver) |
-| msgpack | pecl | [msgpack/msgpack-php](https://github.com/msgpack/msgpack-php) |
-| oauth | pecl | [php/pecl-web_services-oauth](https://github.com/php/pecl-web_services-oauth) |
-| pcov | pecl | [krakjoe/pcov](https://github.com/krakjoe/pcov) |
-| pecl_http | pecl | [m6w6/ext-http](https://github.com/m6w6/ext-http) |
-| pq | pecl | [m6w6/ext-pq](https://github.com/m6w6/ext-pq) |
-| psr | pecl | [jbboehr/php-psr](https://github.com/jbboehr/php-psr) |
-| raphf | pecl | [m6w6/ext-raphf](https://github.com/m6w6/ext-raphf) |
-| rdkafka | pecl | [arnaud-lb/php-rdkafka](https://github.com/arnaud-lb/php-rdkafka) |
-| redis | pecl | [phpredis/phpredis](https://github.com/phpredis/phpredis) |
-| simdjson | git | [crazyxman/simdjson_php](https://github.com/crazyxman/simdjson_php) |
-| smbclient | pecl | [eduardok/libsmbclient-php](https://github.com/eduardok/libsmbclient-php) |
-| stomp | pecl | [php/pecl-tools-stomp](https://github.com/php/pecl-tools-stomp) |
-| swoole | pecl | [swoole/swoole-src](https://github.com/swoole/swoole-src) |
-| taint | pecl | [laruence/taint](https://github.com/laruence/taint) |
-| uploadprogress | pecl | [php/pecl-php-uploadprogress](https://github.com/php/pecl-php-uploadprogress) |
-| uuid | pecl | [php/pecl-networking-uuid](https://github.com/php/pecl-networking-uuid) |
-| uv | pecl | [amphp/ext-uv](https://github.com/amphp/ext-uv) |
-| vld | pecl | [derickr/vld](https://github.com/derickr/vld) |
-| xdebug | pecl | [xdebug/xdebug](https://github.com/xdebug/xdebug) |
-| xdiff | pecl | [php/pecl-text-xdiff](https://github.com/php/pecl-text-xdiff) |
-| xhprof | pecl | [longxinH/xhprof](https://github.com/longxinH/xhprof) |
-| xxtea | pecl | [xxtea/xxtea-pecl](https://github.com/xxtea/xxtea-pecl) |
-| yac | pecl | [laruence/yac](https://github.com/laruence/yac) |
-| yaconf | pecl | [laruence/yaconf](https://github.com/laruence/yaconf) |
-| yaf | pecl | [laruence/yaf](https://github.com/laruence/yaf) |
-| yaml | pecl | [php/pecl-file_formats-yaml](https://github.com/php/pecl-file_formats-yaml) |
-| yar | pecl | [laruence/yar](https://github.com/laruence/yar) |
-| zip | pecl | [pierrejoye/php_zip](https://github.com/pierrejoye/php_zip) |
-| zmq | pecl | [zeromq/php-zmq](https://github.com/zeromq/php-zmq) |
-| zstd | git | [kjdev/php-ext-zstd](https://github.com/kjdev/php-ext-zstd) |
+| Extension | Repository |
+|-----------|------------|
+| amqp | [php-amqp/php-amqp](https://github.com/php-amqp/php-amqp) |
+| apcu | [krakjoe/apcu](https://github.com/krakjoe/apcu) |
+| apcu_bc | [krakjoe/apcu-bc](https://github.com/krakjoe/apcu-bc) |
+| apfd | [m6w6/ext-apfd](https://github.com/m6w6/ext-apfd) |
+| ast | [nikic/php-ast](https://github.com/nikic/php-ast) |
+| bitset | [php/pecl-numbers-bitset](https://github.com/php/pecl-numbers-bitset) |
+| brotli | [kjdev/php-ext-brotli](https://github.com/kjdev/php-ext-brotli) |
+| csv | [Girgias/csv-php-extension](https://gitlab.com/Girgias/csv-php-extension) |
+| decimal | [php-decimal/ext-decimal](https://github.com/php-decimal/ext-decimal) |
+| dio | [php/pecl-system-dio](https://github.com/php/pecl-system-dio) |
+| ds | [php-ds/ext-ds](https://github.com/php-ds/ext-ds) |
+| ev | [osmanov/pecl-ev](https://github.com/osmanov/pecl-ev) |
+| event | [osmanov/pecl-event](https://bitbucket.org/osmanov/pecl-event) |
+| excimer | [wikimedia/php-excimer](https://github.com/wikimedia/php-excimer) |
+| geospatial | [php-geospatial/geospatial](https://github.com/php-geospatial/geospatial) |
+| gnupg | [php-gnupg/php-gnupg](https://github.com/php-gnupg/php-gnupg) |
+| gpio | [embedded-php/ext-gpio](https://github.com/embedded-php/ext-gpio) |
+| grpc | [grpc/grpc](https://github.com/grpc/grpc) |
+| i2c | [embedded-php/ext-i2c](https://github.com/embedded-php/ext-i2c) |
+| igbinary | [igbinary/igbinary](https://github.com/igbinary/igbinary) |
+| imagick | [Imagick/imagick](https://github.com/Imagick/imagick) |
+| inotify | [arnaud-lb/php-inotify](https://github.com/arnaud-lb/php-inotify) |
+| jsonpath | [supermetrics-public/pecl-jsonpath](https://github.com/supermetrics-public/pecl-jsonpath) |
+| lz4 | [kjdev/php-ext-lz4](https://github.com/kjdev/php-ext-lz4) |
+| lzf | [php/pecl-file_formats-lzf](https://github.com/php/pecl-file_formats-lzf) |
+| mailparse | [php/pecl-mail-mailparse](https://github.com/php/pecl-mail-mailparse) |
+| maxminddb | [maxmind/MaxMind-DB-Reader-php](https://github.com/maxmind/MaxMind-DB-Reader-php) |
+| mcrypt | [php/pecl-encryption-mcrypt](https://github.com/php/pecl-encryption-mcrypt) |
+| memcache | [websupport-sk/pecl-memcache](https://github.com/websupport-sk/pecl-memcache) |
+| memcached | [php-memcached-dev/php-memcached](https://github.com/php-memcached-dev/php-memcached) |
+| memprof | [arnaud-lb/php-memory-profiler](https://github.com/arnaud-lb/php-memory-profiler) |
+| mongodb | [mongodb/mongo-php-driver](https://github.com/mongodb/mongo-php-driver) |
+| msgpack | [msgpack/msgpack-php](https://github.com/msgpack/msgpack-php) |
+| oauth | [php/pecl-web_services-oauth](https://github.com/php/pecl-web_services-oauth) |
+| opentelemetry | [open-telemetry/opentelemetry-php-instrumentation](https://github.com/open-telemetry/opentelemetry-php-instrumentation) |
+| parallel | [krakjoe/parallel](https://github.com/krakjoe/parallel) |
+| pcov | [krakjoe/pcov](https://github.com/krakjoe/pcov) |
+| pecl_http | [m6w6/ext-http](https://github.com/m6w6/ext-http) |
+| pq | [m6w6/ext-pq](https://github.com/m6w6/ext-pq) |
+| psr | [jbboehr/php-psr](https://github.com/jbboehr/php-psr) |
+| raphf | [m6w6/ext-raphf](https://github.com/m6w6/ext-raphf) |
+| rdkafka | [arnaud-lb/php-rdkafka](https://github.com/arnaud-lb/php-rdkafka) |
+| redis | [phpredis/phpredis](https://github.com/phpredis/phpredis) |
+| relay | [cachewerk/relay](https://github.com/cachewerk/relay) |
+| rpminfo | [remicollet/php-rpminfo](https://github.com/remicollet/php-rpminfo) |
+| selinux | [php/pecl-security-selinux](https://github.com/php/pecl-security-selinux) |
+| simdjson | [crazyxman/simdjson_php](https://github.com/crazyxman/simdjson_php) |
+| smbclient | [eduardok/libsmbclient-php](https://github.com/eduardok/libsmbclient-php) |
+| spi | [embedded-php/ext-spi](https://github.com/embedded-php/ext-spi) |
+| stomp | [php/pecl-tools-stomp](https://github.com/php/pecl-tools-stomp) |
+| swoole | [swoole/swoole-src](https://github.com/swoole/swoole-src) |
+| taint | [laruence/taint](https://github.com/laruence/taint) |
+| timezonedb | [php/pecl-datetime-timezonedb](https://github.com/php/pecl-datetime-timezonedb) |
+| translit | [derickr/pecl-translit](https://github.com/derickr/pecl-translit) |
+| uart | [embedded-php/ext-uart](https://github.com/embedded-php/ext-uart) |
+| uploadprogress | [php/pecl-php-uploadprogress](https://github.com/php/pecl-php-uploadprogress) |
+| uuid | [php/pecl-networking-uuid](https://github.com/php/pecl-networking-uuid) |
+| uv | [amphp/ext-uv](https://github.com/amphp/ext-uv) |
+| vld | [derickr/vld](https://github.com/derickr/vld) |
+| xattr | [php/pecl-file_system-xattr](https://github.com/php/pecl-file_system-xattr) |
+| xdebug | [xdebug/xdebug](https://github.com/xdebug/xdebug) |
+| xdiff | [php/pecl-text-xdiff](https://github.com/php/pecl-text-xdiff) |
+| xhprof | [longxinH/xhprof](https://github.com/longxinH/xhprof) |
+| xlswriter | [viest/php-ext-xlswriter](https://github.com/viest/php-ext-xlswriter) |
+| xpass | [remicollet/php-xpass](https://github.com/remicollet/php-xpass) |
+| xxtea | [xxtea/xxtea-pecl](https://github.com/xxtea/xxtea-pecl) |
+| yac | [laruence/yac](https://github.com/laruence/yac) |
+| yaconf | [laruence/yaconf](https://github.com/laruence/yaconf) |
+| yaf | [laruence/yaf](https://github.com/laruence/yaf) |
+| yaml | [php/pecl-file_formats-yaml](https://github.com/php/pecl-file_formats-yaml) |
+| yar | [laruence/yar](https://github.com/laruence/yar) |
+| zip | [pierrejoye/php_zip](https://github.com/pierrejoye/php_zip) |
+| zmq | [zeromq/php-zmq](https://github.com/zeromq/php-zmq) |
+| zstd | [kjdev/php-ext-zstd](https://github.com/kjdev/php-ext-zstd) |
 
 ## 🎯 Supported Configurations
 
