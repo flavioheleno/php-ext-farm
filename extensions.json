@@ -1,0 +1,811 @@
+{
+  "php_versions": ["8.2", "8.3", "8.4", "8.5"],
+  "platforms": {
+    "alpine": {
+      "versions": ["3.18", "3.19", "3.20"],
+      "base_image": "php:{php_version}-cli-alpine{alpine_version}"
+    },
+    "debian": {
+      "versions": ["bookworm", "bullseye"],
+      "base_image": "php:{php_version}-cli-{debian_version}"
+    }
+  },
+  "extensions": {
+    "amqp": {
+      "type": "git",
+      "pecl_name": "amqp",
+      "track_url": "https://github.com/php-amqp/php-amqp",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "rabbitmq-c-dev"],
+          "runtime": ["rabbitmq-c"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "librabbitmq-dev"],
+          "runtime": ["librabbitmq4"]
+        }
+      }
+    },
+    "apcu": {
+      "type": "pecl",
+      "pecl_name": "apcu",
+      "track_url": "https://github.com/krakjoe/apcu",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "apcu_bc": {
+      "type": "pecl",
+      "pecl_name": "apcu_bc",
+      "track_url": "https://github.com/krakjoe/apcu-bc",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "ast": {
+      "type": "pecl",
+      "pecl_name": "ast",
+      "track_url": "https://github.com/nikic/php-ast",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "brotli": {
+      "type": "git",
+      "pecl_name": "brotli",
+      "track_url": "https://github.com/kjdev/php-ext-brotli",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "brotli-dev"],
+          "runtime": ["brotli-libs"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libbrotli-dev"],
+          "runtime": ["libbrotli1"]
+        }
+      }
+    },
+    "csv": {
+      "type": "git",
+      "pecl_name": "csv",
+      "track_url": "https://gitlab.com/Girgias/csv-php-extension",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "decimal": {
+      "type": "pecl",
+      "pecl_name": "decimal",
+      "track_url": "https://github.com/php-decimal/ext-decimal",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "mpdecimal-dev"],
+          "runtime": ["mpdecimal"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmpdec-dev"],
+          "runtime": ["libmpdec3"]
+        }
+      }
+    },
+    "ds": {
+      "type": "pecl",
+      "pecl_name": "ds",
+      "track_url": "https://github.com/php-ds/ext-ds",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "event": {
+      "type": "pecl",
+      "pecl_name": "event",
+      "track_url": "https://bitbucket.org/osmanov/pecl-event",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libevent-dev", "openssl-dev"],
+          "runtime": ["libevent", "openssl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libevent-dev", "libssl-dev"],
+          "runtime": ["libevent-2.1-7", "libssl3"]
+        }
+      }
+    },
+    "excimer": {
+      "type": "pecl",
+      "pecl_name": "excimer",
+      "track_url": "https://github.com/wikimedia/php-excimer",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "gnupg": {
+      "type": "pecl",
+      "pecl_name": "gnupg",
+      "track_url": "https://github.com/php-gnupg/php-gnupg",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "gpgme-dev"],
+          "runtime": ["gpgme"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libgpgme-dev"],
+          "runtime": ["libgpgme11"]
+        }
+      }
+    },
+    "grpc": {
+      "type": "pecl",
+      "pecl_name": "grpc",
+      "track_url": "https://github.com/grpc/grpc",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib-dev", "linux-headers"],
+          "runtime": ["zlib"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib1g-dev"],
+          "runtime": ["zlib1g"]
+        }
+      }
+    },
+    "igbinary": {
+      "type": "pecl",
+      "pecl_name": "igbinary",
+      "track_url": "https://github.com/igbinary/igbinary",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "imagick": {
+      "type": "pecl",
+      "pecl_name": "imagick",
+      "track_url": "https://github.com/Imagick/imagick",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "imagemagick-dev"],
+          "runtime": ["imagemagick"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmagickwand-dev"],
+          "runtime": ["libmagickwand-6.q16-6"]
+        }
+      }
+    },
+    "inotify": {
+      "type": "pecl",
+      "pecl_name": "inotify",
+      "track_url": "https://github.com/arnaud-lb/php-inotify",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "lz4": {
+      "type": "git",
+      "pecl_name": "lz4",
+      "track_url": "https://github.com/kjdev/php-ext-lz4",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "lz4-dev"],
+          "runtime": ["lz4-libs"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "liblz4-dev"],
+          "runtime": ["liblz4-1"]
+        }
+      }
+    },
+    "lzf": {
+      "type": "pecl",
+      "pecl_name": "lzf",
+      "track_url": "https://github.com/php/pecl-file_formats-lzf",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "mailparse": {
+      "type": "pecl",
+      "pecl_name": "mailparse",
+      "track_url": "https://github.com/php/pecl-mail-mailparse",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "maxminddb": {
+      "type": "git",
+      "pecl_name": "maxminddb",
+      "track_url": "https://github.com/maxmind/MaxMind-DB-Reader-php",
+      "build_path": "ext",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmaxminddb-dev"],
+          "runtime": ["libmaxminddb"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmaxminddb-dev"],
+          "runtime": ["libmaxminddb0"]
+        }
+      }
+    },
+    "memcache": {
+      "type": "pecl",
+      "pecl_name": "memcache",
+      "track_url": "https://github.com/websupport-sk/pecl-memcache",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib-dev"],
+          "runtime": ["zlib"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib1g-dev"],
+          "runtime": ["zlib1g"]
+        }
+      }
+    },
+    "memcached": {
+      "type": "pecl",
+      "pecl_name": "memcached",
+      "track_url": "https://github.com/php-memcached-dev/php-memcached",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmemcached-dev", "zlib-dev", "cyrus-sasl-dev"],
+          "runtime": ["libmemcached", "zlib", "cyrus-sasl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libmemcached-dev", "zlib1g-dev", "libsasl2-dev"],
+          "runtime": ["libmemcached11", "zlib1g", "libsasl2-2"]
+        }
+      }
+    },
+    "memprof": {
+      "type": "pecl",
+      "pecl_name": "memprof",
+      "track_url": "https://github.com/arnaud-lb/php-memory-profiler",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libjudy-dev"],
+          "runtime": ["libjudy1"]
+        }
+      }
+    },
+    "mongodb": {
+      "type": "pecl",
+      "pecl_name": "mongodb",
+      "track_url": "https://github.com/mongodb/mongo-php-driver",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "openssl-dev"],
+          "runtime": ["openssl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libssl-dev"],
+          "runtime": ["libssl3"]
+        }
+      }
+    },
+    "msgpack": {
+      "type": "pecl",
+      "pecl_name": "msgpack",
+      "track_url": "https://github.com/msgpack/msgpack-php",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "oauth": {
+      "type": "pecl",
+      "pecl_name": "oauth",
+      "track_url": "https://github.com/php/pecl-web_services-oauth",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "pcre-dev", "curl-dev"],
+          "runtime": ["pcre", "curl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libpcre3-dev", "libcurl4-openssl-dev"],
+          "runtime": ["libpcre3", "libcurl4"]
+        }
+      }
+    },
+    "pcov": {
+      "type": "pecl",
+      "pecl_name": "pcov",
+      "track_url": "https://github.com/krakjoe/pcov",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "pecl_http": {
+      "type": "pecl",
+      "pecl_name": "pecl_http",
+      "track_url": "https://github.com/m6w6/ext-http",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "curl-dev", "zlib-dev", "libevent-dev", "icu-dev"],
+          "runtime": ["curl", "zlib", "libevent", "icu"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libcurl4-openssl-dev", "zlib1g-dev", "libevent-dev", "libicu-dev"],
+          "runtime": ["libcurl4", "zlib1g", "libevent-2.1-7", "libicu72"]
+        }
+      }
+    },
+    "pq": {
+      "type": "pecl",
+      "pecl_name": "pq",
+      "track_url": "https://github.com/m6w6/ext-pq",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "postgresql-dev"],
+          "runtime": ["postgresql-libs"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libpq-dev"],
+          "runtime": ["libpq5"]
+        }
+      }
+    },
+    "psr": {
+      "type": "pecl",
+      "pecl_name": "psr",
+      "track_url": "https://github.com/jbboehr/php-psr",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "raphf": {
+      "type": "pecl",
+      "pecl_name": "raphf",
+      "track_url": "https://github.com/m6w6/ext-raphf",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "rdkafka": {
+      "type": "pecl",
+      "pecl_name": "rdkafka",
+      "track_url": "https://github.com/arnaud-lb/php-rdkafka",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "librdkafka-dev"],
+          "runtime": ["librdkafka"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "librdkafka-dev"],
+          "runtime": ["librdkafka1"]
+        }
+      }
+    },
+    "redis": {
+      "type": "pecl",
+      "pecl_name": "redis",
+      "track_url": "https://github.com/phpredis/phpredis",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "simdjson": {
+      "type": "git",
+      "pecl_name": "simdjson",
+      "track_url": "https://github.com/crazyxman/simdjson_php",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "smbclient": {
+      "type": "pecl",
+      "pecl_name": "smbclient",
+      "track_url": "https://github.com/eduardok/libsmbclient-php",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "samba-dev"],
+          "runtime": ["samba-client-libs"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libsmbclient-dev"],
+          "runtime": ["libsmbclient"]
+        }
+      }
+    },
+    "stomp": {
+      "type": "pecl",
+      "pecl_name": "stomp",
+      "track_url": "https://github.com/php/pecl-tools-stomp",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "openssl-dev"],
+          "runtime": ["openssl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libssl-dev"],
+          "runtime": ["libssl3"]
+        }
+      }
+    },
+    "swoole": {
+      "type": "pecl",
+      "pecl_name": "swoole",
+      "track_url": "https://github.com/swoole/swoole-src",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "openssl-dev", "curl-dev", "linux-headers"],
+          "runtime": ["openssl", "curl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libssl-dev", "libcurl4-openssl-dev"],
+          "runtime": ["libssl3", "libcurl4"]
+        }
+      }
+    },
+    "taint": {
+      "type": "pecl",
+      "pecl_name": "taint",
+      "track_url": "https://github.com/laruence/taint",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "uploadprogress": {
+      "type": "pecl",
+      "pecl_name": "uploadprogress",
+      "track_url": "https://github.com/php/pecl-php-uploadprogress",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "uuid": {
+      "type": "pecl",
+      "pecl_name": "uuid",
+      "track_url": "https://github.com/php/pecl-networking-uuid",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "util-linux-dev"],
+          "runtime": ["libuuid"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "uuid-dev"],
+          "runtime": ["libuuid1"]
+        }
+      }
+    },
+    "uv": {
+      "type": "pecl",
+      "pecl_name": "uv",
+      "track_url": "https://github.com/amphp/ext-uv",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libuv-dev"],
+          "runtime": ["libuv"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libuv1-dev"],
+          "runtime": ["libuv1"]
+        }
+      }
+    },
+    "vld": {
+      "type": "pecl",
+      "pecl_name": "vld",
+      "track_url": "https://github.com/derickr/vld",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "xdebug": {
+      "type": "pecl",
+      "pecl_name": "xdebug",
+      "track_url": "https://github.com/xdebug/xdebug",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "linux-headers"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "xdiff": {
+      "type": "pecl",
+      "pecl_name": "xdiff",
+      "track_url": "https://github.com/php/pecl-text-xdiff",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libxdiff-dev"],
+          "runtime": ["libxdiff"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libxdiff-dev"],
+          "runtime": ["libxdiff0"]
+        }
+      }
+    },
+    "xhprof": {
+      "type": "pecl",
+      "pecl_name": "xhprof",
+      "track_url": "https://github.com/longxinH/xhprof",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "xxtea": {
+      "type": "pecl",
+      "pecl_name": "xxtea",
+      "track_url": "https://github.com/xxtea/xxtea-pecl",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "yac": {
+      "type": "pecl",
+      "pecl_name": "yac",
+      "track_url": "https://github.com/laruence/yac",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "yaconf": {
+      "type": "pecl",
+      "pecl_name": "yaconf",
+      "track_url": "https://github.com/laruence/yaconf",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "yaf": {
+      "type": "pecl",
+      "pecl_name": "yaf",
+      "track_url": "https://github.com/laruence/yaf",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "yaml": {
+      "type": "pecl",
+      "pecl_name": "yaml",
+      "track_url": "https://github.com/php/pecl-file_formats-yaml",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "yaml-dev"],
+          "runtime": ["yaml"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libyaml-dev"],
+          "runtime": ["libyaml-0-2"]
+        }
+      }
+    },
+    "yar": {
+      "type": "pecl",
+      "pecl_name": "yar",
+      "track_url": "https://github.com/laruence/yar",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "curl-dev"],
+          "runtime": ["curl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libcurl4-openssl-dev"],
+          "runtime": ["libcurl4"]
+        }
+      }
+    },
+    "zip": {
+      "type": "pecl",
+      "pecl_name": "zip",
+      "track_url": "https://github.com/pierrejoye/php_zip",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libzip-dev"],
+          "runtime": ["libzip"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libzip-dev"],
+          "runtime": ["libzip4"]
+        }
+      }
+    },
+    "zmq": {
+      "type": "pecl",
+      "pecl_name": "zmq",
+      "track_url": "https://github.com/zeromq/php-zmq",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "zeromq-dev"],
+          "runtime": ["zeromq"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libzmq3-dev"],
+          "runtime": ["libzmq5"]
+        }
+      }
+    },
+    "zstd": {
+      "type": "git",
+      "pecl_name": "zstd",
+      "track_url": "https://github.com/kjdev/php-ext-zstd",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "zstd-dev"],
+          "runtime": ["zstd-libs"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libzstd-dev"],
+          "runtime": ["libzstd1"]
+        }
+      }
+    }
+  }
+}

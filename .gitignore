@@ -1,0 +1,21 @@
+# Build outputs
+output/
+
+# Version cache (managed by CI)
+.versions/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp

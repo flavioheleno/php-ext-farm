@@ -1,0 +1,97 @@
+name: Check Releases
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-extension-releases:
+    runs-on: ubuntu-latest
+    outputs:
+      updates: ${{ steps.check.outputs.updates }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for new extension releases
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          UPDATES="[]"
+          
+          for ext in $(jq -r '.extensions | keys[]' extensions.json); do
+            TRACK_URL=$(jq -r ".extensions.${ext}.track_url" extensions.json)
+            REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||')
+            
+            # Get latest release or tag
+            LATEST=$(gh api "repos/${REPO_PATH}/releases/latest" --jq '.tag_name' 2>/dev/null || \
+                     gh api "repos/${REPO_PATH}/tags?per_page=1" --jq '.[0].name' 2>/dev/null || \
+                     echo "")
+            
+            # Get cached version
+            CACHED_FILE=".versions/${ext}.txt"
+            CACHED=""
+            if [[ -f "$CACHED_FILE" ]]; then
+              CACHED=$(cat "$CACHED_FILE")
+            fi
+            
+            if [[ -n "$LATEST" && "$LATEST" != "$CACHED" ]]; then
+              UPDATES=$(echo "$UPDATES" | jq --arg ext "$ext" --arg ver "$LATEST" '. + [{"extension": $ext, "version": $ver}]')
+            fi
+          done
+          
+          echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
+          echo "Found updates: $UPDATES"
+
+      - name: Trigger builds for updated extensions
+        if: steps.check.outputs.updates != '[]'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo '${{ steps.check.outputs.updates }}' | jq -c '.[]' | while read -r update; do
+            EXT=$(echo "$update" | jq -r '.extension')
+            VER=$(echo "$update" | jq -r '.version')
+            
+            gh workflow run build.yml \
+              -f extension="$EXT" \
+              -f extension_version="$VER"
+          done
+
+  check-php-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for new PHP releases
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for version in $(jq -r '.php_versions[]' extensions.json); do
+            # Check PHP docker tags for new releases
+            LATEST=$(curl -s "https://hub.docker.com/v2/repositories/library/php/tags?name=${version}&page_size=100" | \
+                     jq -r ".results[] | select(.name | test(\"^${version}\\\\.[0-9]+-cli-alpine\")) | .name" | \
+                     sort -V | tail -1)
+            
+            echo "PHP ${version}: Latest tag is ${LATEST:-unknown}"
+          done
+
+  check-base-image-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Alpine releases
+        run: |
+          for alpine_ver in $(jq -r '.platforms.alpine.versions[]' extensions.json); do
+            echo "Checking Alpine ${alpine_ver}..."
+            # Could trigger rebuilds if Alpine base images are updated
+          done
+
+      - name: Check Debian releases
+        run: |
+          for debian_ver in $(jq -r '.platforms.debian.versions[]' extensions.json); do
+            echo "Checking Debian ${debian_ver}..."
+            # Could trigger rebuilds if Debian base images are updated
+          done

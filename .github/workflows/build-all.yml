@@ -1,0 +1,52 @@
+name: Build All Extensions
+
+on:
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      force_rebuild:
+        description: 'Force rebuild all extensions'
+        type: boolean
+        default: false
+
+jobs:
+  build-all:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        extension: [redis, imagick, xdebug, apcu, memcached]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get latest version
+        id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXT="${{ matrix.extension }}"
+          TRACK_URL=$(jq -r ".extensions.${EXT}.track_url" extensions.json)
+          REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||')
+          
+          # Get latest release or tag
+          LATEST=$(gh api "repos/${REPO_PATH}/releases/latest" --jq '.tag_name' 2>/dev/null || \
+                   gh api "repos/${REPO_PATH}/tags?per_page=1" --jq '.[0].name' 2>/dev/null || \
+                   echo "")
+          
+          # Clean version (remove 'v' prefix if present)
+          CLEAN_VERSION=$(echo "$LATEST" | sed 's/^v//')
+          
+          echo "version=${CLEAN_VERSION}" >> $GITHUB_OUTPUT
+          echo "Latest version for ${EXT}: ${CLEAN_VERSION}"
+
+      - name: Trigger release workflow
+        if: steps.version.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run release.yml \
+            -f extension="${{ matrix.extension }}" \
+            -f extension_version="${{ steps.version.outputs.version }}" \
+            -f rebuild="${{ inputs.force_rebuild || 'false' }}"

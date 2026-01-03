@@ -1,0 +1,28 @@
+ARG PHP_VERSION=8.3
+ARG DEBIAN_VERSION=bookworm
+FROM php:${PHP_VERSION}-cli-${DEBIAN_VERSION}
+
+ARG EXTENSION_NAME
+ARG EXTENSION_VERSION
+ARG BUILD_DEPS=""
+ARG RUNTIME_DEPS=""
+
+# Install build dependencies
+RUN apt-get update && \
+    if [ -n "$BUILD_DEPS" ]; then \
+      apt-get install -y --no-install-recommends $BUILD_DEPS; \
+    fi && \
+    if [ -n "$RUNTIME_DEPS" ]; then \
+      apt-get install -y --no-install-recommends $RUNTIME_DEPS; \
+    fi && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install the extension
+RUN pecl install ${EXTENSION_NAME}${EXTENSION_VERSION:+-}${EXTENSION_VERSION} && \
+    docker-php-ext-enable ${EXTENSION_NAME}
+
+# Get extension file path
+RUN EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
+    mkdir -p /output && \
+    cp ${EXT_DIR}/${EXTENSION_NAME}.so /output/ && \
+    php -m | grep -i ${EXTENSION_NAME}

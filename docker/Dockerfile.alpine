@@ -1,0 +1,31 @@
+ARG PHP_VERSION=8.3
+ARG ALPINE_VERSION=3.20
+FROM php:${PHP_VERSION}-cli-alpine${ALPINE_VERSION}
+
+ARG EXTENSION_NAME
+ARG EXTENSION_VERSION
+ARG BUILD_DEPS=""
+ARG RUNTIME_DEPS=""
+
+# Install build dependencies
+RUN if [ -n "$BUILD_DEPS" ]; then \
+      apk add --no-cache --virtual .build-deps $BUILD_DEPS; \
+    fi && \
+    if [ -n "$RUNTIME_DEPS" ]; then \
+      apk add --no-cache $RUNTIME_DEPS; \
+    fi
+
+# Install the extension
+RUN pecl install ${EXTENSION_NAME}${EXTENSION_VERSION:+-}${EXTENSION_VERSION} && \
+    docker-php-ext-enable ${EXTENSION_NAME}
+
+# Get extension file path
+RUN EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
+    mkdir -p /output && \
+    cp ${EXT_DIR}/${EXTENSION_NAME}.so /output/ && \
+    php -m | grep -i ${EXTENSION_NAME}
+
+# Cleanup build deps
+RUN if [ -n "$BUILD_DEPS" ]; then \
+      apk del .build-deps; \
+    fi
