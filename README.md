@@ -71,7 +71,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 - PHP 8.5
 
 ### Platforms
-- **Alpine Linux**: 3.18, 3.19, 3.20
+- **Alpine Linux**: 3.19, 3.20, 3.21, 3.22, 3.23
 - **Debian**: bookworm, bullseye
 
 ## 📥 Installation

@@ -2,7 +2,7 @@
   "php_versions": ["8.2", "8.3", "8.4", "8.5"],
   "platforms": {
     "alpine": {
-      "versions": ["3.18", "3.19", "3.20"],
+      "versions": ["3.19", "3.20", "3.21", "3.22", "3.23"],
       "base_image": "php:{php_version}-cli-alpine{alpine_version}"
     },
     "debian": {
