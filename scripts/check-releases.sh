@@ -10,20 +10,52 @@ CONFIG_FILE="${ROOT_DIR}/extensions.json"
 
 check_github_release() {
     local repo_url="$1"
+    
+    # Only works for GitHub URLs
+    if [[ "$repo_url" != *"github.com"* ]]; then
+        echo ""
+        return
+    fi
+    
     local repo_path
     repo_path=$(echo "$repo_url" | sed 's|https://github.com/||')
     
     # Use GitHub API to get latest release
-    curl -s "https://api.github.com/repos/${repo_path}/releases/latest" | jq -r '.tag_name // empty'
+    local response
+    response=$(curl -s "https://api.github.com/repos/${repo_path}/releases/latest")
+    
+    # Check if response contains an error
+    if echo "$response" | jq -e '.message' > /dev/null 2>&1; then
+        echo ""
+        return
+    fi
+    
+    echo "$response" | jq -r '.tag_name // empty'
 }
 
 check_github_tags() {
     local repo_url="$1"
+    
+    # Only works for GitHub URLs
+    if [[ "$repo_url" != *"github.com"* ]]; then
+        echo ""
+        return
+    fi
+    
     local repo_path
     repo_path=$(echo "$repo_url" | sed 's|https://github.com/||')
     
     # Get latest tag
-    curl -s "https://api.github.com/repos/${repo_path}/tags?per_page=1" | jq -r '.[0].name // empty'
+    local response
+    response=$(curl -s "https://api.github.com/repos/${repo_path}/tags?per_page=1")
+    
+    # Check if response is valid array
+    if ! echo "$response" | jq -e '.[0]' > /dev/null 2>&1; then
+        echo ""
+        return
+    fi
+    
+    echo "$response" | jq -r '.[0].name // empty'
 }
 
 echo "{"
