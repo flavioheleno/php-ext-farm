@@ -28,6 +28,8 @@ fi
 
 EXT_TYPE=$(jq -r ".extensions.${EXTENSION}.type" "$CONFIG_FILE")
 PECL_NAME=$(jq -r ".extensions.${EXTENSION}.pecl_name" "$CONFIG_FILE")
+TRACK_URL=$(jq -r ".extensions.${EXTENSION}.track_url" "$CONFIG_FILE")
+BUILD_PATH=$(jq -r ".extensions.${EXTENSION}.build_path // empty" "$CONFIG_FILE")
 BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.build | join(\" \")" "$CONFIG_FILE")
 RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime | join(\" \")" "$CONFIG_FILE")
 
@@ -51,6 +53,7 @@ mkdir -p "$OUTPUT_DIR"
 IMAGE_TAG="php-ext-${EXTENSION}:${PHP_VERSION}-${PLATFORM}${PLATFORM_VERSION}"
 
 echo "Building ${EXTENSION} for PHP ${PHP_VERSION} on ${PLATFORM} ${PLATFORM_VERSION}..."
+echo "Source: ${TRACK_URL}"
 echo "Build deps: ${BUILD_DEPS}"
 echo "Runtime deps: ${RUNTIME_DEPS}"
 
@@ -58,9 +61,14 @@ echo "Runtime deps: ${RUNTIME_DEPS}"
 BUILD_ARGS=(
     --build-arg "PHP_VERSION=${PHP_VERSION}"
     --build-arg "EXTENSION_NAME=${PECL_NAME}"
+    --build-arg "EXTENSION_REPO_URL=${TRACK_URL}"
     --build-arg "BUILD_DEPS=${BUILD_DEPS}"
     --build-arg "RUNTIME_DEPS=${RUNTIME_DEPS}"
 )
+
+if [[ -n "$BUILD_PATH" ]]; then
+    BUILD_ARGS+=(--build-arg "EXTENSION_BUILD_PATH=${BUILD_PATH}")
+fi
 
 if [[ "$PLATFORM" == "alpine" ]]; then
     BUILD_ARGS+=(--build-arg "ALPINE_VERSION=${PLATFORM_VERSION}")
