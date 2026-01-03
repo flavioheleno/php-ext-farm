@@ -128,6 +128,7 @@ jobs:
 
   collect-artifacts:
     needs: build
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -140,10 +141,16 @@ jobs:
       - name: Prepare release artifacts
         run: |
           mkdir -p release
-          find artifacts/ -name "*.tar.gz" -exec cp {} release/ \;
-          ls -la release/
+          find artifacts/ -name "*.tar.gz" -exec cp {} release/ \; 2>/dev/null || true
+          if [ -d release ] && [ "$(ls -A release 2>/dev/null)" ]; then
+            echo "Collected artifacts:"
+            ls -la release/
+          else
+            echo "No artifacts collected"
+          fi
 
       - name: Upload combined artifacts
+        if: hashFiles('release/*.tar.gz') != ''
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.extension }}-all-builds
