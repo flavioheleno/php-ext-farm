@@ -126,8 +126,14 @@ jobs:
 
       - name: Create artifact archive
         run: |
+          EXT="${{ inputs.extension }}"
           EXT_VERSION="${{ inputs.extension_version }}"
-          ARTIFACT_NAME="${{ inputs.extension }}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}"
+          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
+          EXT_VERSION="${EXT_VERSION#${EXT}-}"
+          # Also strip common prefixes like "v" or "release-"
+          EXT_VERSION="${EXT_VERSION#v}"
+          EXT_VERSION="${EXT_VERSION#release-}"
+          ARTIFACT_NAME="${EXT}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}"
           cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}
           tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
           mv "${ARTIFACT_NAME}.tar.gz" "${{ github.workspace }}/"
@@ -155,6 +161,15 @@ jobs:
       - name: Prepare release artifacts
         id: prepare
         run: |
+          EXT="${{ inputs.extension }}"
+          VERSION="${{ inputs.extension_version }}"
+          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
+          VERSION="${VERSION#${EXT}-}"
+          # Also strip common prefixes like "v" or "release-"
+          VERSION="${VERSION#v}"
+          VERSION="${VERSION#release-}"
+          echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
+          
           mkdir -p release
           find artifacts/ -name "*.tar.gz" -exec cp {} release/ \; 2>/dev/null || true
           if [ -d release ] && [ "$(ls -A release 2>/dev/null)" ]; then
@@ -170,7 +185,7 @@ jobs:
         if: steps.prepare.outputs.has_artifacts == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.extension }}-${{ inputs.extension_version }}-all-builds
+          name: ${{ inputs.extension }}-${{ steps.prepare.outputs.clean_version }}-all-builds
           path: release/
           retention-days: 90
 
@@ -181,6 +196,11 @@ jobs:
         run: |
           EXT="${{ inputs.extension }}"
           VERSION="${{ inputs.extension_version }}"
+          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
+          VERSION="${VERSION#${EXT}-}"
+          # Also strip common prefixes like "v" or "release-"
+          VERSION="${VERSION#v}"
+          VERSION="${VERSION#release-}"
           RELEASE_TAG="${EXT}-${VERSION}"
           
           # Delete existing release if it exists

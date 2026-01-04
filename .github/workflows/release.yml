@@ -31,8 +31,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RELEASE_TAG="${{ inputs.extension }}-${{ inputs.extension_version }}"
+          EXT="${{ inputs.extension }}"
+          VERSION="${{ inputs.extension_version }}"
+          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
+          VERSION="${VERSION#${EXT}-}"
+          # Also strip common prefixes like "v" or "release-"
+          VERSION="${VERSION#v}"
+          VERSION="${VERSION#release-}"
+          RELEASE_TAG="${EXT}-${VERSION}"
           echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
+          echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
           
           if [[ "${{ inputs.rebuild }}" == "true" ]]; then
             echo "should_build=true" >> $GITHUB_OUTPUT
@@ -67,14 +75,14 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ inputs.extension }}-all-builds
+          name: ${{ inputs.extension }}-${{ needs.check-release.outputs.clean_version }}-all-builds
           path: release/
 
       - name: Generate release notes
         id: notes
         run: |
           cat > release_notes.md << EOF
-          # ${{ inputs.extension }} v${{ inputs.extension_version }}
+          # ${{ inputs.extension }} v${{ needs.check-release.outputs.clean_version }}
           
           ## Supported Configurations
           
@@ -121,7 +129,7 @@ jobs:
           
           # Create release with all artifacts
           gh release create "$RELEASE_TAG" \
-            --title "${{ inputs.extension }} v${{ inputs.extension_version }}" \
+            --title "${{ inputs.extension }} v${{ needs.check-release.outputs.clean_version }}" \
             --notes-file release_notes.md \
             release/*.tar.gz
 
