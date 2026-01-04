@@ -16,7 +16,7 @@ jobs:
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Check for new extension releases
         id: check
@@ -86,7 +86,7 @@ jobs:
   check-php-releases:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Check for new PHP releases
         env:
@@ -104,7 +104,7 @@ jobs:
   check-base-image-updates:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Check Alpine releases
         run: |
