@@ -12,12 +12,27 @@ on:
         default: false
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      extensions: ${{ steps.list.outputs.extensions }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get extension list
+        id: list
+        run: |
+          EXTENSIONS=$(jq -c '[.extensions | keys[]]' extensions.json)
+          echo "extensions=${EXTENSIONS}" >> $GITHUB_OUTPUT
+          echo "Extensions to build: ${EXTENSIONS}"
+
   build-all:
+    needs: prepare
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        extension: [redis, imagick, xdebug, apcu, memcached]
+        extension: ${{ fromJson(needs.prepare.outputs.extensions) }}
     steps:
       - uses: actions/checkout@v4
 
