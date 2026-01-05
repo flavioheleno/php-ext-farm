@@ -271,6 +271,7 @@ RUN php -m | grep redis
 The main configuration file defines:
 
 - `php_versions`: List of PHP versions to build for
+- `architectures`: List of architectures to build for (amd64, arm64)
 - `platforms`: Platform configurations (Alpine/Debian versions)
 - `extensions`: Extension definitions including:
   - `type`: Extension type (pecl, git, etc.)
@@ -306,6 +307,8 @@ The main configuration file defines:
 
 2. Update the `build-all.yml` matrix to include the new extension.
 
+The extension will automatically be built for all PHP versions, platforms, and architectures defined in `extensions.json`.
+
 ## 🔄 Automation
 
 ### Daily Checks
@@ -320,8 +323,11 @@ The main configuration file defines:
 All workflows can be triggered manually:
 
 ```bash
-# Build specific extension
+# Build specific extension (all architectures)
 gh workflow run build.yml -f extension=redis -f php_versions=8.3,8.4
+
+# Build for specific architecture only
+gh workflow run build.yml -f extension=redis -f php_versions=8.3 -f architectures=arm64
 
 # Create release
 gh workflow run release.yml -f extension=redis -f extension_version=6.0.2
