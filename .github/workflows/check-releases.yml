@@ -5,6 +5,14 @@ on:
     # Run daily at midnight UTC
     - cron: '0 0 * * *'
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner to use'
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: 'ubuntu-latest'
 
 permissions:
   contents: read
@@ -12,7 +20,7 @@ permissions:
 
 jobs:
   check-extension-releases:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
@@ -84,7 +92,7 @@ jobs:
           done
 
   check-php-releases:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -102,7 +110,7 @@ jobs:
           done
 
   check-base-image-updates:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 

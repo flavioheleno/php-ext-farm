@@ -31,6 +31,14 @@ on:
         required: false
         type: boolean
         default: true
+      runner:
+        description: 'Runner to use'
+        required: false
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: 'ubuntu-latest'
   workflow_call:
     inputs:
       extension:
@@ -47,13 +55,17 @@ on:
         required: false
         type: boolean
         default: true
+      runner:
+        required: false
+        type: string
+        default: 'ubuntu-latest'
 
 permissions:
   contents: write
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
@@ -113,7 +125,7 @@ jobs:
 
   build:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -176,7 +188,7 @@ jobs:
   collect-artifacts:
     needs: build
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 

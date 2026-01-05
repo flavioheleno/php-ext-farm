@@ -16,13 +16,21 @@ on:
         required: false
         type: boolean
         default: false
+      runner:
+        description: 'Runner to use'
+        required: false
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: 'ubuntu-latest'
 
 permissions:
   contents: write
 
 jobs:
   check-release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       should_build: ${{ steps.check.outputs.should_build }}
       release_tag: ${{ steps.check.outputs.release_tag }}
@@ -67,11 +75,12 @@ jobs:
     with:
       extension: ${{ inputs.extension }}
       extension_version: ${{ inputs.extension_version }}
+      runner: ${{ inputs.runner || 'ubuntu-latest' }}
 
   release:
     needs: [check-release, build]
     if: needs.check-release.outputs.should_build == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     permissions:
       contents: write
     steps:
@@ -140,7 +149,7 @@ jobs:
 
   update-version-cache:
     needs: release
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     permissions:
       contents: write
     steps:

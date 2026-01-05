@@ -10,6 +10,13 @@ on:
         description: 'Force rebuild all extensions'
         type: boolean
         default: false
+      runner:
+        description: 'Runner to use'
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: 'ubuntu-latest'
 
 permissions:
   actions: write
@@ -17,7 +24,7 @@ permissions:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       extensions: ${{ steps.list.outputs.extensions }}
     steps:
@@ -32,7 +39,7 @@ jobs:
 
   build-all:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
