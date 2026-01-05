@@ -2,6 +2,8 @@ ARG PHP_VERSION=8.3
 ARG DEBIAN_VERSION=bookworm
 FROM php:${PHP_VERSION}-cli-${DEBIAN_VERSION}
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 # Upgrade system packages (cached per PHP/Debian version)
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -16,27 +18,28 @@ ARG BUILD_DEPS=""
 ARG RUNTIME_DEPS=""
 
 # Install build and runtime dependencies
+# hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      $PHP_DEV \
       git \
-      $BUILD_DEPS && \
+      ${BUILD_DEPS} && \
     if [ -n "$RUNTIME_DEPS" ]; then \
-      apt-get install -y --no-install-recommends $RUNTIME_DEPS; \
+      apt-get install -y --no-install-recommends ${RUNTIME_DEPS}; \
     fi && \
     rm -rf /var/lib/apt/lists/*
 
 # Clone, build, install, verify, and cleanup in single layer
 WORKDIR /tmp/extension
+# hadolint ignore=DL3003
 RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${EXTENSION_REPO_URL}" . && \
     if [ -n "$EXTENSION_BUILD_PATH" ]; then cd "$EXTENSION_BUILD_PATH"; fi && \
     phpize && \
     ./configure && \
-    make -j$(nproc) && \
+    make -j"$(nproc)" && \
     make install && \
-    docker-php-ext-enable ${EXTENSION_NAME} && \
-    php -m | grep -i ${EXTENSION_NAME} && \
+    docker-php-ext-enable "${EXTENSION_NAME}" && \
+    php -m | grep -i "${EXTENSION_NAME}" && \
     EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
     mkdir -p /output && \
-    cp ${EXT_DIR}/${EXTENSION_NAME}.so /output/ && \
+    cp "${EXT_DIR}/${EXTENSION_NAME}.so" /output/ && \
     rm -rf /tmp/extension

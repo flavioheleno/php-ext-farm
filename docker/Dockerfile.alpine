@@ -2,6 +2,8 @@ ARG PHP_VERSION=8.3
 ARG ALPINE_VERSION=3.20
 FROM php:${PHP_VERSION}-cli-alpine${ALPINE_VERSION}
 
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
 # Upgrade system packages (cached per PHP/Alpine version)
 RUN apk upgrade --no-cache --available
 
@@ -14,26 +16,27 @@ ARG BUILD_DEPS=""
 ARG RUNTIME_DEPS=""
 
 # Install build and runtime dependencies
+# hadolint ignore=DL3018
 RUN apk add --no-cache --virtual .build-deps \
-      $PHP_DEV \
       git \
-      $BUILD_DEPS && \
+      ${BUILD_DEPS} && \
     if [ -n "$RUNTIME_DEPS" ]; then \
-      apk add --no-cache $RUNTIME_DEPS; \
+      apk add --no-cache ${RUNTIME_DEPS}; \
     fi
 
 # Clone, build, install, verify, and cleanup in single layer
 WORKDIR /tmp/extension
+# hadolint ignore=DL3003
 RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${EXTENSION_REPO_URL}" . && \
     if [ -n "$EXTENSION_BUILD_PATH" ]; then cd "$EXTENSION_BUILD_PATH"; fi && \
     phpize && \
     ./configure && \
-    make -j$(nproc) && \
+    make -j"$(nproc)" && \
     make install && \
-    docker-php-ext-enable ${EXTENSION_NAME} && \
-    php -m | grep -i ${EXTENSION_NAME} && \
+    docker-php-ext-enable "${EXTENSION_NAME}" && \
+    php -m | grep -i "${EXTENSION_NAME}" && \
     EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
     mkdir -p /output && \
-    cp ${EXT_DIR}/${EXTENSION_NAME}.so /output/ && \
+    cp "${EXT_DIR}/${EXTENSION_NAME}.so" /output/ && \
     apk del .build-deps && \
     rm -rf /tmp/extension
