@@ -128,7 +128,7 @@ The script will:
 
 ```bash
 # Extract the archive
-tar -xzf redis-8.3-alpine-3.20.tar.gz
+tar -xzf redis-6.3.0-php8.3-alpine-3.20.tar.gz
 
 # Copy extension to PHP extension directory
 cp redis.so $(php -r "echo ini_get('extension_dir');")
@@ -328,11 +328,11 @@ gh workflow run build-all.yml -f force_rebuild=true
 ## 📋 Artifact Naming Convention
 
 ```
-<extension>-<php_version>-<platform>-<platform_version>.tar.gz
+<extension>-<extension_version>-php<php_version>-<platform>-<platform_version>.tar.gz
 
 Examples:
-- redis-8.3-alpine-3.20.tar.gz
-- imagick-8.4-debian-bookworm.tar.gz
+- redis-6.3.0-php8.3-alpine-3.20.tar.gz
+- imagick-3.7.0-php8.4-debian-bookworm.tar.gz
 ```
 
 ## 🏷️ Release Naming Convention
