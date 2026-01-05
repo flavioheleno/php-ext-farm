@@ -2,6 +2,12 @@ ARG PHP_VERSION=8.3
 ARG DEBIAN_VERSION=bookworm
 FROM php:${PHP_VERSION}-cli-${DEBIAN_VERSION}
 
+# Upgrade system packages (cached per PHP/Debian version)
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# Extension-specific ARGs (declared after base setup for better caching)
 ARG EXTENSION_NAME
 ARG EXTENSION_VERSION
 ARG EXTENSION_REPO_URL
@@ -9,7 +15,7 @@ ARG EXTENSION_BUILD_PATH=""
 ARG BUILD_DEPS=""
 ARG RUNTIME_DEPS=""
 
-# Install build dependencies
+# Install build and runtime dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       $PHP_DEV \
@@ -20,20 +26,17 @@ RUN apt-get update && \
     fi && \
     rm -rf /var/lib/apt/lists/*
 
-# Clone and build extension from source
+# Clone, build, install, verify, and cleanup in single layer
 WORKDIR /tmp/extension
 RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${EXTENSION_REPO_URL}" . && \
     if [ -n "$EXTENSION_BUILD_PATH" ]; then cd "$EXTENSION_BUILD_PATH"; fi && \
     phpize && \
     ./configure && \
     make -j$(nproc) && \
-    make install
-
-# Enable and verify extension
-RUN docker-php-ext-enable ${EXTENSION_NAME} && \
-    php -m | grep -i ${EXTENSION_NAME}
-
-# Copy extension to output
-RUN EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
+    make install && \
+    docker-php-ext-enable ${EXTENSION_NAME} && \
+    php -m | grep -i ${EXTENSION_NAME} && \
+    EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
     mkdir -p /output && \
-    cp ${EXT_DIR}/${EXTENSION_NAME}.so /output/
+    cp ${EXT_DIR}/${EXTENSION_NAME}.so /output/ && \
+    rm -rf /tmp/extension
