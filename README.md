@@ -95,6 +95,10 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 - **Alpine Linux**: 3.19, 3.20, 3.21, 3.22, 3.23
 - **Debian**: bookworm, bullseye
 
+### Architectures
+- amd64 (x86_64)
+- arm64 (aarch64)
+
 ## 📥 Installation
 
 ### Automatic Installation (Recommended)
@@ -111,7 +115,7 @@ Use the install script to automatically download and install extensions:
 ```
 
 The script will:
-1. Detect your PHP version and OS (Alpine/Debian/Ubuntu)
+1. Detect your PHP version, OS (Alpine/Debian/Ubuntu), and architecture (amd64/arm64)
 2. Download the appropriate pre-built extension from GitHub releases
 3. Install runtime dependencies from `metadata.json`
 4. Copy the extension to PHP's extension directory
@@ -128,7 +132,7 @@ The script will:
 
 ```bash
 # Extract the archive
-tar -xzf redis-6.3.0-php8.3-alpine-3.20.tar.gz
+tar -xzf redis-6.3.0-php8.3-alpine-3.20-amd64.tar.gz
 
 # Copy extension to PHP extension directory
 cp redis.so $(php -r "echo ini_get('extension_dir');")
@@ -226,11 +230,12 @@ RUN php -m | grep redis
 ### Build a single extension
 
 ```bash
-./scripts/build.sh <extension> <php_version> <platform> <platform_version> [extension_version]
+./scripts/build.sh <extension> <php_version> <platform> <platform_version> [extension_version] [arch]
 
 # Examples:
-./scripts/build.sh redis 8.3 alpine 3.20
-./scripts/build.sh imagick 8.4 debian bookworm 3.7.0
+./scripts/build.sh redis 8.3 alpine 3.20 6.0.2
+./scripts/build.sh redis 8.3 alpine 3.20 6.0.2 arm64
+./scripts/build.sh imagick 8.4 debian bookworm 3.7.0 amd64
 ```
 
 ### Check for new releases
@@ -328,11 +333,12 @@ gh workflow run build-all.yml -f force_rebuild=true
 ## 📋 Artifact Naming Convention
 
 ```
-<extension>-<extension_version>-php<php_version>-<platform>-<platform_version>.tar.gz
+<extension>-<extension_version>-php<php_version>-<platform>-<platform_version>-<arch>.tar.gz
 
 Examples:
-- redis-6.3.0-php8.3-alpine-3.20.tar.gz
-- imagick-3.7.0-php8.4-debian-bookworm.tar.gz
+- redis-6.3.0-php8.3-alpine-3.20-amd64.tar.gz
+- redis-6.3.0-php8.3-alpine-3.20-arm64.tar.gz
+- imagick-3.7.0-php8.4-debian-bookworm-amd64.tar.gz
 ```
 
 ## 🏷️ Release Naming Convention

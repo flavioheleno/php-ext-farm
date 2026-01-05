@@ -77,7 +77,24 @@ PHP_FULL_VERSION=$(php -r 'echo PHP_VERSION;')
 PHP_MAJOR_MINOR=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
 log_info "PHP version: $PHP_FULL_VERSION (using $PHP_MAJOR_MINOR for matching)"
 
-# Step 2: Detect OS and version
+# Step 2: Detect architecture
+log_info "Detecting architecture..."
+MACHINE_ARCH=$(uname -m)
+case "$MACHINE_ARCH" in
+    x86_64|amd64)
+        ARCH="amd64"
+        ;;
+    aarch64|arm64)
+        ARCH="arm64"
+        ;;
+    *)
+        log_error "Unsupported architecture: $MACHINE_ARCH"
+        exit 1
+        ;;
+esac
+log_info "Architecture: $ARCH"
+
+# Step 3: Detect OS and version
 log_info "Detecting operating system..."
 PLATFORM=""
 PLATFORM_VERSION=""
@@ -136,7 +153,7 @@ detect_os() {
 detect_os
 log_info "Detected platform: $PLATFORM $PLATFORM_VERSION"
 
-# Step 3: Validate extension exists in config
+# Step 4: Validate extension exists in config
 if [ -f "$CONFIG_FILE" ]; then
     EXT_CHECK=$(jq -r ".extensions.${EXTENSION}" "$CONFIG_FILE")
     if [ "$EXT_CHECK" = "null" ]; then
@@ -153,16 +170,16 @@ else
     PECL_NAME="$EXTENSION"
 fi
 
-# Step 4: Build download URL
+# Step 5: Build download URL
 RELEASE_TAG="${EXTENSION}-${EXTENSION_VERSION}"
-ARCHIVE_NAME="${EXTENSION}-${EXTENSION_VERSION}-php${PHP_MAJOR_MINOR}-${PLATFORM}-${PLATFORM_VERSION}.tar.gz"
+ARCHIVE_NAME="${EXTENSION}-${EXTENSION_VERSION}-php${PHP_MAJOR_MINOR}-${PLATFORM}-${PLATFORM_VERSION}-${ARCH}.tar.gz"
 DOWNLOAD_URL="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${ARCHIVE_NAME}"
 
 log_info "Release tag: $RELEASE_TAG"
 log_info "Archive: $ARCHIVE_NAME"
 log_info "Download URL: $DOWNLOAD_URL"
 
-# Step 5: Create temp directory and download
+# Step 6: Create temp directory and download
 TEMP_DIR=$(mktemp -d)
 log_info "Created temporary directory: $TEMP_DIR"
 
@@ -201,7 +218,7 @@ fi
 
 log_info "Downloaded archive successfully"
 
-# Step 6: Extract archive
+# Step 7: Extract archive
 log_info "Extracting archive..."
 EXTRACT_DIR="${TEMP_DIR}/extracted"
 mkdir -p "$EXTRACT_DIR"
@@ -219,11 +236,11 @@ fi
 SO_BASENAME=$(basename "$SO_FILE")
 log_info "Found extension file: $SO_BASENAME"
 
-# Step 7: Get PHP extension directory
+# Step 8: Get PHP extension directory
 EXT_DIR=$(php -r "echo ini_get('extension_dir');")
 log_info "PHP extension directory: $EXT_DIR"
 
-# Step 8: Install runtime dependencies from metadata.json
+# Step 9: Install runtime dependencies from metadata.json
 if [ -n "$METADATA_FILE" ] && [ -f "$METADATA_FILE" ]; then
     RUNTIME_DEPS=$(jq -r '.runtime_deps // empty' "$METADATA_FILE")
     
@@ -264,7 +281,7 @@ else
     log_warn "metadata.json not found in archive, skipping dependency installation"
 fi
 
-# Step 9: Copy extension to PHP extension directory
+# Step 10: Copy extension to PHP extension directory
 log_info "Installing extension to $EXT_DIR..."
 
 SUDO=""
@@ -282,7 +299,7 @@ fi
 $SUDO cp "$SO_FILE" "$EXT_DIR/"
 log_info "Extension copied successfully"
 
-# Step 10: Enable the extension in conf.d
+# Step 11: Enable the extension in conf.d
 log_info "Enabling extension..."
 
 # Find the conf.d directory
@@ -306,7 +323,7 @@ else
     exit 1
 fi
 
-# Step 11: Verify installation
+# Step 12: Verify installation
 log_info "Verifying installation..."
 
 if php -m 2>/dev/null | grep -qi "^${PECL_NAME}\$"; then

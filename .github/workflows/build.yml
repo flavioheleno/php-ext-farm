@@ -21,6 +21,11 @@ on:
         required: false
         default: 'all'
         type: string
+      architectures:
+        description: 'Architectures (comma-separated, e.g., amd64,arm64 or "all")'
+        required: false
+        default: 'all'
+        type: string
       create_release:
         description: 'Create a GitHub release with artifacts'
         required: false
@@ -34,6 +39,10 @@ on:
       extension_version:
         required: true
         type: string
+      architectures:
+        required: false
+        type: string
+        default: 'all'
       create_release:
         required: false
         type: boolean
@@ -56,12 +65,20 @@ jobs:
           EXT="${{ inputs.extension }}"
           PHP_VERS="${{ inputs.php_versions || 'all' }}"
           PLATFORMS="${{ inputs.platforms || 'all' }}"
+          ARCHS="${{ inputs.architectures || 'all' }}"
           
           # Get PHP versions
           if [[ "$PHP_VERS" == "all" ]]; then
             PHP_VERSIONS=$(jq -c '.php_versions' extensions.json)
           else
             PHP_VERSIONS=$(echo "$PHP_VERS" | jq -Rc 'split(",")')
+          fi
+          
+          # Get architectures
+          if [[ "$ARCHS" == "all" ]]; then
+            ARCHITECTURES=$(jq -c '.architectures' extensions.json)
+          else
+            ARCHITECTURES=$(echo "$ARCHS" | jq -Rc 'split(",")')
           fi
           
           # Build matrix
@@ -71,8 +88,10 @@ jobs:
           if [[ "$PLATFORMS" == "all" || "$PLATFORMS" == *"alpine"* ]]; then
             for php in $(echo "$PHP_VERSIONS" | jq -r '.[]'); do
               for alpine in $(jq -r '.platforms.alpine.versions[]' extensions.json); do
-                MATRIX=$(echo "$MATRIX" | jq --arg php "$php" --arg os "alpine" --arg osv "$alpine" \
-                  '.include += [{"php_version": $php, "platform": $os, "platform_version": $osv}]')
+                for arch in $(echo "$ARCHITECTURES" | jq -r '.[]'); do
+                  MATRIX=$(echo "$MATRIX" | jq --arg php "$php" --arg os "alpine" --arg osv "$alpine" --arg arch "$arch" \
+                    '.include += [{"php_version": $php, "platform": $os, "platform_version": $osv, "arch": $arch}]')
+                done
               done
             done
           fi
@@ -81,8 +100,10 @@ jobs:
           if [[ "$PLATFORMS" == "all" || "$PLATFORMS" == *"debian"* ]]; then
             for php in $(echo "$PHP_VERSIONS" | jq -r '.[]'); do
               for debian in $(jq -r '.platforms.debian.versions[]' extensions.json); do
-                MATRIX=$(echo "$MATRIX" | jq --arg php "$php" --arg os "debian" --arg osv "$debian" \
-                  '.include += [{"php_version": $php, "platform": $os, "platform_version": $osv}]')
+                for arch in $(echo "$ARCHITECTURES" | jq -r '.[]'); do
+                  MATRIX=$(echo "$MATRIX" | jq --arg php "$php" --arg os "debian" --arg osv "$debian" --arg arch "$arch" \
+                    '.include += [{"php_version": $php, "platform": $os, "platform_version": $osv, "arch": $arch}]')
+                done
               done
             done
           fi
@@ -98,6 +119,9 @@ jobs:
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
@@ -122,7 +146,8 @@ jobs:
             "${{ matrix.php_version }}" \
             "${{ matrix.platform }}" \
             "${{ matrix.platform_version }}" \
-            "${{ inputs.extension_version }}"
+            "${{ inputs.extension_version }}" \
+            "${{ matrix.arch }}"
 
       - name: Create artifact archive
         run: |
@@ -135,8 +160,8 @@ jobs:
           EXT_VERSION="${EXT_VERSION#release-}"
           EXT_VERSION="${EXT_VERSION#release_}"
           EXT_VERSION="${EXT_VERSION//_/.}"
-          ARTIFACT_NAME="${EXT}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}"
-          cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}
+          ARTIFACT_NAME="${EXT}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}-${{ matrix.arch }}"
+          cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}/${{ matrix.arch }}
           tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
           mv "${ARTIFACT_NAME}.tar.gz" "${{ github.workspace }}/"
           echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
@@ -222,13 +247,14 @@ jobs:
           ## Supported Configurations
           
           - **PHP Versions**: $(jq -r '.php_versions | join(", ")' extensions.json)
+          - **Architectures**: $(jq -r '.architectures | join(", ")' extensions.json)
           - **Alpine Linux**: $(jq -r '.platforms.alpine.versions | join(", ")' extensions.json)
           - **Debian**: $(jq -r '.platforms.debian.versions | join(", ")' extensions.json)
           
           ## Installation
           
           \`\`\`bash
-          tar -xzf ${EXT}-${VERSION}-php<version>-<platform>-<platform_version>.tar.gz
+          tar -xzf ${EXT}-${VERSION}-php<version>-<platform>-<platform_version>-<arch>.tar.gz
           cp ${EXT}.so \$(php -r "echo ini_get('extension_dir');")
           echo "extension=${EXT}.so" >> \$(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
           \`\`\`
