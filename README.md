@@ -97,7 +97,30 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 
 ## 📥 Installation
 
-### Download from Releases
+### Automatic Installation (Recommended)
+
+Use the install script to automatically download and install extensions:
+
+```bash
+./scripts/install.sh <extension> <version>
+
+# Examples:
+./scripts/install.sh redis 6.3.0
+./scripts/install.sh imagick 3.7.0
+./scripts/install.sh xdebug 3.3.1
+```
+
+The script will:
+1. Detect your PHP version and OS (Alpine/Debian/Ubuntu)
+2. Download the appropriate pre-built extension from GitHub releases
+3. Install runtime dependencies from `metadata.json`
+4. Copy the extension to PHP's extension directory
+5. Enable it via a config file in `conf.d`
+6. Verify the installation
+
+**Requirements:** `jq`, `curl` or `wget`, and `php` in PATH.
+
+### Manual Installation
 
 1. Go to [Releases](../../releases)
 2. Download the appropriate `.tar.gz` for your PHP version and platform
@@ -110,8 +133,8 @@ tar -xzf redis-8.3-alpine-3.20.tar.gz
 # Copy extension to PHP extension directory
 cp redis.so $(php -r "echo ini_get('extension_dir');")
 
-# Enable the extension
-echo "extension=redis.so" >> $(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
+# Enable the extension (using conf.d)
+echo "extension=redis.so" | sudo tee /etc/php/conf.d/50-redis.ini
 
 # Verify
 php -m | grep redis
@@ -168,6 +191,7 @@ apt-get install -y <runtime_deps>
 │   └── Dockerfile.debian    # Debian build image
 ├── scripts/
 │   ├── build.sh             # Local build script
+│   ├── install.sh           # Install pre-built extensions
 │   └── check-releases.sh    # Check upstream releases
 ├── extensions.json          # Extension configuration
 └── README.md
