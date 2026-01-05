@@ -154,6 +154,68 @@ apk add --no-cache <runtime_deps>
 apt-get install -y <runtime_deps>
 ```
 
+### Using in a Dockerfile
+
+Install pre-built extensions directly in your Docker images:
+
+**Alpine:**
+```dockerfile
+FROM php:8.3-cli-alpine3.20
+
+# Install dependencies for the install script
+RUN apk add --no-cache jq curl
+
+# Download and run the install script
+RUN curl -fsSL https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
+    && chmod +x /tmp/install.sh \
+    && /tmp/install.sh redis 6.3.0 \
+    && /tmp/install.sh imagick 3.7.0 \
+    && rm /tmp/install.sh
+
+# Verify extensions are loaded
+RUN php -m | grep -E "redis|imagick"
+```
+
+**Debian:**
+```dockerfile
+FROM php:8.3-cli-bookworm
+
+# Install dependencies for the install script
+RUN apt-get update && apt-get install -y --no-install-recommends jq curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download and run the install script
+RUN curl -fsSL https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
+    && chmod +x /tmp/install.sh \
+    && /tmp/install.sh redis 6.3.0 \
+    && /tmp/install.sh xdebug 3.3.1 \
+    && rm /tmp/install.sh
+
+# Verify extensions are loaded
+RUN php -m | grep -E "redis|xdebug"
+```
+
+**Multi-stage build (minimal final image):**
+```dockerfile
+FROM php:8.3-cli-alpine3.20 AS builder
+
+RUN apk add --no-cache jq curl
+RUN curl -fsSL https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
+    && chmod +x /tmp/install.sh \
+    && /tmp/install.sh redis 6.3.0
+
+FROM php:8.3-cli-alpine3.20
+
+# Copy extension and config from builder
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=builder /usr/local/etc/php/conf.d/50-redis.ini /usr/local/etc/php/conf.d/
+
+# Install only runtime dependencies (no jq/curl needed)
+RUN apk add --no-cache <runtime_deps_if_any>
+
+RUN php -m | grep redis
+```
+
 ## 🔧 Local Building
 
 ### Prerequisites
