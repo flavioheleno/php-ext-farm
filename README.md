@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (76)
+## 📦 Supported Extensions (77)
 
 | Extension | Repository |
 |-----------|------------|
@@ -56,6 +56,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | rpminfo | [remicollet/php-rpminfo](https://github.com/remicollet/php-rpminfo) |
 | selinux | [php/pecl-security-selinux](https://github.com/php/pecl-security-selinux) |
 | simdjson | [crazyxman/simdjson_php](https://github.com/crazyxman/simdjson_php) |
+| simdutf | [awesomized/simdutf-php-ext](https://github.com/awesomized/simdutf-php-ext) |
 | smbclient | [eduardok/libsmbclient-php](https://github.com/eduardok/libsmbclient-php) |
 | spi | [embedded-php/ext-spi](https://github.com/embedded-php/ext-spi) |
 | stomp | [php/pecl-tools-stomp](https://github.com/php/pecl-tools-stomp) |

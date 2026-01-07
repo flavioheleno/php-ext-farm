@@ -537,6 +537,21 @@
         }
       }
     },
+    "simdutf": {
+      "type": "git",
+      "pecl_name": "simdutf",
+      "track_url": "https://github.com/awesomized/simdutf-php-ext",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
     "smbclient": {
       "type": "pecl",
       "pecl_name": "smbclient",
