@@ -206,6 +206,33 @@
         }
       }
     },
+    "hdrhistogram": {
+      "type": "git",
+      "pecl_name": "hdrhistogram",
+      "track_url": "https://github.com/beberlei/hdrhistogram-php",
+      "external_libs": [
+        {
+          "name": "HdrHistogram_c",
+          "type": "cmake",
+          "repo_url": "https://github.com/HdrHistogram/HdrHistogram_c",
+          "build_commands": [
+            "cmake .",
+            "make -j$(nproc)",
+            "make install"
+          ]
+        }
+      ],
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake", "zlib-dev"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake", "zlib1g-dev"],
+          "runtime": []
+        }
+      }
+    },
     "grpc": {
       "type": "pecl",
       "pecl_name": "grpc",

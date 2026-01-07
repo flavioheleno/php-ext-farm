@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (77)
+## 📦 Supported Extensions (78)
 
 | Extension | Repository |
 |-----------|------------|
@@ -27,6 +27,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | gnupg | [php-gnupg/php-gnupg](https://github.com/php-gnupg/php-gnupg) |
 | gpio | [embedded-php/ext-gpio](https://github.com/embedded-php/ext-gpio) |
 | grpc | [grpc/grpc](https://github.com/grpc/grpc) |
+| hdrhistogram | [beberlei/hdrhistogram-php](https://github.com/beberlei/hdrhistogram-php) |
 | i2c | [embedded-php/ext-i2c](https://github.com/embedded-php/ext-i2c) |
 | igbinary | [igbinary/igbinary](https://github.com/igbinary/igbinary) |
 | imagick | [Imagick/imagick](https://github.com/Imagick/imagick) |
