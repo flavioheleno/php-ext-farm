@@ -102,6 +102,37 @@
         }
       }
     },
+    "bzip3": {
+      "type": "git",
+      "pecl_name": "bzip3",
+      "track_url": "https://github.com/kjdev/php-ext-bzip3",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      },
+      "notes": "Uses bundled bzip3 library by default"
+    },
+    "corefill": {
+      "type": "git",
+      "pecl_name": "corefill",
+      "track_url": "https://github.com/mailmug/corefill",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
     "crc_fast": {
       "type": "git",
       "pecl_name": "crc_fast",
@@ -335,6 +366,60 @@
         "debian": {
           "build": ["autoconf", "gcc", "g++", "make", "libmagickwand-dev"],
           "runtime": ["libmagickwand-6.q16-6"]
+        }
+      }
+    },
+    "ip2location": {
+      "type": "git",
+      "pecl_name": "ip2location",
+      "track_url": "https://github.com/chrislim2888/IP2Location-PECL-Extension",
+      "external_libs": [
+        {
+          "name": "IP2Location_C",
+          "type": "cmake",
+          "repo_url": "https://github.com/chrislim2888/IP2Location-C-Library",
+          "build_commands": [
+            "cmake .",
+            "make -j$(nproc)",
+            "make install"
+          ]
+        }
+      ],
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake"],
+          "runtime": []
+        }
+      }
+    },
+    "ip2proxy": {
+      "type": "git",
+      "pecl_name": "ip2proxy",
+      "track_url": "https://github.com/ip2location/ip2proxy-pecl",
+      "external_libs": [
+        {
+          "name": "IP2Proxy_C",
+          "type": "cmake",
+          "repo_url": "https://github.com/ip2location/IP2Proxy-C-Library",
+          "build_commands": [
+            "cmake .",
+            "make -j$(nproc)",
+            "make install"
+          ]
+        }
+      ],
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake"],
+          "runtime": []
         }
       }
     },
@@ -746,6 +831,21 @@
         }
       }
     },
+    "uopz": {
+      "type": "git",
+      "pecl_name": "uopz",
+      "track_url": "https://github.com/krakjoe/uopz",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
     "uploadprogress": {
       "type": "pecl",
       "pecl_name": "uploadprogress",
@@ -1106,6 +1206,22 @@
         }
       }
     },
+    "json_post": {
+      "type": "git",
+      "pecl_name": "json_post",
+      "track_url": "https://github.com/m6w6/ext-json_post",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      },
+      "notes": "Depends on json extension (built-in)"
+    },
     "jsonpath": {
       "type": "git",
       "pecl_name": "jsonpath",
@@ -1210,6 +1326,22 @@
           "runtime": ["libselinux1"]
         }
       }
+    },
+    "snappy": {
+      "type": "git",
+      "pecl_name": "snappy",
+      "track_url": "https://github.com/kjdev/php-ext-snappy",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      },
+      "notes": "Uses bundled snappy library by default"
     },
     "spi": {
       "type": "git",

@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (86)
+## 📦 Supported Extensions (93)
 
 | Extension | Repository |
 |-----------|------------|
@@ -16,6 +16,8 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | bitset | [php/pecl-numbers-bitset](https://github.com/php/pecl-numbers-bitset) |
 | blake3 | [cypherbits/php-blake3](https://github.com/cypherbits/php-blake3) |
 | brotli | [kjdev/php-ext-brotli](https://github.com/kjdev/php-ext-brotli) |
+| bzip3 | [kjdev/php-ext-bzip3](https://github.com/kjdev/php-ext-bzip3) |
+| corefill | [mailmug/corefill](https://github.com/mailmug/corefill) |
 | crc_fast | [awesomized/crc-fast-php-ext](https://github.com/awesomized/crc-fast-php-ext) |
 | csv | [Girgias/csv-php-extension](https://gitlab.com/Girgias/csv-php-extension) |
 | decimal | [php-decimal/ext-decimal](https://github.com/php-decimal/ext-decimal) |
@@ -36,6 +38,9 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | igbinary | [igbinary/igbinary](https://github.com/igbinary/igbinary) |
 | imagick | [Imagick/imagick](https://github.com/Imagick/imagick) |
 | inotify | [arnaud-lb/php-inotify](https://github.com/arnaud-lb/php-inotify) |
+| ip2location | [chrislim2888/IP2Location-PECL-Extension](https://github.com/chrislim2888/IP2Location-PECL-Extension) |
+| ip2proxy | [ip2location/ip2proxy-pecl](https://github.com/ip2location/ip2proxy-pecl) |
+| json_post | [m6w6/ext-json_post](https://github.com/m6w6/ext-json_post) |
 | jsonpath | [supermetrics-public/pecl-jsonpath](https://github.com/supermetrics-public/pecl-jsonpath) |
 | lz4 | [kjdev/php-ext-lz4](https://github.com/kjdev/php-ext-lz4) |
 | lzf | [php/pecl-file_formats-lzf](https://github.com/php/pecl-file_formats-lzf) |
@@ -66,6 +71,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | simdjson | [crazyxman/simdjson_php](https://github.com/crazyxman/simdjson_php) |
 | simdutf | [awesomized/simdutf-php-ext](https://github.com/awesomized/simdutf-php-ext) |
 | smbclient | [eduardok/libsmbclient-php](https://github.com/eduardok/libsmbclient-php) |
+| snappy | [kjdev/php-ext-snappy](https://github.com/kjdev/php-ext-snappy) |
 | spi | [embedded-php/ext-spi](https://github.com/embedded-php/ext-spi) |
 | stomp | [php/pecl-tools-stomp](https://github.com/php/pecl-tools-stomp) |
 | swoole | [swoole/swoole-src](https://github.com/swoole/swoole-src) |
@@ -74,6 +80,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | traitify | [arshidkv12/traitify](https://github.com/arshidkv12/traitify) |
 | translit | [derickr/pecl-translit](https://github.com/derickr/pecl-translit) |
 | uart | [embedded-php/ext-uart](https://github.com/embedded-php/ext-uart) |
+| uopz | [krakjoe/uopz](https://github.com/krakjoe/uopz) |
 | uploadprogress | [php/pecl-php-uploadprogress](https://github.com/php/pecl-php-uploadprogress) |
 | uuid | [php/pecl-networking-uuid](https://github.com/php/pecl-networking-uuid) |
 | uv | [amphp/ext-uv](https://github.com/amphp/ext-uv) |
