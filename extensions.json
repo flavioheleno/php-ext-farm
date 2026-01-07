@@ -474,6 +474,21 @@
         }
       }
     },
+    "pheme": {
+      "type": "git",
+      "pecl_name": "pheme",
+      "track_url": "https://github.com/capotej/pheme",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "guile-dev", "pkgconfig"],
+          "runtime": ["guile"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "guile-3.0-dev", "pkg-config"],
+          "runtime": ["guile-3.0"]
+        }
+      }
+    },
     "pq": {
       "type": "pecl",
       "pecl_name": "pq",

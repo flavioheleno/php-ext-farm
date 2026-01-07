@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (78)
+## 📦 Supported Extensions (79)
 
 | Extension | Repository |
 |-----------|------------|
@@ -48,6 +48,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | parallel | [krakjoe/parallel](https://github.com/krakjoe/parallel) |
 | pcov | [krakjoe/pcov](https://github.com/krakjoe/pcov) |
 | pecl_http | [m6w6/ext-http](https://github.com/m6w6/ext-http) |
+| pheme | [capotej/pheme](https://github.com/capotej/pheme) |
 | pq | [m6w6/ext-pq](https://github.com/m6w6/ext-pq) |
 | psr | [jbboehr/php-psr](https://github.com/jbboehr/php-psr) |
 | raphf | [m6w6/ext-raphf](https://github.com/m6w6/ext-raphf) |
