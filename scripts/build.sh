@@ -242,9 +242,14 @@ if [[ "$BUILD_DEPS" == "null" || "$RUNTIME_DEPS" == "null" ]]; then
 fi
 
 # Determine dockerfile
-DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}"
+if [[ "$PHP_VERSION" == "next" ]]; then
+    DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}.next"
+else
+    DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}"
+fi
+
 if [[ ! -f "$DOCKERFILE" ]]; then
-    echo "Error: Dockerfile not found for platform: $PLATFORM"
+    echo "Error: Dockerfile not found: $DOCKERFILE"
     exit 1
 fi
 
@@ -272,12 +277,16 @@ echo "Docker platform: ${DOCKER_PLATFORM}"
 
 # Build arguments
 BUILD_ARGS=(
-    --build-arg "PHP_VERSION=${PHP_VERSION}"
     --build-arg "EXTENSION_NAME=${PECL_NAME}"
     --build-arg "EXTENSION_REPO_URL=${TRACK_URL}"
     --build-arg "BUILD_DEPS=${BUILD_DEPS}"
     --build-arg "RUNTIME_DEPS=${RUNTIME_DEPS}"
 )
+
+# Only pass PHP_VERSION for non-next builds (next builds use master branch)
+if [[ "$PHP_VERSION" != "next" ]]; then
+    BUILD_ARGS+=(--build-arg "PHP_VERSION=${PHP_VERSION}")
+fi
 
 if [[ -n "$BUILD_PATH" ]]; then
     BUILD_ARGS+=(--build-arg "EXTENSION_BUILD_PATH=${BUILD_PATH}")

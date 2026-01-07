@@ -1,0 +1,119 @@
+ARG ALPINE_VERSION=3.20
+FROM alpine:${ALPINE_VERSION}
+
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
+# Upgrade system packages
+RUN apk upgrade --no-cache --available
+
+# Install PHP build dependencies
+# hadolint ignore=DL3018
+RUN apk add --no-cache \
+      autoconf \
+      bison \
+      build-base \
+      curl-dev \
+      dpkg-dev \
+      file \
+      g++ \
+      gcc \
+      git \
+      jq \
+      libc-dev \
+      libsodium-dev \
+      libxml2-dev \
+      make \
+      oniguruma-dev \
+      openssl-dev \
+      pkgconf \
+      re2c \
+      readline-dev \
+      sqlite-dev
+
+# Build PHP from master branch
+WORKDIR /usr/src/php
+RUN git clone --depth 1 --branch master https://github.com/php/php-src.git . && \
+    ./buildconf --force && \
+    ./configure \
+      --prefix=/usr/local \
+      --enable-cli \
+      --with-config-file-path=/usr/local/etc/php \
+      --with-config-file-scan-dir=/usr/local/etc/php/conf.d \
+      --disable-cgi \
+      --enable-mbstring \
+      --with-curl \
+      --with-openssl \
+      --with-readline \
+      --with-sodium \
+      --enable-sockets \
+      --enable-pcntl && \
+    make -j"$(nproc)" && \
+    make install && \
+    strip /usr/local/bin/php /usr/local/bin/phpize /usr/local/bin/php-config && \
+    mkdir -p /usr/local/etc/php/conf.d && \
+    rm -rf /usr/src/php
+
+# Verify PHP installation
+RUN php --version && \
+    php -m
+
+# Extension-specific ARGs
+ARG EXTENSION_NAME
+ARG EXTENSION_VERSION
+ARG EXTENSION_REPO_URL
+ARG EXTENSION_BUILD_PATH=""
+ARG BUILD_DEPS=""
+ARG RUNTIME_DEPS=""
+ARG EXTERNAL_LIBS=""
+ARG CONFIGURE_OPTIONS=""
+
+# Install extension build and runtime dependencies
+# hadolint ignore=DL3018
+RUN apk add --no-cache --virtual .build-deps \
+      ${BUILD_DEPS} && \
+    if [ -n "$RUNTIME_DEPS" ]; then \
+      apk add --no-cache ${RUNTIME_DEPS}; \
+    fi
+
+# Build external libraries if any
+RUN if [ -n "$EXTERNAL_LIBS" ]; then \
+      echo "$EXTERNAL_LIBS" > /tmp/external_libs.json && \
+      jq -c '.[]' /tmp/external_libs.json | while read -r lib; do \
+        LIB_NAME=$(echo "$lib" | jq -r '.name'); \
+        LIB_TYPE=$(echo "$lib" | jq -r '.type'); \
+        LIB_REPO=$(echo "$lib" | jq -r '.repo_url'); \
+        LIB_VERSION=$(echo "$lib" | jq -r '.version // ""'); \
+        echo "Building external library: $LIB_NAME ($LIB_TYPE)"; \
+        cd /tmp && \
+        git clone --depth 1 ${LIB_VERSION:+--branch ${LIB_VERSION}} "$LIB_REPO" "$LIB_NAME" && \
+        cd "$LIB_NAME" && \
+        echo "$lib" | jq -r '.build_commands[]' | while read -r cmd; do \
+          echo "Running: $cmd"; \
+          eval "$cmd"; \
+        done && \
+        cd /tmp && \
+        rm -rf "$LIB_NAME"; \
+      done; \
+    fi
+
+# Clone, build, install, verify, and cleanup in single layer
+WORKDIR /tmp/extension
+# hadolint ignore=DL3003
+RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${EXTENSION_REPO_URL}" . && \
+    if [ -n "$EXTENSION_BUILD_PATH" ]; then cd "$EXTENSION_BUILD_PATH"; fi && \
+    phpize && \
+    ./configure ${CONFIGURE_OPTIONS} && \
+    make -j"$(nproc)" && \
+    make install && \
+    echo "extension=${EXTENSION_NAME}.so" > /usr/local/etc/php/conf.d/50-${EXTENSION_NAME}.ini && \
+    php -m | grep -i "${EXTENSION_NAME}" && \
+    EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
+    mkdir -p /output/extension /output/libs && \
+    cp "${EXT_DIR}/${EXTENSION_NAME}.so" /output/extension/ && \
+    if [ -n "$EXTERNAL_LIBS" ]; then \
+      echo "Copying external libraries..." && \
+      find /usr/local/lib -name '*.so*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true && \
+      find /usr/local/lib -name '*.dylib*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true; \
+    fi && \
+    apk del .build-deps && \
+    rm -rf /tmp/extension
