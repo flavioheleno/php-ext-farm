@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (79)
+## 📦 Supported Extensions (86)
 
 | Extension | Repository |
 |-----------|------------|
@@ -14,6 +14,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | apfd | [m6w6/ext-apfd](https://github.com/m6w6/ext-apfd) |
 | ast | [nikic/php-ast](https://github.com/nikic/php-ast) |
 | bitset | [php/pecl-numbers-bitset](https://github.com/php/pecl-numbers-bitset) |
+| blake3 | [cypherbits/php-blake3](https://github.com/cypherbits/php-blake3) |
 | brotli | [kjdev/php-ext-brotli](https://github.com/kjdev/php-ext-brotli) |
 | crc_fast | [awesomized/crc-fast-php-ext](https://github.com/awesomized/crc-fast-php-ext) |
 | csv | [Girgias/csv-php-extension](https://gitlab.com/Girgias/csv-php-extension) |
@@ -23,12 +24,15 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | ev | [osmanov/pecl-ev](https://github.com/osmanov/pecl-ev) |
 | event | [osmanov/pecl-event](https://bitbucket.org/osmanov/pecl-event) |
 | excimer | [wikimedia/php-excimer](https://github.com/wikimedia/php-excimer) |
+| fastcsv | [csvtoolkit/FastCSV-ext](https://github.com/csvtoolkit/FastCSV-ext) |
+| fnbind | [Danack/fnbind](https://github.com/Danack/fnbind) |
 | geospatial | [php-geospatial/geospatial](https://github.com/php-geospatial/geospatial) |
 | gnupg | [php-gnupg/php-gnupg](https://github.com/php-gnupg/php-gnupg) |
 | gpio | [embedded-php/ext-gpio](https://github.com/embedded-php/ext-gpio) |
 | grpc | [grpc/grpc](https://github.com/grpc/grpc) |
 | hdrhistogram | [beberlei/hdrhistogram-php](https://github.com/beberlei/hdrhistogram-php) |
 | i2c | [embedded-php/ext-i2c](https://github.com/embedded-php/ext-i2c) |
+| identifier | [castor-labs/php-ext-identifier](https://github.com/castor-labs/php-ext-identifier) |
 | igbinary | [igbinary/igbinary](https://github.com/igbinary/igbinary) |
 | imagick | [Imagick/imagick](https://github.com/Imagick/imagick) |
 | inotify | [arnaud-lb/php-inotify](https://github.com/arnaud-lb/php-inotify) |
@@ -48,9 +52,11 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | parallel | [krakjoe/parallel](https://github.com/krakjoe/parallel) |
 | pcov | [krakjoe/pcov](https://github.com/krakjoe/pcov) |
 | pecl_http | [m6w6/ext-http](https://github.com/m6w6/ext-http) |
+| pg_query | [flow-php/pg-query-ext](https://github.com/flow-php/pg-query-ext) |
 | pheme | [capotej/pheme](https://github.com/capotej/pheme) |
 | pq | [m6w6/ext-pq](https://github.com/m6w6/ext-pq) |
 | psr | [jbboehr/php-psr](https://github.com/jbboehr/php-psr) |
+| quickhash | [derickr/quickhash](https://github.com/derickr/quickhash) |
 | raphf | [m6w6/ext-raphf](https://github.com/m6w6/ext-raphf) |
 | rdkafka | [arnaud-lb/php-rdkafka](https://github.com/arnaud-lb/php-rdkafka) |
 | redis | [phpredis/phpredis](https://github.com/phpredis/phpredis) |
@@ -79,6 +85,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | xlswriter | [viest/php-ext-xlswriter](https://github.com/viest/php-ext-xlswriter) |
 | xpass | [remicollet/php-xpass](https://github.com/remicollet/php-xpass) |
 | xxtea | [xxtea/xxtea-pecl](https://github.com/xxtea/xxtea-pecl) |
+| xz | [codemasher/php-ext-xz](https://github.com/codemasher/php-ext-xz) |
 | yac | [laruence/yac](https://github.com/laruence/yac) |
 | yaconf | [laruence/yaconf](https://github.com/laruence/yaconf) |
 | yaf | [laruence/yaf](https://github.com/laruence/yaf) |

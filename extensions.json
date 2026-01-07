@@ -72,6 +72,21 @@
         }
       }
     },
+    "blake3": {
+      "type": "git",
+      "pecl_name": "blake3",
+      "track_url": "https://github.com/cypherbits/php-blake3",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
     "brotli": {
       "type": "git",
       "pecl_name": "brotli",
@@ -176,6 +191,36 @@
         }
       }
     },
+    "fastcsv": {
+      "type": "git",
+      "pecl_name": "fastcsv",
+      "track_url": "https://github.com/csvtoolkit/FastCSV-ext",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "fnbind": {
+      "type": "git",
+      "pecl_name": "fnbind",
+      "track_url": "https://github.com/Danack/fnbind",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
     "excimer": {
       "type": "pecl",
       "pecl_name": "excimer",
@@ -245,6 +290,21 @@
         "debian": {
           "build": ["autoconf", "gcc", "g++", "make", "zlib1g-dev"],
           "runtime": ["zlib1g"]
+        }
+      }
+    },
+    "identifier": {
+      "type": "git",
+      "pecl_name": "identifier",
+      "track_url": "https://github.com/castor-labs/php-ext-identifier",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
         }
       }
     },
@@ -474,6 +534,23 @@
         }
       }
     },
+    "pg_query": {
+      "type": "git",
+      "pecl_name": "pg_query",
+      "track_url": "https://github.com/flow-php/pg-query-ext",
+      "build_path": "ext",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "git"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "git"],
+          "runtime": []
+        }
+      },
+      "notes": "Auto-downloads and builds libpg_query during build"
+    },
     "pheme": {
       "type": "git",
       "pecl_name": "pheme",
@@ -508,6 +585,21 @@
       "type": "pecl",
       "pecl_name": "psr",
       "track_url": "https://github.com/jbboehr/php-psr",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        }
+      }
+    },
+    "quickhash": {
+      "type": "git",
+      "pecl_name": "quickhash",
+      "track_url": "https://github.com/derickr/quickhash",
       "dependencies": {
         "alpine": {
           "build": ["autoconf", "gcc", "g++", "make"],
@@ -771,6 +863,21 @@
         "debian": {
           "build": ["autoconf", "gcc", "g++", "make"],
           "runtime": []
+        }
+      }
+    },
+    "xz": {
+      "type": "git",
+      "pecl_name": "xz",
+      "track_url": "https://github.com/codemasher/php-ext-xz",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "xz-dev", "pkgconfig"],
+          "runtime": ["xz-libs"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "liblzma-dev", "pkg-config"],
+          "runtime": ["liblzma5"]
         }
       }
     },
