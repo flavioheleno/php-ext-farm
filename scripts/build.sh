@@ -14,11 +14,12 @@ PLATFORM="${3:-}"
 PLATFORM_VERSION="${4:-}"
 EXTENSION_VERSION="${5:-}"
 ARCH="${6:-amd64}"
+CHANNEL="${7:-release}"
 
 if [[ -z "$EXTENSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" || -z "$EXTENSION_VERSION" ]]; then
-    echo "Usage: $0 <extension> <php_version> <platform> <platform_version> <extension_version> [arch]"
-    echo "Example: $0 redis 8.3 alpine 3.20 6.0.2 amd64"
-    echo "         $0 redis 8.3 alpine 3.20 6.0.2 arm64"
+    echo "Usage: $0 <extension> <php_version> <platform> <platform_version> <extension_version> [arch] [channel]"
+    echo "Example: $0 redis 8.3 alpine 3.20 6.0.2 amd64 release"
+    echo "         $0 redis 8.3 alpine 3.20 6.0.2 arm64 dev"
     exit 1
 fi
 
@@ -69,6 +70,13 @@ fi
 OUTPUT_DIR="${ROOT_DIR}/output/${EXTENSION}/${PHP_VERSION}/${PLATFORM}/${PLATFORM_VERSION}/${ARCH}"
 mkdir -p "$OUTPUT_DIR"
 
+# Create reports directory
+REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
+mkdir -p "$REPORT_DIR"
+
+# Capture build start time
+BUILD_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
 # Build image tag
 IMAGE_TAG="php-ext-${EXTENSION}:${PHP_VERSION}-${PLATFORM}${PLATFORM_VERSION}-${ARCH}"
 
@@ -111,33 +119,46 @@ if [[ -n "$CONFIGURE_OPTIONS" ]]; then
     BUILD_ARGS+=(--build-arg "CONFIGURE_OPTIONS=${CONFIGURE_OPTIONS}")
 fi
 
+# Track build status
+BUILD_STATUS="success"
+BUILD_ERROR=""
+
 # Build the image
-docker build \
+if ! docker build \
     --platform "$DOCKER_PLATFORM" \
     "${BUILD_ARGS[@]}" \
     -t "$IMAGE_TAG" \
     -f "$DOCKERFILE" \
-    "$ROOT_DIR"
-
-# Extract the extension
-CONTAINER_ID=$(docker create --platform "$DOCKER_PLATFORM" "$IMAGE_TAG")
-docker cp "${CONTAINER_ID}:/output/extension/${PECL_NAME}.so" "${OUTPUT_DIR}/${PECL_NAME}.so"
-
-# Extract external libraries if they exist
-if docker exec "$CONTAINER_ID" test -d /output/libs 2>/dev/null; then
-    docker cp "${CONTAINER_ID}:/output/libs" "${OUTPUT_DIR}/" || true
+    "$ROOT_DIR"; then
+    BUILD_STATUS="failed"
+    BUILD_ERROR="Docker build failed"
 fi
 
-docker rm "$CONTAINER_ID"
+# Extract the extension
+if [[ "$BUILD_STATUS" == "success" ]]; then
+    CONTAINER_ID=$(docker create --platform "$DOCKER_PLATFORM" "$IMAGE_TAG")
+    if ! docker cp "${CONTAINER_ID}:/output/extension/${PECL_NAME}.so" "${OUTPUT_DIR}/${PECL_NAME}.so"; then
+        BUILD_STATUS="failed"
+        BUILD_ERROR="Failed to extract extension from container"
+    fi
+    
+    # Extract external libraries if they exist
+    if [[ "$BUILD_STATUS" == "success" ]] && docker exec "$CONTAINER_ID" test -d /output/libs 2>/dev/null; then
+        docker cp "${CONTAINER_ID}:/output/libs" "${OUTPUT_DIR}/" || true
+    fi
+    
+    docker rm "$CONTAINER_ID"
+fi
 
 # List external library files for metadata
 EXTERNAL_LIB_FILES=""
-if [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
+if [[ "$BUILD_STATUS" == "success" ]] && [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
     EXTERNAL_LIB_FILES=$(cd "${OUTPUT_DIR}/libs" && ls -1 | jq -R -s -c 'split("\n") | map(select(length > 0))')
 fi
 
 # Generate metadata
-cat > "${OUTPUT_DIR}/metadata.json" <<EOF
+if [[ "$BUILD_STATUS" == "success" ]]; then
+    cat > "${OUTPUT_DIR}/metadata.json" <<EOF
 {
   "extension": "${EXTENSION}",
   "pecl_name": "${PECL_NAME}",
@@ -153,9 +174,77 @@ cat > "${OUTPUT_DIR}/metadata.json" <<EOF
 }
 EOF
 
-echo "Extension built successfully: ${OUTPUT_DIR}/${PECL_NAME}.so"
-if [[ -d "${OUTPUT_DIR}/libs" ]]; then
-    echo "External libraries: ${OUTPUT_DIR}/libs/"
-    ls -lh "${OUTPUT_DIR}/libs/"
+    echo "Extension built successfully: ${OUTPUT_DIR}/${PECL_NAME}.so"
+    if [[ -d "${OUTPUT_DIR}/libs" ]]; then
+        echo "External libraries: ${OUTPUT_DIR}/libs/"
+        ls -lh "${OUTPUT_DIR}/libs/"
+    fi
+    echo "Metadata: ${OUTPUT_DIR}/metadata.json"
 fi
-echo "Metadata: ${OUTPUT_DIR}/metadata.json"
+
+# Generate build report
+BUILD_END_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Normalize extension version (strip v prefix if present)
+NORMALIZED_VERSION="${EXTENSION_VERSION#v}"
+NORMALIZED_VERSION="${NORMALIZED_VERSION#release-}"
+NORMALIZED_VERSION="${NORMALIZED_VERSION#release_}"
+NORMALIZED_VERSION="${NORMALIZED_VERSION//_/.}"
+
+# Construct asset name
+ASSET_NAME="${EXTENSION}-${NORMALIZED_VERSION}-php${PHP_VERSION}-${PLATFORM}-${PLATFORM_VERSION}-${ARCH}.tar.gz"
+
+# Get GitHub Actions metadata if available
+WORKFLOW_RUN_ID="${GITHUB_RUN_ID:-}"
+RUN_ATTEMPT="${GITHUB_RUN_ATTEMPT:-1}"
+GIT_SHA="${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}"
+LOG_URL=""
+if [[ -n "$WORKFLOW_RUN_ID" ]]; then
+    REPO="${GITHUB_REPOSITORY:-}"
+    LOG_URL="https://github.com/${REPO}/actions/runs/${WORKFLOW_RUN_ID}"
+fi
+
+# Build JSON report using jq for proper escaping
+jq -n \
+  --arg extension "$EXTENSION" \
+  --arg extension_version "$NORMALIZED_VERSION" \
+  --arg channel "$CHANNEL" \
+  --arg php_version "$PHP_VERSION" \
+  --arg platform "$PLATFORM" \
+  --arg platform_version "$PLATFORM_VERSION" \
+  --arg arch "$ARCH" \
+  --arg status "$BUILD_STATUS" \
+  --arg started_at "$BUILD_START_TIME" \
+  --arg finished_at "$BUILD_END_TIME" \
+  --arg git_sha "$GIT_SHA" \
+  --arg log_url "$LOG_URL" \
+  --arg asset_name "$ASSET_NAME" \
+  --arg error "$BUILD_ERROR" \
+  --argjson workflow_run_id "${WORKFLOW_RUN_ID:-null}" \
+  --argjson run_attempt "${RUN_ATTEMPT}" \
+  '{
+    extension: $extension,
+    extension_version: $extension_version,
+    channel: $channel,
+    php_version: $php_version,
+    platform: $platform,
+    platform_version: $platform_version,
+    arch: $arch,
+    status: $status,
+    started_at: $started_at,
+    finished_at: $finished_at,
+    workflow_run_id: $workflow_run_id,
+    run_attempt: $run_attempt,
+    git_sha: $git_sha,
+    log_url: (if $log_url == "" then null else $log_url end),
+    asset_name: $asset_name
+  } + (if $error != "" then {error: $error} else {} end)' \
+  > "${REPORT_DIR}/${ARCH}.json"
+
+echo "Build report: ${REPORT_DIR}/${ARCH}.json"
+
+# Exit with error if build failed
+if [[ "$BUILD_STATUS" != "success" ]]; then
+    echo "Build failed: ${BUILD_ERROR}"
+    exit 1
+fi

@@ -185,6 +185,14 @@ jobs:
           path: ${{ env.ARTIFACT_NAME }}.tar.gz
           retention-days: 90
 
+      - name: Upload build report
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: report-${{ inputs.extension }}-${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}-${{ matrix.arch }}
+          path: reports/
+          retention-days: 90
+
   collect-artifacts:
     needs: build
     if: always()
@@ -229,6 +237,72 @@ jobs:
           name: ${{ inputs.extension }}-${{ steps.prepare.outputs.clean_version }}-all-builds
           path: release/
           retention-days: 90
+
+      - name: Aggregate build reports
+        id: aggregate
+        run: |
+          # Collect all JSON reports
+          mkdir -p dataset
+          
+          # Find all report JSON files
+          REPORTS=$(find artifacts/ -name "*.json" -path "*/reports/*" 2>/dev/null || true)
+          
+          if [ -z "$REPORTS" ]; then
+            echo "No reports found"
+            echo "has_reports=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "Found reports:"
+          echo "$REPORTS"
+          
+          # Merge all reports into a single JSON array
+          jq -s '.' $REPORTS > dataset/latest.json
+          
+          # Create timestamped version organized by year
+          YEAR=$(date -u +"%Y")
+          TIMESTAMP=$(date -u +"%m-%d")
+          mkdir -p "dataset/${YEAR}"
+          cp dataset/latest.json "dataset/${YEAR}/${TIMESTAMP}.json"
+          
+          echo "has_reports=true" >> $GITHUB_OUTPUT
+          echo "year=${YEAR}" >> $GITHUB_OUTPUT
+          echo "timestamp=${TIMESTAMP}" >> $GITHUB_OUTPUT
+          
+          echo "Aggregated $(jq length dataset/latest.json) reports"
+          jq '.' dataset/latest.json
+
+      - name: Push to dataset branch
+        if: steps.aggregate.outputs.has_reports == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Try to fetch the dataset branch
+          if git fetch origin dataset:dataset 2>/dev/null; then
+            echo "Dataset branch exists, checking out"
+            git checkout dataset
+          else
+            echo "Dataset branch does not exist, creating orphan branch"
+            git checkout --orphan dataset
+            git rm -rf . 2>/dev/null || true
+          fi
+          
+          # Clean workspace except dataset directory
+          git clean -fdx -e dataset
+          
+          # Move dataset files to root, preserving directory structure
+          cp dataset/latest.json . 2>/dev/null || true
+          mkdir -p ${{ steps.aggregate.outputs.year }}
+          cp dataset/${{ steps.aggregate.outputs.year }}/*.json ${{ steps.aggregate.outputs.year }}/ 2>/dev/null || true
+          rm -rf dataset
+          
+          # Add and commit
+          git add latest.json ${{ steps.aggregate.outputs.year }}/
+          git commit -m "Update build reports - ${{ steps.aggregate.outputs.year }}-${{ steps.aggregate.outputs.timestamp }}" -m "Extension: ${{ inputs.extension }} v${{ steps.prepare.outputs.clean_version }}" || echo "No changes to commit"
+          
+          # Push to dataset branch
+          git push origin dataset
 
       - name: Create GitHub Release
         if: steps.prepare.outputs.has_artifacts == 'true' && inputs.create_release
