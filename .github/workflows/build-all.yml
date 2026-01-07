@@ -17,6 +17,10 @@ on:
           - ubuntu-latest
           - self-hosted
         default: 'ubuntu-latest'
+      build_dev:
+        description: 'Also build dev channel (HEAD of default branch)'
+        type: boolean
+        default: true
 
 permissions:
   actions: write
@@ -37,7 +41,7 @@ jobs:
           echo "extensions=${EXTENSIONS}" >> $GITHUB_OUTPUT
           echo "Extensions to build: ${EXTENSIONS}"
 
-  build-all:
+  build-release:
     needs: prepare
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     strategy:
@@ -47,7 +51,7 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Get latest version
+      - name: Get latest release version
         id: version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -65,9 +69,9 @@ jobs:
           CLEAN_VERSION=$(echo "$LATEST" | sed 's/^v//')
           
           echo "version=${CLEAN_VERSION}" >> $GITHUB_OUTPUT
-          echo "Latest version for ${EXT}: ${CLEAN_VERSION}"
+          echo "Latest release version for ${EXT}: ${CLEAN_VERSION}"
 
-      - name: Trigger release workflow
+      - name: Trigger release channel build
         if: steps.version.outputs.version != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -76,3 +80,50 @@ jobs:
             -f extension="${{ matrix.extension }}" \
             -f extension_version="${{ steps.version.outputs.version }}" \
             -f rebuild="${{ inputs.force_rebuild || 'false' }}"
+
+  build-dev:
+    needs: prepare
+    if: inputs.build_dev != false
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        extension: ${{ fromJson(needs.prepare.outputs.extensions) }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Get default branch HEAD
+        id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EXT="${{ matrix.extension }}"
+          TRACK_URL=$(jq -r ".extensions.${EXT}.track_url" extensions.json)
+          REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||' | sed 's|https://bitbucket.org/||')
+          
+          # Get default branch name and HEAD commit
+          DEFAULT_BRANCH=$(gh api "repos/${REPO_PATH}" --jq '.default_branch' 2>/dev/null || echo "main")
+          HEAD_SHA=$(gh api "repos/${REPO_PATH}/commits/${DEFAULT_BRANCH}" --jq '.sha' 2>/dev/null || echo "")
+          
+          if [[ -z "$HEAD_SHA" ]]; then
+            echo "Could not get HEAD SHA for ${EXT}, skipping dev build"
+            echo "version=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Use short SHA as version (first 7 characters)
+          SHORT_SHA="${HEAD_SHA:0:7}"
+          DEV_VERSION="dev-${SHORT_SHA}"
+          
+          echo "version=${DEV_VERSION}" >> $GITHUB_OUTPUT
+          echo "Dev version for ${EXT}: ${DEV_VERSION} (branch: ${DEFAULT_BRANCH})"
+
+      - name: Trigger dev channel build
+        if: steps.version.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run build.yml \
+            -f extension="${{ matrix.extension }}" \
+            -f extension_version="${{ steps.version.outputs.version }}" \
+            -f create_release=false

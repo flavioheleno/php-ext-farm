@@ -153,13 +153,23 @@ jobs:
       - name: Build extension
         run: |
           chmod +x scripts/build.sh
+          
+          # Determine channel based on version format
+          VERSION="${{ inputs.extension_version }}"
+          if [[ "$VERSION" == dev-* ]]; then
+            CHANNEL="dev"
+          else
+            CHANNEL="release"
+          fi
+          
           ./scripts/build.sh \
             "${{ inputs.extension }}" \
             "${{ matrix.php_version }}" \
             "${{ matrix.platform }}" \
             "${{ matrix.platform_version }}" \
             "${{ inputs.extension_version }}" \
-            "${{ matrix.arch }}"
+            "${{ matrix.arch }}" \
+            "${CHANNEL}"
 
       - name: Create artifact archive
         run: |
