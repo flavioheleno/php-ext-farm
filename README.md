@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (100)
+## 📦 Supported Extensions (106)
 
 | Extension | Repository |
 |-----------|------------|
@@ -12,6 +12,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | apcu | [krakjoe/apcu](https://github.com/krakjoe/apcu) |
 | apcu_bc | [krakjoe/apcu-bc](https://github.com/krakjoe/apcu-bc) |
 | apfd | [m6w6/ext-apfd](https://github.com/m6w6/ext-apfd) |
+| aspect | [SolidWorx/aspect](https://github.com/SolidWorx/aspect) |
 | ast | [nikic/php-ast](https://github.com/nikic/php-ast) |
 | bitset | [php/pecl-numbers-bitset](https://github.com/php/pecl-numbers-bitset) |
 | blake3 | [cypherbits/php-blake3](https://github.com/cypherbits/php-blake3) |
@@ -21,6 +22,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | corefill | [mailmug/corefill](https://github.com/mailmug/corefill) |
 | crc_fast | [awesomized/crc-fast-php-ext](https://github.com/awesomized/crc-fast-php-ext) |
 | csv | [Girgias/csv-php-extension](https://gitlab.com/Girgias/csv-php-extension) |
+| dbus | [derickr/pecl-dbus](https://github.com/derickr/pecl-dbus) |
 | decimal | [php-decimal/ext-decimal](https://github.com/php-decimal/ext-decimal) |
 | dio | [php/pecl-system-dio](https://github.com/php/pecl-system-dio) |
 | ds | [php-ds/ext-ds](https://github.com/php-ds/ext-ds) |
@@ -59,11 +61,14 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | mysqlnd_parsec | [mariadb-corporation/mysqlnd_parsec](https://github.com/mariadb-corporation/mysqlnd_parsec) |
 | oauth | [php/pecl-web_services-oauth](https://github.com/php/pecl-web_services-oauth) |
 | oci8 | [php/pecl-database-oci8](https://github.com/php/pecl-database-oci8) |
+| oqs | [secudoc/php-liboqs](https://github.com/secudoc/php-liboqs) |
 | opentelemetry | [open-telemetry/opentelemetry-php-instrumentation](https://github.com/open-telemetry/opentelemetry-php-instrumentation) |
 | parallel | [krakjoe/parallel](https://github.com/krakjoe/parallel) |
 | pcov | [krakjoe/pcov](https://github.com/krakjoe/pcov) |
+| pdo_oci | [php/pecl-database-pdo_oci](https://github.com/php/pecl-database-pdo_oci) |
 | pecl_http | [m6w6/ext-http](https://github.com/m6w6/ext-http) |
 | pg_query | [flow-php/pg-query-ext](https://github.com/flow-php/pg-query-ext) |
+| phreakscope | [pakutoma/ext-phreakscope](https://github.com/pakutoma/ext-phreakscope) |
 | pheme | [capotej/pheme](https://github.com/capotej/pheme) |
 | pq | [m6w6/ext-pq](https://github.com/m6w6/ext-pq) |
 | psr | [jbboehr/php-psr](https://github.com/jbboehr/php-psr) |
@@ -78,6 +83,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | simdutf | [awesomized/simdutf-php-ext](https://github.com/awesomized/simdutf-php-ext) |
 | smbclient | [eduardok/libsmbclient-php](https://github.com/eduardok/libsmbclient-php) |
 | snappy | [kjdev/php-ext-snappy](https://github.com/kjdev/php-ext-snappy) |
+| solr | [php/pecl-search_engine-solr](https://github.com/php/pecl-search_engine-solr) |
 | spi | [embedded-php/ext-spi](https://github.com/embedded-php/ext-spi) |
 | spx | [NoiseByNorthwest/php-spx](https://github.com/NoiseByNorthwest/php-spx) |
 | stomp | [php/pecl-tools-stomp](https://github.com/php/pecl-tools-stomp) |
