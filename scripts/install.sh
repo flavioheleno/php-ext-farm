@@ -87,8 +87,15 @@ case "$MACHINE_ARCH" in
     aarch64|arm64)
         ARCH="arm64"
         ;;
+    armv6l|armv6)
+        ARCH="arm32v6"
+        ;;
+    armv7l|armv7)
+        ARCH="arm32v7"
+        ;;
     *)
         log_error "Unsupported architecture: $MACHINE_ARCH"
+        log_error "Supported: x86_64/amd64, aarch64/arm64, armv6l, armv7l"
         exit 1
         ;;
 esac
