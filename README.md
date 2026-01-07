@@ -130,6 +130,8 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 ### Architectures
 - amd64 (x86_64)
 - arm64 (aarch64)
+- arm32v6 (ARM 32-bit v6)
+- arm32v7 (ARM 32-bit v7)
 
 ## 📥 Installation
 
@@ -147,7 +149,7 @@ Use the install script to automatically download and install extensions:
 ```
 
 The script will:
-1. Detect your PHP version, OS (Alpine/Debian/Ubuntu), and architecture (amd64/arm64)
+1. Detect your PHP version, OS (Alpine/Debian/Ubuntu), and architecture (amd64/arm64/arm32v6/arm32v7)
 2. Download the appropriate pre-built extension from GitHub releases
 3. Install runtime dependencies from `metadata.json`
 4. Copy the extension to PHP's extension directory
@@ -317,7 +319,7 @@ RUN php -m | grep redis
 The main configuration file defines:
 
 - `php_versions`: List of PHP versions to build for
-- `architectures`: List of architectures to build for (amd64, arm64)
+- `architectures`: List of architectures to build for (amd64, arm64, arm32v6, arm32v7)
 - `platforms`: Platform configurations (Alpine/Debian versions)
 - `extensions`: Extension definitions including:
   - `type`: Extension type (pecl, git, etc.)

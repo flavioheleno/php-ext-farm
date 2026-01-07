@@ -7,7 +7,9 @@
   ],
   "architectures": [
     "amd64",
-    "arm64"
+    "arm64",
+    "arm32v6",
+    "arm32v7"
   ],
   "platforms": {
     "alpine": {
