@@ -122,6 +122,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 - PHP 8.3
 - PHP 8.4
 - PHP 8.5
+- **PHP next** (bleeding-edge from master branch)
 
 ### Platforms
 - **Alpine Linux**: 3.19, 3.20, 3.21, 3.22, 3.23
@@ -132,6 +133,10 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 - arm64 (aarch64)
 - arm32v6 (ARM 32-bit v6)
 - arm32v7 (ARM 32-bit v7)
+
+### Build Channels
+- **release** - Stable tagged releases
+- **dev** - Development builds from HEAD of extension's default branch
 
 ## 📥 Installation
 
@@ -266,6 +271,75 @@ COPY --from=builder /usr/local/etc/php/conf.d/50-redis.ini /usr/local/etc/php/co
 RUN apk add --no-cache <runtime_deps_if_any>
 
 RUN php -m | grep redis
+```
+
+## 🚀 Advanced Features
+
+### PHP "next" - Bleeding Edge PHP
+
+Build extensions against the upcoming PHP version from the master branch of php/php-src:
+
+```bash
+# Install extension for PHP next
+./scripts/install.sh redis 6.3.0 next
+
+# Build locally
+./scripts/build.sh redis 8.3 alpine 3.20 6.0.2 amd64
+./scripts/build.sh redis next alpine 3.20 6.0.2 amd64  # ← PHP next
+```
+
+**Use cases:**
+- Test extensions against upcoming PHP features before stable release
+- Catch compatibility issues early
+- Help extension maintainers prepare for next PHP version
+- CI/CD testing against future PHP
+
+**How it works:**
+- PHP "next" builds PHP from source (master branch) before building the extension
+- Uses custom Dockerfiles: `Dockerfile.alpine.next` and `Dockerfile.debian.next`
+- Reported as `php_version: "next"` in build reports
+- Artifacts: `redis-6.3.0-phpnext-alpine-3.20-amd64.tar.gz`
+
+### Dev Channel - Nightly/Weekly Builds
+
+Get the latest unreleased features from the extension's default branch:
+
+```bash
+# Dev builds use format: dev-{commit-sha}
+# Example: dev-abc1234
+
+# Build specific dev version
+gh workflow run build.yml \
+  -f extension=redis \
+  -f extension_version=dev-abc1234 \
+  -f create_release=false
+```
+
+**Automatic dev builds:**
+- Weekly schedule builds both release and dev channels
+- Dev versions: `dev-{7-char-sha}` (e.g., `dev-abc1234`)
+- Artifacts uploaded but no GitHub releases created
+- Tracked separately in dataset: `channel: "dev"`
+
+**Query dev builds:**
+```bash
+# Get all dev channel builds
+jq '.[] | select(.channel == "dev")' dataset/latest.json
+
+# Compare dev vs release for same extension
+jq '.[] | select(.extension == "redis") | {channel, status, extension_version}' dataset/latest.json
+```
+
+### Combining PHP next + Dev Channel
+
+Test bleeding-edge extension code against bleeding-edge PHP:
+
+```bash
+# Build dev extension version on PHP next
+./scripts/build.sh redis dev-abc1234 alpine 3.20 next amd64 dev
+
+# Artifact: redis-dev-abc1234-phpnext-alpine-3.20-amd64.tar.gz
+# Report: {php_version: "next", channel: "dev", ...}
 ```
 
 ## 🔧 Local Building
@@ -469,10 +543,21 @@ gh workflow run build-all.yml -f force_rebuild=true
 ```
 <extension>-<extension_version>-php<php_version>-<platform>-<platform_version>-<arch>.tar.gz
 
-Examples:
+Examples - Release channel:
 - redis-6.3.0-php8.3-alpine-3.20-amd64.tar.gz
 - redis-6.3.0-php8.3-alpine-3.20-arm64.tar.gz
 - imagick-3.7.0-php8.4-debian-bookworm-amd64.tar.gz
+
+Examples - Dev channel:
+- redis-dev-abc1234-php8.4-alpine-3.20-amd64.tar.gz
+- imagick-dev-xyz5678-php8.3-debian-bookworm-arm64.tar.gz
+
+Examples - PHP next:
+- redis-6.3.0-phpnext-alpine-3.20-amd64.tar.gz
+- imagick-3.7.0-phpnext-debian-bookworm-amd64.tar.gz
+
+Examples - Dev channel + PHP next:
+- redis-dev-abc1234-phpnext-alpine-3.20-amd64.tar.gz
 ```
 
 ## 🏷️ Release Naming Convention
@@ -483,6 +568,8 @@ Examples:
 Examples:
 - redis-6.0.2
 - imagick-3.7.0
+
+Note: Dev channel builds are not released (artifacts only)
 ```
 
 ## 📊 Build Reports & Dataset
@@ -615,6 +702,38 @@ curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
   jq '.[] | select(.php_version == "8.4" and .status == "success")'
 ```
 
+**Filter by channel:**
+```bash
+# All dev channel builds
+jq '.[] | select(.channel == "dev")' latest.json
+
+# All release channel builds
+jq '.[] | select(.channel == "release")' latest.json
+
+# All PHP next builds
+jq '.[] | select(.php_version == "next")' latest.json
+
+# Dev channel on PHP next (bleeding edge × bleeding edge)
+jq '.[] | select(.channel == "dev" and .php_version == "next")' latest.json
+```
+
+**Compare PHP versions:**
+```bash
+# Success rate by PHP version
+jq 'group_by(.php_version) | map({
+  php: .[0].php_version,
+  total: length,
+  success: [.[] | select(.status == "success")] | length,
+  success_rate: ([.[] | select(.status == "success")] | length) / length * 100
+})' latest.json
+
+# Extensions failing on PHP next but working on stable
+jq '[.[] | select(.extension as $ext | 
+  (.php_version == "next" and .status == "failure") and
+  (map(select(.extension == $ext and .php_version != "next" and .status == "success")) | length > 0)
+)] | unique_by(.extension) | .[].extension' latest.json
+```
+
 **Count builds by platform:**
 ```bash
 curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
@@ -657,6 +776,60 @@ done
 - **Compatibility Matrix**: Verify which PHP versions/platforms are supported
 - **Historical Analysis**: Compare build performance over time
 - **Automated Testing**: Download specific builds based on metadata
+- **PHP Next Testing**: Test extensions against upcoming PHP versions
+- **Dev Channel Tracking**: Monitor bleeding-edge extension development
+- **Multi-dimensional Analysis**: Filter by channel, PHP version, platform, architecture
+
+## 🎯 Common Workflows
+
+### Testing Extensions Against PHP Next
+
+```bash
+# Build all extensions on PHP next
+gh workflow run build.yml -f php_versions=next
+
+# Check which extensions work on PHP next
+jq '[.[] | select(.php_version == "next" and .status == "success")] | 
+    unique_by(.extension) | .[].extension' latest.json
+
+# Find extensions that need PHP next compatibility fixes
+jq '[.[] | select(.php_version == "next" and .status == "failure")] | 
+    unique_by(.extension) | map({extension, reason})' latest.json
+```
+
+### Monitoring Dev Channel Builds
+
+```bash
+# Get latest dev builds
+jq '.[] | select(.channel == "dev") | 
+    {extension, extension_version, php_version, status}' latest.json
+
+# Compare dev vs release stability
+jq 'group_by(.channel) | map({
+  channel: .[0].channel,
+  total: length,
+  success_rate: ([.[] | select(.status == "success")] | length) / length * 100
+})' latest.json
+```
+
+### Multi-Matrix Testing
+
+```bash
+# All possible combinations
+# - 2 channels (release, dev)
+# - 6 PHP versions (8.2, 8.3, 8.4, 8.5, next)
+# - 2 platforms (alpine, debian)
+# - Multiple platform versions
+# - 4 architectures (amd64, arm64, arm32v6, arm32v7)
+
+# Example: Find best configuration for production
+jq '[.[] | select(.status == "success" and .channel == "release")] | 
+    group_by(.php_version) | map({
+      php: .[0].php_version,
+      success_count: length,
+      platforms: [.[] | .platform] | unique
+    })' latest.json
+```
 
 ## License
 
