@@ -125,7 +125,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 
 ### Platforms
 - **Alpine Linux**: 3.19, 3.20, 3.21, 3.22, 3.23
-- **Debian**: bookworm, bullseye
+- **Debian**: bookworm, bullseye, trixie
 
 ### Architectures
 - amd64 (x86_64)

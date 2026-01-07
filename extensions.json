@@ -29,7 +29,8 @@
     "debian": {
       "versions": [
         "bookworm",
-        "bullseye"
+        "bullseye",
+        "trixie"
       ],
       "base_image": "php:{php_version}-cli-{debian_version}",
       "common_build_deps": [
