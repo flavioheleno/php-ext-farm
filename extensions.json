@@ -133,6 +133,21 @@
         }
       }
     },
+    "cairo": {
+      "type": "git",
+      "pecl_name": "cairo",
+      "track_url": "https://github.com/MarcelBolten/php-cairo",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "cairo-dev", "freetype-dev", "fontconfig-dev", "libjpeg-turbo-dev", "pkgconfig"],
+          "runtime": ["cairo", "freetype", "fontconfig", "libjpeg-turbo"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libcairo2-dev", "libfreetype6-dev", "libfontconfig1-dev", "libjpeg-dev", "pkg-config"],
+          "runtime": ["libcairo2", "libfreetype6", "libfontconfig1", "libjpeg62-turbo"]
+        }
+      }
+    },
     "crc_fast": {
       "type": "git",
       "pecl_name": "crc_fast",
@@ -266,6 +281,22 @@
           "runtime": []
         }
       }
+    },
+    "glfw": {
+      "type": "git",
+      "pecl_name": "glfw",
+      "track_url": "https://github.com/mario-deluna/php-glfw",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake", "glfw-dev", "mesa-dev", "libx11-dev", "libxrandr-dev", "libxinerama-dev", "libxcursor-dev", "libxi-dev"],
+          "runtime": ["glfw", "mesa-gl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "cmake", "libglfw3-dev", "libgl1-mesa-dev", "libx11-dev", "libxrandr-dev", "libxinerama-dev", "libxcursor-dev", "libxi-dev"],
+          "runtime": ["libglfw3", "libgl1-mesa-glx"]
+        }
+      },
+      "notes": "Can auto-build GLFW if not found in system"
     },
     "gnupg": {
       "type": "pecl",
@@ -438,6 +469,21 @@
         }
       }
     },
+    "judy": {
+      "type": "git",
+      "pecl_name": "judy",
+      "track_url": "https://github.com/orieg/php-judy",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "judy-dev"],
+          "runtime": ["judy"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libjudy-dev"],
+          "runtime": ["libjudy1"]
+        }
+      }
+    },
     "lz4": {
       "type": "git",
       "pecl_name": "lz4",
@@ -573,6 +619,38 @@
           "runtime": []
         }
       }
+    },
+    "mysqlnd_ed25519": {
+      "type": "git",
+      "pecl_name": "mysqlnd_ed25519",
+      "track_url": "https://github.com/mariadb-corporation/mysqlnd_ed25519",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libsodium-dev", "pkgconfig"],
+          "runtime": ["libsodium"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libsodium-dev", "pkg-config"],
+          "runtime": ["libsodium23"]
+        }
+      },
+      "notes": "MariaDB ed25519 authentication plugin for mysqlnd"
+    },
+    "mysqlnd_parsec": {
+      "type": "git",
+      "pecl_name": "mysqlnd_parsec",
+      "track_url": "https://github.com/mariadb-corporation/mysqlnd_parsec",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libsodium-dev", "openssl-dev", "pkgconfig"],
+          "runtime": ["libsodium", "openssl"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libsodium-dev", "libssl-dev", "pkg-config"],
+          "runtime": ["libsodium23", "libssl3"]
+        }
+      },
+      "notes": "MariaDB PARSEC authentication plugin for mysqlnd"
     },
     "oauth": {
       "type": "pecl",
@@ -1252,6 +1330,22 @@
         }
       }
     },
+    "oci8": {
+      "type": "git",
+      "pecl_name": "oci8",
+      "track_url": "https://github.com/php/pecl-database-oci8",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "libaio-dev"],
+          "runtime": ["libaio"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "libaio-dev"],
+          "runtime": ["libaio1"]
+        }
+      },
+      "notes": "Requires Oracle Instant Client or ORACLE_HOME (not auto-installed)"
+    },
     "opentelemetry": {
       "type": "git",
       "pecl_name": "opentelemetry",
@@ -1342,6 +1436,22 @@
         }
       },
       "notes": "Uses bundled snappy library by default"
+    },
+    "spx": {
+      "type": "git",
+      "pecl_name": "spx",
+      "track_url": "https://github.com/NoiseByNorthwest/php-spx",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib-dev"],
+          "runtime": ["zlib"]
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "zlib1g-dev"],
+          "runtime": ["zlib1g"]
+        }
+      },
+      "configure_options": ["--with-zlib-dir=/usr"]
     },
     "spi": {
       "type": "git",

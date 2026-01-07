@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (93)
+## 📦 Supported Extensions (100)
 
 | Extension | Repository |
 |-----------|------------|
@@ -17,6 +17,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | blake3 | [cypherbits/php-blake3](https://github.com/cypherbits/php-blake3) |
 | brotli | [kjdev/php-ext-brotli](https://github.com/kjdev/php-ext-brotli) |
 | bzip3 | [kjdev/php-ext-bzip3](https://github.com/kjdev/php-ext-bzip3) |
+| cairo | [MarcelBolten/php-cairo](https://github.com/MarcelBolten/php-cairo) |
 | corefill | [mailmug/corefill](https://github.com/mailmug/corefill) |
 | crc_fast | [awesomized/crc-fast-php-ext](https://github.com/awesomized/crc-fast-php-ext) |
 | csv | [Girgias/csv-php-extension](https://gitlab.com/Girgias/csv-php-extension) |
@@ -29,6 +30,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | fastcsv | [csvtoolkit/FastCSV-ext](https://github.com/csvtoolkit/FastCSV-ext) |
 | fnbind | [Danack/fnbind](https://github.com/Danack/fnbind) |
 | geospatial | [php-geospatial/geospatial](https://github.com/php-geospatial/geospatial) |
+| glfw | [mario-deluna/php-glfw](https://github.com/mario-deluna/php-glfw) |
 | gnupg | [php-gnupg/php-gnupg](https://github.com/php-gnupg/php-gnupg) |
 | gpio | [embedded-php/ext-gpio](https://github.com/embedded-php/ext-gpio) |
 | grpc | [grpc/grpc](https://github.com/grpc/grpc) |
@@ -42,6 +44,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | ip2proxy | [ip2location/ip2proxy-pecl](https://github.com/ip2location/ip2proxy-pecl) |
 | json_post | [m6w6/ext-json_post](https://github.com/m6w6/ext-json_post) |
 | jsonpath | [supermetrics-public/pecl-jsonpath](https://github.com/supermetrics-public/pecl-jsonpath) |
+| judy | [orieg/php-judy](https://github.com/orieg/php-judy) |
 | lz4 | [kjdev/php-ext-lz4](https://github.com/kjdev/php-ext-lz4) |
 | lzf | [php/pecl-file_formats-lzf](https://github.com/php/pecl-file_formats-lzf) |
 | mailparse | [php/pecl-mail-mailparse](https://github.com/php/pecl-mail-mailparse) |
@@ -52,7 +55,10 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | memprof | [arnaud-lb/php-memory-profiler](https://github.com/arnaud-lb/php-memory-profiler) |
 | mongodb | [mongodb/mongo-php-driver](https://github.com/mongodb/mongo-php-driver) |
 | msgpack | [msgpack/msgpack-php](https://github.com/msgpack/msgpack-php) |
+| mysqlnd_ed25519 | [mariadb-corporation/mysqlnd_ed25519](https://github.com/mariadb-corporation/mysqlnd_ed25519) |
+| mysqlnd_parsec | [mariadb-corporation/mysqlnd_parsec](https://github.com/mariadb-corporation/mysqlnd_parsec) |
 | oauth | [php/pecl-web_services-oauth](https://github.com/php/pecl-web_services-oauth) |
+| oci8 | [php/pecl-database-oci8](https://github.com/php/pecl-database-oci8) |
 | opentelemetry | [open-telemetry/opentelemetry-php-instrumentation](https://github.com/open-telemetry/opentelemetry-php-instrumentation) |
 | parallel | [krakjoe/parallel](https://github.com/krakjoe/parallel) |
 | pcov | [krakjoe/pcov](https://github.com/krakjoe/pcov) |
@@ -73,6 +79,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | smbclient | [eduardok/libsmbclient-php](https://github.com/eduardok/libsmbclient-php) |
 | snappy | [kjdev/php-ext-snappy](https://github.com/kjdev/php-ext-snappy) |
 | spi | [embedded-php/ext-spi](https://github.com/embedded-php/ext-spi) |
+| spx | [NoiseByNorthwest/php-spx](https://github.com/NoiseByNorthwest/php-spx) |
 | stomp | [php/pecl-tools-stomp](https://github.com/php/pecl-tools-stomp) |
 | swoole | [swoole/swoole-src](https://github.com/swoole/swoole-src) |
 | taint | [laruence/taint](https://github.com/laruence/taint) |
