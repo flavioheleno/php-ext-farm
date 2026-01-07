@@ -50,6 +50,8 @@ TRACK_URL=$(jq -r ".extensions.${EXTENSION}.track_url" "$CONFIG_FILE")
 BUILD_PATH=$(jq -r ".extensions.${EXTENSION}.build_path // empty" "$CONFIG_FILE")
 BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.build | join(\" \")" "$CONFIG_FILE")
 RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime | join(\" \")" "$CONFIG_FILE")
+EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "$CONFIG_FILE")
+CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options | join(\" \") // empty" "$CONFIG_FILE")
 
 if [[ "$EXT_TYPE" == "null" ]]; then
     echo "Error: Extension '$EXTENSION' not found in config"
@@ -74,6 +76,8 @@ echo "Building ${EXTENSION} for PHP ${PHP_VERSION} on ${PLATFORM} ${PLATFORM_VER
 echo "Source: ${TRACK_URL}"
 echo "Build deps: ${BUILD_DEPS}"
 echo "Runtime deps: ${RUNTIME_DEPS}"
+echo "External libs: ${EXTERNAL_LIBS}"
+echo "Configure options: ${CONFIGURE_OPTIONS}"
 echo "Docker platform: ${DOCKER_PLATFORM}"
 
 # Build arguments
@@ -99,6 +103,14 @@ if [[ -n "$EXTENSION_VERSION" ]]; then
     BUILD_ARGS+=(--build-arg "EXTENSION_VERSION=${EXTENSION_VERSION}")
 fi
 
+if [[ "$EXTERNAL_LIBS" != "[]" ]]; then
+    BUILD_ARGS+=(--build-arg "EXTERNAL_LIBS=${EXTERNAL_LIBS}")
+fi
+
+if [[ -n "$CONFIGURE_OPTIONS" ]]; then
+    BUILD_ARGS+=(--build-arg "CONFIGURE_OPTIONS=${CONFIGURE_OPTIONS}")
+fi
+
 # Build the image
 docker build \
     --platform "$DOCKER_PLATFORM" \
@@ -109,8 +121,20 @@ docker build \
 
 # Extract the extension
 CONTAINER_ID=$(docker create --platform "$DOCKER_PLATFORM" "$IMAGE_TAG")
-docker cp "${CONTAINER_ID}:/output/${PECL_NAME}.so" "${OUTPUT_DIR}/${PECL_NAME}.so"
+docker cp "${CONTAINER_ID}:/output/extension/${PECL_NAME}.so" "${OUTPUT_DIR}/${PECL_NAME}.so"
+
+# Extract external libraries if they exist
+if docker exec "$CONTAINER_ID" test -d /output/libs 2>/dev/null; then
+    docker cp "${CONTAINER_ID}:/output/libs" "${OUTPUT_DIR}/" || true
+fi
+
 docker rm "$CONTAINER_ID"
+
+# List external library files for metadata
+EXTERNAL_LIB_FILES=""
+if [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
+    EXTERNAL_LIB_FILES=$(cd "${OUTPUT_DIR}/libs" && ls -1 | jq -R -s -c 'split("\n") | map(select(length > 0))')
+fi
 
 # Generate metadata
 cat > "${OUTPUT_DIR}/metadata.json" <<EOF
@@ -123,9 +147,15 @@ cat > "${OUTPUT_DIR}/metadata.json" <<EOF
   "platform_version": "${PLATFORM_VERSION}",
   "arch": "${ARCH}",
   "build_date": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "runtime_deps": "${RUNTIME_DEPS}"
+  "runtime_deps": "${RUNTIME_DEPS}",
+  "external_libs": ${EXTERNAL_LIBS},
+  "external_lib_files": ${EXTERNAL_LIB_FILES:-null}
 }
 EOF
 
 echo "Extension built successfully: ${OUTPUT_DIR}/${PECL_NAME}.so"
+if [[ -d "${OUTPUT_DIR}/libs" ]]; then
+    echo "External libraries: ${OUTPUT_DIR}/libs/"
+    ls -lh "${OUTPUT_DIR}/libs/"
+fi
 echo "Metadata: ${OUTPUT_DIR}/metadata.json"

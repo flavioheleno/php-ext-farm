@@ -4,7 +4,7 @@ PHP-Ext.com Build Farm
 
 Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
 
-## 📦 Supported Extensions (74)
+## 📦 Supported Extensions (76)
 
 | Extension | Repository |
 |-----------|------------|
@@ -15,6 +15,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | ast | [nikic/php-ast](https://github.com/nikic/php-ast) |
 | bitset | [php/pecl-numbers-bitset](https://github.com/php/pecl-numbers-bitset) |
 | brotli | [kjdev/php-ext-brotli](https://github.com/kjdev/php-ext-brotli) |
+| crc_fast | [awesomized/crc-fast-php-ext](https://github.com/awesomized/crc-fast-php-ext) |
 | csv | [Girgias/csv-php-extension](https://gitlab.com/Girgias/csv-php-extension) |
 | decimal | [php-decimal/ext-decimal](https://github.com/php-decimal/ext-decimal) |
 | dio | [php/pecl-system-dio](https://github.com/php/pecl-system-dio) |
@@ -61,6 +62,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | swoole | [swoole/swoole-src](https://github.com/swoole/swoole-src) |
 | taint | [laruence/taint](https://github.com/laruence/taint) |
 | timezonedb | [php/pecl-datetime-timezonedb](https://github.com/php/pecl-datetime-timezonedb) |
+| traitify | [arshidkv12/traitify](https://github.com/arshidkv12/traitify) |
 | translit | [derickr/pecl-translit](https://github.com/derickr/pecl-translit) |
 | uart | [embedded-php/ext-uart](https://github.com/embedded-php/ext-uart) |
 | uploadprogress | [php/pecl-php-uploadprogress](https://github.com/php/pecl-php-uploadprogress) |
@@ -134,6 +136,12 @@ The script will:
 # Extract the archive
 tar -xzf redis-6.3.0-php8.3-alpine-3.20-amd64.tar.gz
 
+# If the extension has external libraries (check if libs/ directory exists)
+if [ -d libs ]; then
+    sudo cp libs/* /usr/local/lib/
+    sudo ldconfig  # Update library cache (Debian/Ubuntu) or /etc/ld.so.cache
+fi
+
 # Copy extension to PHP extension directory
 cp redis.so $(php -r "echo ini_get('extension_dir');")
 
@@ -143,6 +151,14 @@ echo "extension=redis.so" | sudo tee /etc/php/conf.d/50-redis.ini
 # Verify
 php -m | grep redis
 ```
+
+### External Libraries
+
+Some extensions (like `crc_fast`) depend on external libraries. These are automatically included in the `libs/` directory within the archive. The install script handles this automatically, but for manual installation:
+
+1. Check if `libs/` directory exists in the extracted archive
+2. Copy all files to `/usr/local/lib/`: `sudo cp libs/* /usr/local/lib/`
+3. Update the library cache: `sudo ldconfig` (Linux) or set `LD_LIBRARY_PATH`
 
 ### Runtime Dependencies
 
@@ -308,6 +324,86 @@ The main configuration file defines:
 2. Update the `build-all.yml` matrix to include the new extension.
 
 The extension will automatically be built for all PHP versions, platforms, and architectures defined in `extensions.json`.
+
+### Adding Extensions with External Library Dependencies
+
+Some extensions require external libraries (written in Rust, Go, C++, etc.) to be built first. The build system supports this through the `external_libs` configuration:
+
+```json
+{
+  "extensions": {
+    "myext": {
+      "type": "git",
+      "pecl_name": "myext",
+      "track_url": "https://github.com/owner/myext",
+      "external_libs": [
+        {
+          "name": "libmyext",
+          "type": "rust",
+          "repo_url": "https://github.com/owner/libmyext-rust",
+          "version": "v1.0.0",
+          "build_commands": [
+            "cargo build --release --features=c-library",
+            "mkdir -p /usr/local/include /usr/local/lib",
+            "cp target/release/libmyext.so /usr/local/lib/",
+            "cp include/libmyext.h /usr/local/include/"
+          ]
+        }
+      ],
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "cargo", "rust"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "cargo", "rustc"],
+          "runtime": []
+        }
+      },
+      "configure_options": ["--with-myext=/usr/local"]
+    }
+  }
+}
+```
+
+**Key features:**
+- `external_libs`: Array of external libraries to build before the extension
+  - `name`: Library name (for logging)
+  - `type`: Library type (rust, go, cmake, etc.) - currently informational
+  - `repo_url`: Git repository URL
+  - `version`: Optional git tag/branch to checkout
+  - `build_commands`: Array of shell commands to build and install the library
+- `configure_options`: Array of additional options to pass to `./configure`
+
+This approach works for any compiled library dependency. **Examples:**
+
+**Rust library:**
+```json
+"build_commands": [
+  "cargo build --release --features=c-library",
+  "cp target/release/libmyext.so /usr/local/lib/",
+  "cp include/myext.h /usr/local/include/"
+]
+```
+
+**Go library:**
+```json
+"build_commands": [
+  "go build -buildmode=c-shared -o libmyext.so .",
+  "cp libmyext.so /usr/local/lib/",
+  "cp myext.h /usr/local/include/"
+]
+```
+
+**CMake library:**
+```json
+"build_commands": [
+  "mkdir build && cd build",
+  "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..",
+  "make -j$(nproc)",
+  "make install"
+]
+```
 
 ## 🔄 Automation
 

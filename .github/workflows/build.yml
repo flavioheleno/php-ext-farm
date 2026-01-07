@@ -174,7 +174,7 @@ jobs:
           EXT_VERSION="${EXT_VERSION//_/.}"
           ARTIFACT_NAME="${EXT}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}-${{ matrix.arch }}"
           cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}/${{ matrix.arch }}
-          tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
+          tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json libs/ 2>/dev/null || tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
           mv "${ARTIFACT_NAME}.tar.gz" "${{ github.workspace }}/"
           echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
 

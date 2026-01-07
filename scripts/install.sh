@@ -281,7 +281,45 @@ else
     log_warn "metadata.json not found in archive, skipping dependency installation"
 fi
 
-# Step 10: Copy extension to PHP extension directory
+# Step 10: Install external libraries if present
+LIBS_DIR="${EXTRACT_DIR}/libs"
+if [ -d "$LIBS_DIR" ] && [ "$(ls -A "$LIBS_DIR" 2>/dev/null)" ]; then
+    log_info "Found external libraries, installing..."
+    
+    # Check if running as root or with sudo
+    SUDO=""
+    if [ "$(id -u)" -ne 0 ]; then
+        if command -v sudo >/dev/null 2>&1; then
+            SUDO="sudo"
+        else
+            log_warn "Not running as root and sudo not available. You may need to install libraries manually."
+        fi
+    fi
+    
+    # Install to /usr/local/lib (standard location)
+    LIB_INSTALL_DIR="/usr/local/lib"
+    log_info "Installing external libraries to $LIB_INSTALL_DIR..."
+    
+    for lib_file in "$LIBS_DIR"/*; do
+        if [ -f "$lib_file" ]; then
+            lib_basename=$(basename "$lib_file")
+            log_info "  Installing $lib_basename"
+            $SUDO cp -P "$lib_file" "$LIB_INSTALL_DIR/"
+        fi
+    done
+    
+    # Update library cache
+    if command -v ldconfig >/dev/null 2>&1; then
+        log_info "Updating library cache..."
+        $SUDO ldconfig || log_warn "Failed to run ldconfig, libraries may not be found"
+    fi
+    
+    log_info "External libraries installed successfully"
+else
+    log_info "No external libraries to install"
+fi
+
+# Step 11: Copy extension to PHP extension directory
 log_info "Installing extension to $EXT_DIR..."
 
 SUDO=""
@@ -299,7 +337,7 @@ fi
 $SUDO cp "$SO_FILE" "$EXT_DIR/"
 log_info "Extension copied successfully"
 
-# Step 11: Enable the extension in conf.d
+# Step 12: Enable the extension in conf.d
 log_info "Enabling extension..."
 
 # Find the conf.d directory
@@ -323,7 +361,7 @@ else
     exit 1
 fi
 
-# Step 12: Verify installation
+# Step 13: Verify installation
 log_info "Verifying installation..."
 
 if php -m 2>/dev/null | grep -qi "^${PECL_NAME}\$"; then

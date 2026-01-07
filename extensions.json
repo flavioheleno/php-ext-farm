@@ -87,6 +87,35 @@
         }
       }
     },
+    "crc_fast": {
+      "type": "git",
+      "pecl_name": "crc_fast",
+      "track_url": "https://github.com/awesomized/crc-fast-php-ext",
+      "external_libs": [
+        {
+          "name": "libcrc_fast",
+          "type": "rust",
+          "repo_url": "https://github.com/awesomized/crc-fast-rust",
+          "build_commands": [
+            "cargo build --release --features=c-library",
+            "mkdir -p /usr/local/include /usr/local/lib",
+            "cp target/release/libcrc_fast.so /usr/local/lib/ || cp target/release/libcrc_fast.dylib /usr/local/lib/ || true",
+            "cp include/libcrc_fast.h /usr/local/include/"
+          ]
+        }
+      ],
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make", "cargo", "rust"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make", "cargo", "rustc"],
+          "runtime": []
+        }
+      },
+      "configure_options": ["--with-crc-fast=/usr/local"]
+    },
     "csv": {
       "type": "git",
       "pecl_name": "csv",
@@ -1120,6 +1149,21 @@
         "debian": {
           "build": ["autoconf", "gcc", "g++", "make", "libcrypt-dev"],
           "runtime": ["libcrypt1"]
+        }
+      }
+    },
+    "traitify": {
+      "type": "git",
+      "pecl_name": "traitify",
+      "track_url": "https://github.com/arshidkv12/traitify",
+      "dependencies": {
+        "alpine": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
+        },
+        "debian": {
+          "build": ["autoconf", "gcc", "g++", "make"],
+          "runtime": []
         }
       }
     }

@@ -16,17 +16,41 @@ ARG EXTENSION_REPO_URL
 ARG EXTENSION_BUILD_PATH=""
 ARG BUILD_DEPS=""
 ARG RUNTIME_DEPS=""
+ARG EXTERNAL_LIBS=""
+ARG CONFIGURE_OPTIONS=""
 
 # Install build and runtime dependencies
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
       git \
+      jq \
       ${BUILD_DEPS} && \
     if [ -n "$RUNTIME_DEPS" ]; then \
       apt-get install -y --no-install-recommends ${RUNTIME_DEPS}; \
     fi && \
     rm -rf /var/lib/apt/lists/*
+
+# Build external libraries if any
+RUN if [ -n "$EXTERNAL_LIBS" ]; then \
+      echo "$EXTERNAL_LIBS" > /tmp/external_libs.json && \
+      jq -c '.[]' /tmp/external_libs.json | while read -r lib; do \
+        LIB_NAME=$(echo "$lib" | jq -r '.name'); \
+        LIB_TYPE=$(echo "$lib" | jq -r '.type'); \
+        LIB_REPO=$(echo "$lib" | jq -r '.repo_url'); \
+        LIB_VERSION=$(echo "$lib" | jq -r '.version // ""'); \
+        echo "Building external library: $LIB_NAME ($LIB_TYPE)"; \
+        cd /tmp && \
+        git clone --depth 1 ${LIB_VERSION:+--branch ${LIB_VERSION}} "$LIB_REPO" "$LIB_NAME" && \
+        cd "$LIB_NAME" && \
+        echo "$lib" | jq -r '.build_commands[]' | while read -r cmd; do \
+          echo "Running: $cmd"; \
+          eval "$cmd"; \
+        done && \
+        cd /tmp && \
+        rm -rf "$LIB_NAME"; \
+      done; \
+    fi
 
 # Clone, build, install, verify, and cleanup in single layer
 WORKDIR /tmp/extension
@@ -34,12 +58,17 @@ WORKDIR /tmp/extension
 RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${EXTENSION_REPO_URL}" . && \
     if [ -n "$EXTENSION_BUILD_PATH" ]; then cd "$EXTENSION_BUILD_PATH"; fi && \
     phpize && \
-    ./configure && \
+    ./configure ${CONFIGURE_OPTIONS} && \
     make -j"$(nproc)" && \
     make install && \
     docker-php-ext-enable "${EXTENSION_NAME}" && \
     php -m | grep -i "${EXTENSION_NAME}" && \
     EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
-    mkdir -p /output && \
-    cp "${EXT_DIR}/${EXTENSION_NAME}.so" /output/ && \
+    mkdir -p /output/extension /output/libs && \
+    cp "${EXT_DIR}/${EXTENSION_NAME}.so" /output/extension/ && \
+    if [ -n "$EXTERNAL_LIBS" ]; then \
+      echo "Copying external libraries..." && \
+      find /usr/local/lib -name '*.so*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true && \
+      find /usr/local/lib -name '*.dylib*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true; \
+    fi && \
     rm -rf /tmp/extension
