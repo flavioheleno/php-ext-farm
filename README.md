@@ -485,6 +485,112 @@ Examples:
 - imagick-3.7.0
 ```
 
+## 📊 Build Reports & Dataset
+
+### Accessing Build Data
+
+All build results are automatically collected and published to the `dataset` branch as JSON files. This provides a queryable dataset of all build statuses, timestamps, and metadata.
+
+#### Dataset Structure
+
+```
+dataset (branch)
+├── latest.json              # Most recent build results
+└── 2026/                    # Historical data organized by year
+    ├── 01-07.json          # Daily snapshot (MM-DD format)
+    ├── 01-06.json
+    └── ...
+```
+
+#### Accessing the Dataset
+
+**Get latest build results:**
+```bash
+curl https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/dataset/latest.json
+```
+
+**Get specific date:**
+```bash
+curl https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/dataset/2026/01-07.json
+```
+
+**Clone dataset branch:**
+```bash
+git clone -b dataset --depth 1 https://github.com/php-ext-farm/php-ext-farm.git dataset
+```
+
+#### Report Schema
+
+Each report contains detailed build information:
+
+```json
+{
+  "extension": "redis",
+  "extension_version": "6.3.0",
+  "channel": "release",
+  "php_version": "8.4",
+  "platform": "alpine",
+  "platform_version": "3.20",
+  "arch": "amd64",
+  "status": "success",
+  "started_at": "2026-01-07T20:10:11Z",
+  "finished_at": "2026-01-07T20:14:52Z",
+  "workflow_run_id": 123456789,
+  "run_attempt": 1,
+  "git_sha": "abc123def456",
+  "log_url": "https://github.com/php-ext-farm/php-ext-farm/actions/runs/123456789",
+  "asset_name": "redis-6.3.0-php8.4-alpine-3.20-amd64.tar.gz"
+}
+```
+
+For failed builds, an additional `error` field is included:
+```json
+{
+  "status": "failed",
+  "error": "Docker build failed",
+  ...
+}
+```
+
+#### Querying Build Data
+
+**Find all successful PHP 8.4 builds:**
+```bash
+curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+  jq '.[] | select(.php_version == "8.4" and .status == "success")'
+```
+
+**Count builds by platform:**
+```bash
+curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+  jq 'group_by(.platform) | map({platform: .[0].platform, count: length})'
+```
+
+**List all failed builds:**
+```bash
+curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+  jq '.[] | select(.status == "failed")'
+```
+
+**Track success rate over time:**
+```bash
+git clone -b dataset --depth 1 https://github.com/php-ext-farm/php-ext-farm.git dataset
+cd dataset/2026
+for file in *.json; do
+  total=$(jq 'length' "$file")
+  success=$(jq '[.[] | select(.status == "success")] | length' "$file")
+  echo "$file: $success/$total successful"
+done
+```
+
+#### Use Cases
+
+- **CI/CD Integration**: Check build status before deployments
+- **Monitoring Dashboards**: Track build success rates and trends
+- **Compatibility Matrix**: Verify which PHP versions/platforms are supported
+- **Historical Analysis**: Compare build performance over time
+- **Automated Testing**: Download specific builds based on metadata
+
 ## License
 
 MIT
