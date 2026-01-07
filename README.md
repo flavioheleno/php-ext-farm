@@ -523,6 +523,7 @@ git clone -b dataset --depth 1 https://github.com/php-ext-farm/php-ext-farm.git 
 
 Each report contains detailed build information:
 
+**Successful build:**
 ```json
 {
   "extension": "redis",
@@ -543,14 +544,68 @@ Each report contains detailed build information:
 }
 ```
 
-For failed builds, an additional `error` field is included:
+**Failed build:**
 ```json
 {
-  "status": "failed",
-  "error": "Docker build failed",
-  ...
+  "extension": "redis",
+  "extension_version": "6.3.0",
+  "channel": "release",
+  "php_version": "8.4",
+  "platform": "alpine",
+  "platform_version": "3.20",
+  "arch": "amd64",
+  "status": "failure",
+  "reason": "compile_error",
+  "error": "Compilation failed: undefined reference to 'xyz'",
+  "started_at": "2026-01-07T20:10:11Z",
+  "finished_at": "2026-01-07T20:14:52Z",
+  "workflow_run_id": 123456789,
+  "run_attempt": 1,
+  "git_sha": "abc123def456",
+  "log_url": "https://github.com/php-ext-farm/php-ext-farm/actions/runs/123456789",
+  "asset_name": "redis-6.3.0-php8.4-alpine-3.20-amd64.tar.gz"
 }
 ```
+
+**Skipped build:**
+```json
+{
+  "extension": "redis",
+  "extension_version": "6.3.0",
+  "channel": "release",
+  "php_version": "8.5",
+  "platform": "alpine",
+  "platform_version": "3.20",
+  "arch": "amd64",
+  "status": "skipped",
+  "reason": "unsupported_php",
+  "started_at": "2026-01-07T20:10:11Z",
+  "finished_at": "2026-01-07T20:10:11Z",
+  "workflow_run_id": 123456789,
+  "run_attempt": 1,
+  "git_sha": "abc123def456",
+  "log_url": null,
+  "asset_name": null
+}
+```
+
+**Status values:**
+- `success` - Build completed successfully
+- `failure` - Build failed during compilation or testing
+- `skipped` - Build was skipped due to unsupported configuration
+
+**Reason values** (only present when status is `failure` or `skipped`):
+- `compile_error` - Compilation failed
+- `deps_missing` - Build dependencies missing or configure failed
+- `test_failed` - Extension tests failed
+- `unsupported_php` - PHP version not supported
+- `unsupported_platform` - Platform not supported
+- `unsupported_architecture` - Architecture not supported
+
+**Additional fields:**
+- `error` - Human-readable error message (only present when status is `failure`)
+- `reason` - Machine-readable failure/skip reason (only present when status is `failure` or `skipped`)
+- `asset_name` - Name of the build artifact (null when status is `skipped`)
 
 #### Querying Build Data
 
@@ -569,7 +624,19 @@ curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
 **List all failed builds:**
 ```bash
 curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
-  jq '.[] | select(.status == "failed")'
+  jq '.[] | select(.status == "failure")'
+```
+
+**Group failures by reason:**
+```bash
+curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+  jq 'group_by(.reason) | map({reason: .[0].reason, count: length})'
+```
+
+**Find compile errors:**
+```bash
+curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+  jq '.[] | select(.reason == "compile_error") | {extension, php_version, platform, arch, error}'
 ```
 
 **Track success rate over time:**

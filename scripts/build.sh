@@ -23,6 +23,122 @@ if [[ -z "$EXTENSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VE
     exit 1
 fi
 
+# Read extension config
+if ! command -v jq &> /dev/null; then
+    echo "Error: jq is required but not installed."
+    exit 1
+fi
+
+EXT_TYPE=$(jq -r ".extensions.${EXTENSION}.type" "$CONFIG_FILE")
+if [[ "$EXT_TYPE" == "null" ]]; then
+    echo "Error: Extension '$EXTENSION' not found in config"
+    exit 1
+fi
+
+# Check if PHP version is supported
+SUPPORTED_PHP_VERSIONS=$(jq -r '.php_versions[]' "$CONFIG_FILE")
+PHP_SUPPORTED=false
+for v in $SUPPORTED_PHP_VERSIONS; do
+    if [[ "$v" == "$PHP_VERSION" ]]; then
+        PHP_SUPPORTED=true
+        break
+    fi
+done
+
+if [[ "$PHP_SUPPORTED" == "false" ]]; then
+    echo "Error: PHP version $PHP_VERSION is not supported"
+    echo "Supported versions: $(echo $SUPPORTED_PHP_VERSIONS | tr '\n' ' ')"
+    
+    # Create report directory and report skip
+    REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
+    mkdir -p "$REPORT_DIR"
+    
+    # Generate skip report
+    jq -n \
+      --arg extension "$EXTENSION" \
+      --arg extension_version "$EXTENSION_VERSION" \
+      --arg channel "$CHANNEL" \
+      --arg php_version "$PHP_VERSION" \
+      --arg platform "$PLATFORM" \
+      --arg platform_version "$PLATFORM_VERSION" \
+      --arg arch "$ARCH" \
+      --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
+      --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
+      --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
+      '{
+        extension: $extension,
+        extension_version: $extension_version,
+        channel: $channel,
+        php_version: $php_version,
+        platform: $platform,
+        platform_version: $platform_version,
+        arch: $arch,
+        status: "skipped",
+        reason: "unsupported_php",
+        started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        workflow_run_id: $workflow_run_id,
+        run_attempt: $run_attempt,
+        git_sha: $git_sha,
+        log_url: null,
+        asset_name: null
+      }' > "${REPORT_DIR}/${ARCH}.json"
+    
+    exit 0
+fi
+
+# Check if platform is supported
+SUPPORTED_PLATFORMS=$(jq -r '.platforms | keys[]' "$CONFIG_FILE")
+PLATFORM_SUPPORTED=false
+for p in $SUPPORTED_PLATFORMS; do
+    if [[ "$p" == "$PLATFORM" ]]; then
+        PLATFORM_SUPPORTED=true
+        break
+    fi
+done
+
+if [[ "$PLATFORM_SUPPORTED" == "false" ]]; then
+    echo "Error: Platform $PLATFORM is not supported"
+    echo "Supported platforms: $(echo $SUPPORTED_PLATFORMS | tr '\n' ' ')"
+    
+    # Create report directory and report skip
+    REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
+    mkdir -p "$REPORT_DIR"
+    
+    # Generate skip report
+    jq -n \
+      --arg extension "$EXTENSION" \
+      --arg extension_version "$EXTENSION_VERSION" \
+      --arg channel "$CHANNEL" \
+      --arg php_version "$PHP_VERSION" \
+      --arg platform "$PLATFORM" \
+      --arg platform_version "$PLATFORM_VERSION" \
+      --arg arch "$ARCH" \
+      --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
+      --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
+      --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
+      '{
+        extension: $extension,
+        extension_version: $extension_version,
+        channel: $channel,
+        php_version: $php_version,
+        platform: $platform,
+        platform_version: $platform_version,
+        arch: $arch,
+        status: "skipped",
+        reason: "unsupported_platform",
+        started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        workflow_run_id: $workflow_run_id,
+        run_attempt: $run_attempt,
+        git_sha: $git_sha,
+        log_url: null,
+        asset_name: null
+      }' > "${REPORT_DIR}/${ARCH}.json"
+    
+    exit 0
+fi
+
 # Map architecture names to Docker platform format
 case "$ARCH" in
     amd64|x86_64)
@@ -35,17 +151,46 @@ case "$ARCH" in
         ;;
     *)
         echo "Error: Unsupported architecture: $ARCH (supported: amd64, arm64)"
-        exit 1
+        
+        # Create report directory and report skip
+        REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
+        mkdir -p "$REPORT_DIR"
+        
+        # Generate skip report
+        jq -n \
+          --arg extension "$EXTENSION" \
+          --arg extension_version "$EXTENSION_VERSION" \
+          --arg channel "$CHANNEL" \
+          --arg php_version "$PHP_VERSION" \
+          --arg platform "$PLATFORM" \
+          --arg platform_version "$PLATFORM_VERSION" \
+          --arg arch "$ARCH" \
+          --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
+          --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
+          --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
+          '{
+            extension: $extension,
+            extension_version: $extension_version,
+            channel: $channel,
+            php_version: $php_version,
+            platform: $platform,
+            platform_version: $platform_version,
+            arch: $arch,
+            status: "skipped",
+            reason: "unsupported_architecture",
+            started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+            finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+            workflow_run_id: $workflow_run_id,
+            run_attempt: $run_attempt,
+            git_sha: $git_sha,
+            log_url: null,
+            asset_name: null
+          }' > "${REPORT_DIR}/${ARCH}.json"
+        
+        exit 0
         ;;
 esac
 
-# Read extension config
-if ! command -v jq &> /dev/null; then
-    echo "Error: jq is required but not installed."
-    exit 1
-fi
-
-EXT_TYPE=$(jq -r ".extensions.${EXTENSION}.type" "$CONFIG_FILE")
 PECL_NAME=$(jq -r ".extensions.${EXTENSION}.pecl_name" "$CONFIG_FILE")
 TRACK_URL=$(jq -r ".extensions.${EXTENSION}.track_url" "$CONFIG_FILE")
 BUILD_PATH=$(jq -r ".extensions.${EXTENSION}.build_path // empty" "$CONFIG_FILE")
@@ -54,9 +199,46 @@ RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime 
 EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "$CONFIG_FILE")
 CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options | join(\" \") // empty" "$CONFIG_FILE")
 
-if [[ "$EXT_TYPE" == "null" ]]; then
-    echo "Error: Extension '$EXTENSION' not found in config"
-    exit 1
+# Check if dependencies are defined
+if [[ "$BUILD_DEPS" == "null" || "$RUNTIME_DEPS" == "null" ]]; then
+    echo "Error: Dependencies not defined for platform $PLATFORM"
+    
+    # Create report directory and report skip
+    REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
+    mkdir -p "$REPORT_DIR"
+    
+    # Generate skip report
+    jq -n \
+      --arg extension "$EXTENSION" \
+      --arg extension_version "$EXTENSION_VERSION" \
+      --arg channel "$CHANNEL" \
+      --arg php_version "$PHP_VERSION" \
+      --arg platform "$PLATFORM" \
+      --arg platform_version "$PLATFORM_VERSION" \
+      --arg arch "$ARCH" \
+      --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
+      --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
+      --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
+      '{
+        extension: $extension,
+        extension_version: $extension_version,
+        channel: $channel,
+        php_version: $php_version,
+        platform: $platform,
+        platform_version: $platform_version,
+        arch: $arch,
+        status: "skipped",
+        reason: "deps_missing",
+        started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        workflow_run_id: $workflow_run_id,
+        run_attempt: $run_attempt,
+        git_sha: $git_sha,
+        log_url: null,
+        asset_name: null
+      }' > "${REPORT_DIR}/${ARCH}.json"
+    
+    exit 0
 fi
 
 # Determine dockerfile
@@ -119,27 +301,45 @@ if [[ -n "$CONFIGURE_OPTIONS" ]]; then
     BUILD_ARGS+=(--build-arg "CONFIGURE_OPTIONS=${CONFIGURE_OPTIONS}")
 fi
 
-# Track build status
+# Track build status and reason
 BUILD_STATUS="success"
+BUILD_REASON=""
 BUILD_ERROR=""
 
-# Build the image
+# Build the image and capture output
+BUILD_LOG=$(mktemp)
 if ! docker build \
     --platform "$DOCKER_PLATFORM" \
     "${BUILD_ARGS[@]}" \
     -t "$IMAGE_TAG" \
     -f "$DOCKERFILE" \
-    "$ROOT_DIR"; then
-    BUILD_STATUS="failed"
-    BUILD_ERROR="Docker build failed"
+    "$ROOT_DIR" 2>&1 | tee "$BUILD_LOG"; then
+    BUILD_STATUS="failure"
+    
+    # Analyze build log to determine reason
+    if grep -qiE "configure: error|configure: WARNING.*not found" "$BUILD_LOG"; then
+        BUILD_REASON="deps_missing"
+        BUILD_ERROR="Build dependencies missing or configure failed"
+    elif grep -qiE "error:|fatal error|compilation terminated|undefined reference" "$BUILD_LOG"; then
+        BUILD_REASON="compile_error"
+        BUILD_ERROR="Compilation failed"
+    elif grep -qiE "test.*failed|FAIL:|phpunit" "$BUILD_LOG"; then
+        BUILD_REASON="test_failed"
+        BUILD_ERROR="Extension tests failed"
+    else
+        BUILD_REASON="compile_error"
+        BUILD_ERROR="Docker build failed"
+    fi
 fi
+rm -f "$BUILD_LOG"
 
 # Extract the extension
 if [[ "$BUILD_STATUS" == "success" ]]; then
     CONTAINER_ID=$(docker create --platform "$DOCKER_PLATFORM" "$IMAGE_TAG")
     if ! docker cp "${CONTAINER_ID}:/output/extension/${PECL_NAME}.so" "${OUTPUT_DIR}/${PECL_NAME}.so"; then
-        BUILD_STATUS="failed"
-        BUILD_ERROR="Failed to extract extension from container"
+        BUILD_STATUS="failure"
+        BUILD_REASON="compile_error"
+        BUILD_ERROR="Failed to extract extension from container - extension may not have been compiled"
     fi
     
     # Extract external libraries if they exist
@@ -214,6 +414,7 @@ jq -n \
   --arg platform_version "$PLATFORM_VERSION" \
   --arg arch "$ARCH" \
   --arg status "$BUILD_STATUS" \
+  --arg reason "$BUILD_REASON" \
   --arg started_at "$BUILD_START_TIME" \
   --arg finished_at "$BUILD_END_TIME" \
   --arg git_sha "$GIT_SHA" \
@@ -238,7 +439,7 @@ jq -n \
     git_sha: $git_sha,
     log_url: (if $log_url == "" then null else $log_url end),
     asset_name: $asset_name
-  } + (if $error != "" then {error: $error} else {} end)' \
+  } + (if $reason != "" then {reason: $reason} else {} end) + (if $error != "" then {error: $error} else {} end)' \
   > "${REPORT_DIR}/${ARCH}.json"
 
 echo "Build report: ${REPORT_DIR}/${ARCH}.json"
