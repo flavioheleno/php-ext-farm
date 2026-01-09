@@ -149,8 +149,16 @@ case "$ARCH" in
         DOCKER_PLATFORM="linux/arm64"
         ARCH="arm64"
         ;;
+    arm32v7|armv7|armv7l)
+        DOCKER_PLATFORM="linux/arm/v7"
+        ARCH="arm32v7"
+        ;;
+    arm32v6|armv6|armv6l)
+        DOCKER_PLATFORM="linux/arm/v6"
+        ARCH="arm32v6"
+        ;;
     *)
-        echo "Error: Unsupported architecture: $ARCH (supported: amd64, arm64)"
+        echo "Error: Unsupported architecture: $ARCH (supported: amd64, arm64, arm32v7, arm32v6)"
         
         # Create report directory and report skip
         REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
