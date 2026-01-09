@@ -35,6 +35,7 @@ jobs:
     outputs:
       should_build: ${{ steps.check.outputs.should_build }}
       release_tag: ${{ steps.check.outputs.release_tag }}
+      clean_version: ${{ steps.check.outputs.clean_version }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 

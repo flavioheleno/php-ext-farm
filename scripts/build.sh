@@ -197,7 +197,7 @@ BUILD_PATH=$(jq -r ".extensions.${EXTENSION}.build_path // empty" "$CONFIG_FILE"
 BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.build // [] | join(\" \")" "$CONFIG_FILE")
 RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime // [] | join(\" \")" "$CONFIG_FILE")
 EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "$CONFIG_FILE")
-CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options | join(\" \") // empty" "$CONFIG_FILE")
+CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options // [] | join(\" \")" "$CONFIG_FILE")
 
 # Check if dependencies are defined
 if [[ "$BUILD_DEPS" == "null" || "$RUNTIME_DEPS" == "null" ]]; then
