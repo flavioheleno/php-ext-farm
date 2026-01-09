@@ -223,7 +223,7 @@ FROM php:8.3-cli-alpine3.20
 RUN apk add --no-cache jq curl
 
 # Download and run the install script
-RUN curl -fsSL https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
+RUN curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
     && chmod +x /tmp/install.sh \
     && /tmp/install.sh redis 6.3.0 \
     && /tmp/install.sh imagick 3.7.0 \
@@ -242,7 +242,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends jq curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and run the install script
-RUN curl -fsSL https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
+RUN curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
     && chmod +x /tmp/install.sh \
     && /tmp/install.sh redis 6.3.0 \
     && /tmp/install.sh xdebug 3.3.1 \
@@ -257,7 +257,7 @@ RUN php -m | grep -E "redis|xdebug"
 FROM php:8.3-cli-alpine3.20 AS builder
 
 RUN apk add --no-cache jq curl
-RUN curl -fsSL https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
+RUN curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
     && chmod +x /tmp/install.sh \
     && /tmp/install.sh redis 6.3.0
 
@@ -593,17 +593,17 @@ dataset (branch)
 
 **Get latest build results:**
 ```bash
-curl https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/dataset/latest.json
+curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/latest.json
 ```
 
 **Get specific date:**
 ```bash
-curl https://raw.githubusercontent.com/php-ext-farm/php-ext-farm/dataset/2026/01-07.json
+curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/2026/01-07.json
 ```
 
 **Clone dataset branch:**
 ```bash
-git clone -b dataset --depth 1 https://github.com/php-ext-farm/php-ext-farm.git dataset
+git clone -b dataset --depth 1 https://github.com/flavioheleno/php-ext-farm.git dataset
 ```
 
 #### Report Schema
@@ -626,7 +626,7 @@ Each report contains detailed build information:
   "workflow_run_id": 123456789,
   "run_attempt": 1,
   "git_sha": "abc123def456",
-  "log_url": "https://github.com/php-ext-farm/php-ext-farm/actions/runs/123456789",
+  "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/123456789",
   "asset_name": "redis-6.3.0-php8.4-alpine-3.20-amd64.tar.gz"
 }
 ```
@@ -649,7 +649,7 @@ Each report contains detailed build information:
   "workflow_run_id": 123456789,
   "run_attempt": 1,
   "git_sha": "abc123def456",
-  "log_url": "https://github.com/php-ext-farm/php-ext-farm/actions/runs/123456789",
+  "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/123456789",
   "asset_name": "redis-6.3.0-php8.4-alpine-3.20-amd64.tar.gz"
 }
 ```
@@ -760,7 +760,7 @@ curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
 
 **Track success rate over time:**
 ```bash
-git clone -b dataset --depth 1 https://github.com/php-ext-farm/php-ext-farm.git dataset
+git clone -b dataset --depth 1 https://github.com/flavioheleno/php-ext-farm.git dataset
 cd dataset/2026
 for file in *.json; do
   total=$(jq 'length' "$file")
