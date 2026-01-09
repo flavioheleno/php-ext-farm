@@ -8,7 +8,8 @@ ARG EXTENSION_NAME
 ARG EXTENSION_VERSION
 ARG TARGETARCH
 ARG TARGETVARIANT
-LABEL org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm" \
+LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
+      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/Dockerfile.alpine" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.title="PHP Extension: ${EXTENSION_NAME}" \
       org.opencontainers.image.description="Pre-compiled PHP extension ${EXTENSION_NAME} ${EXTENSION_VERSION} for ${TARGETARCH}${TARGETVARIANT}" \
