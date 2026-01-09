@@ -16,6 +16,47 @@ EXTENSION_VERSION="${5:-}"
 ARCH="${6:-amd64}"
 CHANNEL="${7:-release}"
 
+# Generate a skip report and exit
+# Usage: generate_skip_report <reason>
+generate_skip_report() {
+    local reason="$1"
+    local report_dir="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
+    mkdir -p "$report_dir"
+    
+    jq -n \
+      --arg extension "$EXTENSION" \
+      --arg extension_version "$EXTENSION_VERSION" \
+      --arg channel "$CHANNEL" \
+      --arg php_version "$PHP_VERSION" \
+      --arg platform "$PLATFORM" \
+      --arg platform_version "$PLATFORM_VERSION" \
+      --arg arch "$ARCH" \
+      --arg reason "$reason" \
+      --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
+      --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
+      --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
+      '{
+        extension: $extension,
+        extension_version: $extension_version,
+        channel: $channel,
+        php_version: $php_version,
+        platform: $platform,
+        platform_version: $platform_version,
+        arch: $arch,
+        status: "skipped",
+        reason: $reason,
+        started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
+        workflow_run_id: $workflow_run_id,
+        run_attempt: $run_attempt,
+        git_sha: $git_sha,
+        log_url: null,
+        asset_name: null
+      }' > "${report_dir}/${ARCH}.json"
+    
+    exit 0
+}
+
 if [[ -z "$EXTENSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" || -z "$EXTENSION_VERSION" ]]; then
     echo "Usage: $0 <extension> <php_version> <platform> <platform_version> <extension_version> [arch] [channel]"
     echo "Example: $0 redis 8.3 alpine 3.20 6.0.2 amd64 release"
@@ -48,43 +89,7 @@ done
 if [[ "$PHP_SUPPORTED" == "false" ]]; then
     echo "Error: PHP version $PHP_VERSION is not supported"
     echo "Supported versions: $(echo $SUPPORTED_PHP_VERSIONS | tr '\n' ' ')"
-    
-    # Create report directory and report skip
-    REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
-    mkdir -p "$REPORT_DIR"
-    
-    # Generate skip report
-    jq -n \
-      --arg extension "$EXTENSION" \
-      --arg extension_version "$EXTENSION_VERSION" \
-      --arg channel "$CHANNEL" \
-      --arg php_version "$PHP_VERSION" \
-      --arg platform "$PLATFORM" \
-      --arg platform_version "$PLATFORM_VERSION" \
-      --arg arch "$ARCH" \
-      --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
-      --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
-      --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
-      '{
-        extension: $extension,
-        extension_version: $extension_version,
-        channel: $channel,
-        php_version: $php_version,
-        platform: $platform,
-        platform_version: $platform_version,
-        arch: $arch,
-        status: "skipped",
-        reason: "unsupported_php",
-        started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-        finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-        workflow_run_id: $workflow_run_id,
-        run_attempt: $run_attempt,
-        git_sha: $git_sha,
-        log_url: null,
-        asset_name: null
-      }' > "${REPORT_DIR}/${ARCH}.json"
-    
-    exit 0
+    generate_skip_report "unsupported_php"
 fi
 
 # Check if platform is supported
@@ -100,43 +105,7 @@ done
 if [[ "$PLATFORM_SUPPORTED" == "false" ]]; then
     echo "Error: Platform $PLATFORM is not supported"
     echo "Supported platforms: $(echo $SUPPORTED_PLATFORMS | tr '\n' ' ')"
-    
-    # Create report directory and report skip
-    REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
-    mkdir -p "$REPORT_DIR"
-    
-    # Generate skip report
-    jq -n \
-      --arg extension "$EXTENSION" \
-      --arg extension_version "$EXTENSION_VERSION" \
-      --arg channel "$CHANNEL" \
-      --arg php_version "$PHP_VERSION" \
-      --arg platform "$PLATFORM" \
-      --arg platform_version "$PLATFORM_VERSION" \
-      --arg arch "$ARCH" \
-      --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
-      --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
-      --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
-      '{
-        extension: $extension,
-        extension_version: $extension_version,
-        channel: $channel,
-        php_version: $php_version,
-        platform: $platform,
-        platform_version: $platform_version,
-        arch: $arch,
-        status: "skipped",
-        reason: "unsupported_platform",
-        started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-        finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-        workflow_run_id: $workflow_run_id,
-        run_attempt: $run_attempt,
-        git_sha: $git_sha,
-        log_url: null,
-        asset_name: null
-      }' > "${REPORT_DIR}/${ARCH}.json"
-    
-    exit 0
+    generate_skip_report "unsupported_platform"
 fi
 
 # Map architecture names to Docker platform format
@@ -159,43 +128,7 @@ case "$ARCH" in
         ;;
     *)
         echo "Error: Unsupported architecture: $ARCH (supported: amd64, arm64, arm32v7, arm32v6)"
-        
-        # Create report directory and report skip
-        REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
-        mkdir -p "$REPORT_DIR"
-        
-        # Generate skip report
-        jq -n \
-          --arg extension "$EXTENSION" \
-          --arg extension_version "$EXTENSION_VERSION" \
-          --arg channel "$CHANNEL" \
-          --arg php_version "$PHP_VERSION" \
-          --arg platform "$PLATFORM" \
-          --arg platform_version "$PLATFORM_VERSION" \
-          --arg arch "$ARCH" \
-          --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
-          --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
-          --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
-          '{
-            extension: $extension,
-            extension_version: $extension_version,
-            channel: $channel,
-            php_version: $php_version,
-            platform: $platform,
-            platform_version: $platform_version,
-            arch: $arch,
-            status: "skipped",
-            reason: "unsupported_architecture",
-            started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-            finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-            workflow_run_id: $workflow_run_id,
-            run_attempt: $run_attempt,
-            git_sha: $git_sha,
-            log_url: null,
-            asset_name: null
-          }' > "${REPORT_DIR}/${ARCH}.json"
-        
-        exit 0
+        generate_skip_report "unsupported_architecture"
         ;;
 esac
 
