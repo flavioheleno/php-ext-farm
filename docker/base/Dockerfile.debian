@@ -62,12 +62,11 @@ RUN if [ -n "$PHP_VERSION_TAG" ]; then \
       --with-zlib && \
     make -j"$(nproc)" && \
     make install && \
-    strip --strip-all /usr/local/bin/php /usr/local/bin/phpize /usr/local/bin/php-config 2>/dev/null || true && \
     mkdir -p /usr/local/etc/php/conf.d && \
+    php --version && \
+    php -m && \
+    strip --strip-all /usr/local/bin/php /usr/local/bin/phpize /usr/local/bin/php-config 2>/dev/null || true && \
     rm -rf /usr/src/php
-
-# Verify PHP installation
-RUN php --version && php -m
 
 # Set up working directory for extension builds
 WORKDIR /tmp/extension
