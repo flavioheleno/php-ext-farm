@@ -151,6 +151,7 @@ jobs:
           echo "runtime_deps=${RUNTIME_DEPS}" >> $GITHUB_OUTPUT
 
       - name: Build extension
+        id: build
         run: |
           chmod +x scripts/build.sh
           
@@ -170,8 +171,17 @@ jobs:
             "${{ inputs.extension_version }}" \
             "${{ matrix.arch }}" \
             "${CHANNEL}"
+          
+          # Check if artifact was generated
+          ARTIFACT_DIR="output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}/${{ matrix.arch }}"
+          if [ -d "$ARTIFACT_DIR" ] && ls "$ARTIFACT_DIR"/*.so 1>/dev/null 2>&1; then
+            echo "artifact_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "artifact_exists=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create artifact archive
+        if: steps.build.outputs.artifact_exists == 'true'
         run: |
           EXT="${{ inputs.extension }}"
           EXT_VERSION="${{ inputs.extension_version }}"
@@ -189,6 +199,7 @@ jobs:
           echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
 
       - name: Upload artifact
+        if: steps.build.outputs.artifact_exists == 'true'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ env.ARTIFACT_NAME }}
