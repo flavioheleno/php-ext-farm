@@ -8,7 +8,7 @@ ARG TARGETARCH
 ARG TARGETVARIANT
 LABEL org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm" \
       org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="PHP ${PHP_VERSION} on Alpine" \
+      org.opencontainers.image.title="PHP ${PHP_VERSION} on Alpine ${ALPINE_VERSION}" \
       org.opencontainers.image.description="Custom PHP ${PHP_VERSION} base image for ${TARGETARCH}${TARGETVARIANT} built from source for extension compilation" \
       org.opencontainers.image.vendor="php-ext-farm" \
       org.opencontainers.image.licenses="MIT"
