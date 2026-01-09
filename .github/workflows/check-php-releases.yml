@@ -5,6 +5,15 @@ on:
     # Run daily at 4 AM UTC
     - cron: '0 4 * * *'
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner to use'
+        required: false
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: 'ubuntu-latest'
 
 permissions:
   contents: write
@@ -12,7 +21,7 @@ permissions:
 
 jobs:
   check-php-releases:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 

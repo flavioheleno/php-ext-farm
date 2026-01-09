@@ -21,6 +21,14 @@ on:
         required: false
         type: boolean
         default: false
+      runner:
+        description: 'Runner to use'
+        required: false
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: 'ubuntu-latest'
   push:
     paths:
       - 'docker/base/**'
@@ -36,7 +44,7 @@ env:
 
 jobs:
   prepare:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
@@ -105,7 +113,7 @@ jobs:
 
   build:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -179,7 +187,7 @@ jobs:
 
   create-manifest:
     needs: [prepare, build]
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
