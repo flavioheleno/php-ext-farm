@@ -143,8 +143,8 @@ jobs:
         run: |
           EXT="${{ inputs.extension }}"
           PECL_NAME=$(jq -r ".extensions.${EXT}.pecl_name" extensions.json)
-          BUILD_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.build | join(\" \")" extensions.json)
-          RUNTIME_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.runtime | join(\" \")" extensions.json)
+          BUILD_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.build // [] | join(\" \")" extensions.json)
+          RUNTIME_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.runtime // [] | join(\" \")" extensions.json)
           
           echo "pecl_name=${PECL_NAME}" >> $GITHUB_OUTPUT
           echo "build_deps=${BUILD_DEPS}" >> $GITHUB_OUTPUT
