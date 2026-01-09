@@ -1,4 +1,10 @@
 {
+  "architectures": [
+    "amd64",
+    "arm64",
+    "arm32v6",
+    "arm32v7"
+  ],
   "php_versions": [
     "8.2",
     "8.3",
@@ -6,49 +12,40 @@
     "8.5",
     "next"
   ],
-  "architectures": [
-    "amd64",
-    "arm64",
-    "arm32v6",
-    "arm32v7"
-  ],
   "platforms": {
     "alpine": {
-      "versions": [
-        "3.19",
-        "3.20",
-        "3.21",
-        "3.22",
-        "3.23"
-      ],
       "base_image": "php:{php_version}-cli-alpine{alpine_version}",
       "common_build_deps": [
         "autoconf",
         "gcc",
         "g++",
         "make"
+      ],
+      "versions": [
+        "3.19",
+        "3.20",
+        "3.21",
+        "3.22",
+        "3.23"
       ]
     },
     "debian": {
-      "versions": [
-        "bookworm",
-        "bullseye",
-        "trixie"
-      ],
       "base_image": "php:{php_version}-cli-{debian_version}",
       "common_build_deps": [
         "autoconf",
         "gcc",
         "g++",
         "make"
+      ],
+      "versions": [
+        "bookworm",
+        "bullseye",
+        "trixie"
       ]
     }
   },
   "extensions": {
     "amqp": {
-      "type": "git",
-      "pecl_name": "amqp",
-      "track_url": "https://github.com/php-amqp/php-amqp",
       "dependencies": {
         "alpine": {
           "build": [
@@ -66,27 +63,42 @@
             "librabbitmq4"
           ]
         }
-      }
+      },
+      "pecl_name": "amqp",
+      "track_url": "https://github.com/php-amqp/php-amqp",
+      "type": "git"
     },
     "apcu": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "apcu",
       "track_url": "https://github.com/krakjoe/apcu",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "pecl"
     },
     "apcu_bc": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "apcu_bc",
       "track_url": "https://github.com/krakjoe/apcu-bc",
+      "type": "pecl"
+    },
+    "apfd": {
       "dependencies": {
         "alpine": {
           "build": [],
@@ -96,27 +108,42 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "apfd",
+      "track_url": "https://github.com/m6w6/ext-apfd",
+      "type": "git"
     },
     "aspect": {
-      "type": "git",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "aspect",
       "track_url": "https://github.com/SolidWorx/aspect",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "git"
     },
     "ast": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "ast",
       "track_url": "https://github.com/nikic/php-ast",
+      "type": "pecl"
+    },
+    "bitset": {
       "dependencies": {
         "alpine": {
           "build": [],
@@ -126,12 +153,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "bitset",
+      "track_url": "https://github.com/php/pecl-numbers-bitset",
+      "type": "git"
     },
     "blake3": {
-      "type": "git",
-      "pecl_name": "blake3",
-      "track_url": "https://github.com/cypherbits/php-blake3",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -141,12 +168,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "blake3",
+      "track_url": "https://github.com/cypherbits/php-blake3",
+      "type": "git"
     },
     "brotli": {
-      "type": "git",
-      "pecl_name": "brotli",
-      "track_url": "https://github.com/kjdev/php-ext-brotli",
       "dependencies": {
         "alpine": {
           "build": [
@@ -164,12 +191,12 @@
             "libbrotli1"
           ]
         }
-      }
+      },
+      "pecl_name": "brotli",
+      "track_url": "https://github.com/kjdev/php-ext-brotli",
+      "type": "git"
     },
     "bzip3": {
-      "type": "git",
-      "pecl_name": "bzip3",
-      "track_url": "https://github.com/kjdev/php-ext-bzip3",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -180,27 +207,12 @@
           "runtime": []
         }
       },
-      "notes": "Uses bundled bzip3 library by default"
-    },
-    "corefill": {
-      "type": "git",
-      "pecl_name": "corefill",
-      "track_url": "https://github.com/mailmug/corefill",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "notes": "Uses bundled bzip3 library by default",
+      "pecl_name": "bzip3",
+      "track_url": "https://github.com/kjdev/php-ext-bzip3",
+      "type": "git"
     },
     "cairo": {
-      "type": "git",
-      "pecl_name": "cairo",
-      "track_url": "https://github.com/MarcelBolten/php-cairo",
       "dependencies": {
         "alpine": {
           "build": [
@@ -232,24 +244,29 @@
             "libjpeg62-turbo"
           ]
         }
-      }
+      },
+      "pecl_name": "cairo",
+      "track_url": "https://github.com/MarcelBolten/php-cairo",
+      "type": "git"
+    },
+    "corefill": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "corefill",
+      "track_url": "https://github.com/mailmug/corefill",
+      "type": "git"
     },
     "crc_fast": {
-      "type": "git",
-      "pecl_name": "crc_fast",
-      "track_url": "https://github.com/awesomized/crc-fast-php-ext",
-      "external_libs": [
-        {
-          "name": "libcrc_fast",
-          "type": "rust",
-          "repo_url": "https://github.com/awesomized/crc-fast-rust",
-          "build_commands": [
-            "cargo build --release --features=c-library",
-            "mkdir -p /usr/local/include /usr/local/lib",
-            "cp target/release/libcrc_fast.so /usr/local/lib/ || cp target/release/libcrc_fast.dylib /usr/local/lib/ || true",
-            "cp include/libcrc_fast.h /usr/local/include/"
-          ]
-        }
+      "configure_options": [
+        "--with-crc-fast=/usr/local"
       ],
       "dependencies": {
         "alpine": {
@@ -267,14 +284,24 @@
           "runtime": []
         }
       },
-      "configure_options": [
-        "--with-crc-fast=/usr/local"
-      ]
+      "external_libs": [
+        {
+          "build_commands": [
+            "cargo build --release --features=c-library",
+            "mkdir -p /usr/local/include /usr/local/lib",
+            "cp target/release/libcrc_fast.so /usr/local/lib/ || cp target/release/libcrc_fast.dylib /usr/local/lib/ || true",
+            "cp include/libcrc_fast.h /usr/local/include/"
+          ],
+          "name": "libcrc_fast",
+          "repo_url": "https://github.com/awesomized/crc-fast-rust",
+          "type": "rust"
+        }
+      ],
+      "pecl_name": "crc_fast",
+      "track_url": "https://github.com/awesomized/crc-fast-php-ext",
+      "type": "git"
     },
     "csv": {
-      "type": "git",
-      "pecl_name": "csv",
-      "track_url": "https://gitlab.com/Girgias/csv-php-extension",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -284,12 +311,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "csv",
+      "track_url": "https://gitlab.com/Girgias/csv-php-extension",
+      "type": "git"
     },
     "dbus": {
-      "type": "git",
-      "pecl_name": "dbus",
-      "track_url": "https://github.com/derickr/pecl-dbus",
       "dependencies": {
         "alpine": {
           "build": [
@@ -313,12 +340,12 @@
             "libxml2"
           ]
         }
-      }
+      },
+      "pecl_name": "dbus",
+      "track_url": "https://github.com/derickr/pecl-dbus",
+      "type": "git"
     },
     "decimal": {
-      "type": "pecl",
-      "pecl_name": "decimal",
-      "track_url": "https://github.com/php-decimal/ext-decimal",
       "dependencies": {
         "alpine": {
           "build": [
@@ -336,12 +363,12 @@
             "libmpdec3"
           ]
         }
-      }
+      },
+      "pecl_name": "decimal",
+      "track_url": "https://github.com/php-decimal/ext-decimal",
+      "type": "pecl"
     },
-    "ds": {
-      "type": "pecl",
-      "pecl_name": "ds",
-      "track_url": "https://github.com/php-ds/ext-ds",
+    "dio": {
       "dependencies": {
         "alpine": {
           "build": [],
@@ -351,12 +378,50 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "dio",
+      "track_url": "https://github.com/php/pecl-system-dio",
+      "type": "git"
+    },
+    "ds": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "ds",
+      "track_url": "https://github.com/php-ds/ext-ds",
+      "type": "pecl"
+    },
+    "ev": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "libev-dev"
+          ],
+          "runtime": [
+            "libev"
+          ]
+        },
+        "debian": {
+          "build": [
+            "libev-dev"
+          ],
+          "runtime": [
+            "libev4"
+          ]
+        }
+      },
+      "pecl_name": "ev",
+      "track_url": "https://github.com/osmanov/pecl-ev",
+      "type": "git"
     },
     "event": {
-      "type": "pecl",
-      "pecl_name": "event",
-      "track_url": "https://bitbucket.org/osmanov/pecl-event",
       "dependencies": {
         "alpine": {
           "build": [
@@ -378,42 +443,12 @@
             "libssl3"
           ]
         }
-      }
-    },
-    "fastcsv": {
-      "type": "git",
-      "pecl_name": "fastcsv",
-      "track_url": "https://github.com/csvtoolkit/FastCSV-ext",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "fnbind": {
-      "type": "git",
-      "pecl_name": "fnbind",
-      "track_url": "https://github.com/Danack/fnbind",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      },
+      "pecl_name": "event",
+      "track_url": "https://bitbucket.org/osmanov/pecl-event",
+      "type": "pecl"
     },
     "excimer": {
-      "type": "pecl",
-      "pecl_name": "excimer",
-      "track_url": "https://github.com/wikimedia/php-excimer",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -423,12 +458,57 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "excimer",
+      "track_url": "https://github.com/wikimedia/php-excimer",
+      "type": "pecl"
+    },
+    "fastcsv": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "fastcsv",
+      "track_url": "https://github.com/csvtoolkit/FastCSV-ext",
+      "type": "git"
+    },
+    "fnbind": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "fnbind",
+      "track_url": "https://github.com/Danack/fnbind",
+      "type": "git"
+    },
+    "geospatial": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "geospatial",
+      "track_url": "https://github.com/php-geospatial/geospatial",
+      "type": "git"
     },
     "glfw": {
-      "type": "git",
-      "pecl_name": "glfw",
-      "track_url": "https://github.com/mario-deluna/php-glfw",
       "dependencies": {
         "alpine": {
           "build": [
@@ -463,12 +543,12 @@
           ]
         }
       },
-      "notes": "Can auto-build GLFW if not found in system"
+      "notes": "Can auto-build GLFW if not found in system",
+      "pecl_name": "glfw",
+      "track_url": "https://github.com/mario-deluna/php-glfw",
+      "type": "git"
     },
     "gnupg": {
-      "type": "pecl",
-      "pecl_name": "gnupg",
-      "track_url": "https://github.com/php-gnupg/php-gnupg",
       "dependencies": {
         "alpine": {
           "build": [
@@ -486,45 +566,27 @@
             "libgpgme11"
           ]
         }
-      }
+      },
+      "pecl_name": "gnupg",
+      "track_url": "https://github.com/php-gnupg/php-gnupg",
+      "type": "pecl"
     },
-    "hdrhistogram": {
-      "type": "git",
-      "pecl_name": "hdrhistogram",
-      "track_url": "https://github.com/beberlei/hdrhistogram-php",
-      "external_libs": [
-        {
-          "name": "HdrHistogram_c",
-          "type": "cmake",
-          "repo_url": "https://github.com/HdrHistogram/HdrHistogram_c",
-          "build_commands": [
-            "cmake .",
-            "make -j$(nproc)",
-            "make install"
-          ]
-        }
-      ],
+    "gpio": {
       "dependencies": {
         "alpine": {
-          "build": [
-            "cmake",
-            "zlib-dev"
-          ],
+          "build": [],
           "runtime": []
         },
         "debian": {
-          "build": [
-            "cmake",
-            "zlib1g-dev"
-          ],
+          "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "gpio",
+      "track_url": "https://github.com/embedded-php/ext-gpio",
+      "type": "git"
     },
     "grpc": {
-      "type": "pecl",
-      "pecl_name": "grpc",
-      "track_url": "https://github.com/grpc/grpc",
       "dependencies": {
         "alpine": {
           "build": [
@@ -543,27 +605,79 @@
             "zlib1g"
           ]
         }
-      }
+      },
+      "pecl_name": "grpc",
+      "track_url": "https://github.com/grpc/grpc",
+      "type": "pecl"
+    },
+    "hdrhistogram": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "cmake",
+            "zlib-dev"
+          ],
+          "runtime": []
+        },
+        "debian": {
+          "build": [
+            "cmake",
+            "zlib1g-dev"
+          ],
+          "runtime": []
+        }
+      },
+      "external_libs": [
+        {
+          "build_commands": [
+            "cmake .",
+            "make -j$(nproc)",
+            "make install"
+          ],
+          "name": "HdrHistogram_c",
+          "repo_url": "https://github.com/HdrHistogram/HdrHistogram_c",
+          "type": "cmake"
+        }
+      ],
+      "pecl_name": "hdrhistogram",
+      "track_url": "https://github.com/beberlei/hdrhistogram-php",
+      "type": "git"
+    },
+    "i2c": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "linux-headers"
+          ],
+          "runtime": []
+        },
+        "debian": {
+          "build": [
+            "linux-libc-dev"
+          ],
+          "runtime": []
+        }
+      },
+      "pecl_name": "i2c",
+      "track_url": "https://github.com/embedded-php/ext-i2c",
+      "type": "git"
     },
     "identifier": {
-      "type": "git",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "identifier",
       "track_url": "https://github.com/castor-labs/php-ext-identifier",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "git"
     },
     "igbinary": {
-      "type": "pecl",
-      "pecl_name": "igbinary",
-      "track_url": "https://github.com/igbinary/igbinary",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -573,12 +687,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "igbinary",
+      "track_url": "https://github.com/igbinary/igbinary",
+      "type": "pecl"
     },
     "imagick": {
-      "type": "pecl",
-      "pecl_name": "imagick",
-      "track_url": "https://github.com/Imagick/imagick",
       "dependencies": {
         "alpine": {
           "build": [
@@ -596,74 +710,12 @@
             "libmagickwand-6.q16-6"
           ]
         }
-      }
-    },
-    "ip2location": {
-      "type": "git",
-      "pecl_name": "ip2location",
-      "track_url": "https://github.com/chrislim2888/IP2Location-PECL-Extension",
-      "external_libs": [
-        {
-          "name": "IP2Location_C",
-          "type": "cmake",
-          "repo_url": "https://github.com/chrislim2888/IP2Location-C-Library",
-          "build_commands": [
-            "cmake .",
-            "make -j$(nproc)",
-            "make install"
-          ]
-        }
-      ],
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "cmake"
-          ],
-          "runtime": []
-        },
-        "debian": {
-          "build": [
-            "cmake"
-          ],
-          "runtime": []
-        }
-      }
-    },
-    "ip2proxy": {
-      "type": "git",
-      "pecl_name": "ip2proxy",
-      "track_url": "https://github.com/ip2location/ip2proxy-pecl",
-      "external_libs": [
-        {
-          "name": "IP2Proxy_C",
-          "type": "cmake",
-          "repo_url": "https://github.com/ip2location/IP2Proxy-C-Library",
-          "build_commands": [
-            "cmake .",
-            "make -j$(nproc)",
-            "make install"
-          ]
-        }
-      ],
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "cmake"
-          ],
-          "runtime": []
-        },
-        "debian": {
-          "build": [
-            "cmake"
-          ],
-          "runtime": []
-        }
-      }
+      },
+      "pecl_name": "imagick",
+      "track_url": "https://github.com/Imagick/imagick",
+      "type": "pecl"
     },
     "inotify": {
-      "type": "pecl",
-      "pecl_name": "inotify",
-      "track_url": "https://github.com/arnaud-lb/php-inotify",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -673,12 +725,105 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "inotify",
+      "track_url": "https://github.com/arnaud-lb/php-inotify",
+      "type": "pecl"
+    },
+    "ip2location": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "cmake"
+          ],
+          "runtime": []
+        },
+        "debian": {
+          "build": [
+            "cmake"
+          ],
+          "runtime": []
+        }
+      },
+      "external_libs": [
+        {
+          "build_commands": [
+            "cmake .",
+            "make -j$(nproc)",
+            "make install"
+          ],
+          "name": "IP2Location_C",
+          "repo_url": "https://github.com/chrislim2888/IP2Location-C-Library",
+          "type": "cmake"
+        }
+      ],
+      "pecl_name": "ip2location",
+      "track_url": "https://github.com/chrislim2888/IP2Location-PECL-Extension",
+      "type": "git"
+    },
+    "ip2proxy": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "cmake"
+          ],
+          "runtime": []
+        },
+        "debian": {
+          "build": [
+            "cmake"
+          ],
+          "runtime": []
+        }
+      },
+      "external_libs": [
+        {
+          "build_commands": [
+            "cmake .",
+            "make -j$(nproc)",
+            "make install"
+          ],
+          "name": "IP2Proxy_C",
+          "repo_url": "https://github.com/ip2location/IP2Proxy-C-Library",
+          "type": "cmake"
+        }
+      ],
+      "pecl_name": "ip2proxy",
+      "track_url": "https://github.com/ip2location/ip2proxy-pecl",
+      "type": "git"
+    },
+    "json_post": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "notes": "Depends on json extension (built-in)",
+      "pecl_name": "json_post",
+      "track_url": "https://github.com/m6w6/ext-json_post",
+      "type": "git"
+    },
+    "jsonpath": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "jsonpath",
+      "track_url": "https://github.com/supermetrics-public/pecl-jsonpath",
+      "type": "git"
     },
     "judy": {
-      "type": "git",
-      "pecl_name": "judy",
-      "track_url": "https://github.com/orieg/php-judy",
       "dependencies": {
         "alpine": {
           "build": [
@@ -696,12 +841,12 @@
             "libjudy1"
           ]
         }
-      }
+      },
+      "pecl_name": "judy",
+      "track_url": "https://github.com/orieg/php-judy",
+      "type": "git"
     },
     "lz4": {
-      "type": "git",
-      "pecl_name": "lz4",
-      "track_url": "https://github.com/kjdev/php-ext-lz4",
       "dependencies": {
         "alpine": {
           "build": [
@@ -719,27 +864,27 @@
             "liblz4-1"
           ]
         }
-      }
+      },
+      "pecl_name": "lz4",
+      "track_url": "https://github.com/kjdev/php-ext-lz4",
+      "type": "git"
     },
     "lzf": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "lzf",
       "track_url": "https://github.com/php/pecl-file_formats-lzf",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "pecl"
     },
     "mailparse": {
-      "type": "pecl",
-      "pecl_name": "mailparse",
-      "track_url": "https://github.com/php/pecl-mail-mailparse",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -749,12 +894,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "mailparse",
+      "track_url": "https://github.com/php/pecl-mail-mailparse",
+      "type": "pecl"
     },
     "maxminddb": {
-      "type": "git",
-      "pecl_name": "maxminddb",
-      "track_url": "https://github.com/maxmind/MaxMind-DB-Reader-php",
       "build_path": "ext",
       "dependencies": {
         "alpine": {
@@ -773,12 +918,35 @@
             "libmaxminddb0"
           ]
         }
-      }
+      },
+      "pecl_name": "maxminddb",
+      "track_url": "https://github.com/maxmind/MaxMind-DB-Reader-php",
+      "type": "git"
+    },
+    "mcrypt": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "libmcrypt-dev"
+          ],
+          "runtime": [
+            "libmcrypt"
+          ]
+        },
+        "debian": {
+          "build": [
+            "libmcrypt-dev"
+          ],
+          "runtime": [
+            "libmcrypt4"
+          ]
+        }
+      },
+      "pecl_name": "mcrypt",
+      "track_url": "https://github.com/php/pecl-encryption-mcrypt",
+      "type": "git"
     },
     "memcache": {
-      "type": "pecl",
-      "pecl_name": "memcache",
-      "track_url": "https://github.com/websupport-sk/pecl-memcache",
       "dependencies": {
         "alpine": {
           "build": [
@@ -796,12 +964,12 @@
             "zlib1g"
           ]
         }
-      }
+      },
+      "pecl_name": "memcache",
+      "track_url": "https://github.com/websupport-sk/pecl-memcache",
+      "type": "pecl"
     },
     "memcached": {
-      "type": "pecl",
-      "pecl_name": "memcached",
-      "track_url": "https://github.com/php-memcached-dev/php-memcached",
       "dependencies": {
         "alpine": {
           "build": [
@@ -827,12 +995,12 @@
             "libsasl2-2"
           ]
         }
-      }
+      },
+      "pecl_name": "memcached",
+      "track_url": "https://github.com/php-memcached-dev/php-memcached",
+      "type": "pecl"
     },
     "memprof": {
-      "type": "pecl",
-      "pecl_name": "memprof",
-      "track_url": "https://github.com/arnaud-lb/php-memory-profiler",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -846,12 +1014,12 @@
             "libjudy1"
           ]
         }
-      }
+      },
+      "pecl_name": "memprof",
+      "track_url": "https://github.com/arnaud-lb/php-memory-profiler",
+      "type": "pecl"
     },
     "mongodb": {
-      "type": "pecl",
-      "pecl_name": "mongodb",
-      "track_url": "https://github.com/mongodb/mongo-php-driver",
       "dependencies": {
         "alpine": {
           "build": [
@@ -869,12 +1037,12 @@
             "libssl3"
           ]
         }
-      }
+      },
+      "pecl_name": "mongodb",
+      "track_url": "https://github.com/mongodb/mongo-php-driver",
+      "type": "pecl"
     },
     "msgpack": {
-      "type": "pecl",
-      "pecl_name": "msgpack",
-      "track_url": "https://github.com/msgpack/msgpack-php",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -884,12 +1052,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "msgpack",
+      "track_url": "https://github.com/msgpack/msgpack-php",
+      "type": "pecl"
     },
     "mysqlnd_ed25519": {
-      "type": "git",
-      "pecl_name": "mysqlnd_ed25519",
-      "track_url": "https://github.com/mariadb-corporation/mysqlnd_ed25519",
       "dependencies": {
         "alpine": {
           "build": [
@@ -910,12 +1078,12 @@
           ]
         }
       },
-      "notes": "MariaDB ed25519 authentication plugin for mysqlnd"
+      "notes": "MariaDB ed25519 authentication plugin for mysqlnd",
+      "pecl_name": "mysqlnd_ed25519",
+      "track_url": "https://github.com/mariadb-corporation/mysqlnd_ed25519",
+      "type": "git"
     },
     "mysqlnd_parsec": {
-      "type": "git",
-      "pecl_name": "mysqlnd_parsec",
-      "track_url": "https://github.com/mariadb-corporation/mysqlnd_parsec",
       "dependencies": {
         "alpine": {
           "build": [
@@ -940,12 +1108,12 @@
           ]
         }
       },
-      "notes": "MariaDB PARSEC authentication plugin for mysqlnd"
+      "notes": "MariaDB PARSEC authentication plugin for mysqlnd",
+      "pecl_name": "mysqlnd_parsec",
+      "track_url": "https://github.com/mariadb-corporation/mysqlnd_parsec",
+      "type": "git"
     },
     "oauth": {
-      "type": "pecl",
-      "pecl_name": "oauth",
-      "track_url": "https://github.com/php/pecl-web_services-oauth",
       "dependencies": {
         "alpine": {
           "build": [
@@ -967,27 +1135,12 @@
             "libcurl4"
           ]
         }
-      }
+      },
+      "pecl_name": "oauth",
+      "track_url": "https://github.com/php/pecl-web_services-oauth",
+      "type": "pecl"
     },
-    "pcov": {
-      "type": "pecl",
-      "pecl_name": "pcov",
-      "track_url": "https://github.com/krakjoe/pcov",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "pdo_oci": {
-      "type": "git",
-      "pecl_name": "pdo_oci",
-      "track_url": "https://github.com/php/pecl-database-pdo_oci",
+    "oci8": {
       "dependencies": {
         "alpine": {
           "build": [
@@ -1006,12 +1159,103 @@
           ]
         }
       },
-      "notes": "PDO driver for Oracle - requires Oracle Instant Client or ORACLE_HOME (not auto-installed)"
+      "notes": "Requires Oracle Instant Client or ORACLE_HOME (not auto-installed)",
+      "pecl_name": "oci8",
+      "track_url": "https://github.com/php/pecl-database-oci8",
+      "type": "git"
+    },
+    "opentelemetry": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "opentelemetry",
+      "track_url": "https://github.com/open-telemetry/opentelemetry-php-instrumentation",
+      "type": "git"
+    },
+    "oqs": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "cmake",
+            "openssl-dev"
+          ],
+          "runtime": []
+        },
+        "debian": {
+          "build": [
+            "cmake",
+            "libssl-dev"
+          ],
+          "runtime": []
+        }
+      },
+      "notes": "Requires liboqs >= 0.14.0 (post-quantum cryptography library) - user must install",
+      "pecl_name": "oqs",
+      "track_url": "https://github.com/secudoc/php-liboqs",
+      "type": "git"
+    },
+    "parallel": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "parallel",
+      "track_url": "https://github.com/krakjoe/parallel",
+      "type": "git"
+    },
+    "pcov": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "pcov",
+      "track_url": "https://github.com/krakjoe/pcov",
+      "type": "pecl"
+    },
+    "pdo_oci": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "libaio-dev"
+          ],
+          "runtime": [
+            "libaio"
+          ]
+        },
+        "debian": {
+          "build": [
+            "libaio-dev"
+          ],
+          "runtime": [
+            "libaio1"
+          ]
+        }
+      },
+      "notes": "PDO driver for Oracle - requires Oracle Instant Client or ORACLE_HOME (not auto-installed)",
+      "pecl_name": "pdo_oci",
+      "track_url": "https://github.com/php/pecl-database-pdo_oci",
+      "type": "git"
     },
     "pecl_http": {
-      "type": "pecl",
-      "pecl_name": "pecl_http",
-      "track_url": "https://github.com/m6w6/ext-http",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1041,12 +1285,12 @@
             "libicu72"
           ]
         }
-      }
+      },
+      "pecl_name": "pecl_http",
+      "track_url": "https://github.com/m6w6/ext-http",
+      "type": "pecl"
     },
     "pg_query": {
-      "type": "git",
-      "pecl_name": "pg_query",
-      "track_url": "https://github.com/flow-php/pg-query-ext",
       "build_path": "ext",
       "dependencies": {
         "alpine": {
@@ -1062,27 +1306,12 @@
           "runtime": []
         }
       },
-      "notes": "Auto-downloads and builds libpg_query during build"
-    },
-    "phreakscope": {
-      "type": "git",
-      "pecl_name": "phreakscope",
-      "track_url": "https://github.com/pakutoma/ext-phreakscope",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "notes": "Auto-downloads and builds libpg_query during build",
+      "pecl_name": "pg_query",
+      "track_url": "https://github.com/flow-php/pg-query-ext",
+      "type": "git"
     },
     "pheme": {
-      "type": "git",
-      "pecl_name": "pheme",
-      "track_url": "https://github.com/capotej/pheme",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1102,12 +1331,27 @@
             "guile-3.0"
           ]
         }
-      }
+      },
+      "pecl_name": "pheme",
+      "track_url": "https://github.com/capotej/pheme",
+      "type": "git"
+    },
+    "phreakscope": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "phreakscope",
+      "track_url": "https://github.com/pakutoma/ext-phreakscope",
+      "type": "git"
     },
     "pq": {
-      "type": "pecl",
-      "pecl_name": "pq",
-      "track_url": "https://github.com/m6w6/ext-pq",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1125,42 +1369,42 @@
             "libpq5"
           ]
         }
-      }
+      },
+      "pecl_name": "pq",
+      "track_url": "https://github.com/m6w6/ext-pq",
+      "type": "pecl"
     },
     "psr": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "psr",
       "track_url": "https://github.com/jbboehr/php-psr",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "pecl"
     },
     "quickhash": {
-      "type": "git",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "quickhash",
       "track_url": "https://github.com/derickr/quickhash",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "git"
     },
     "raphf": {
-      "type": "pecl",
-      "pecl_name": "raphf",
-      "track_url": "https://github.com/m6w6/ext-raphf",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1170,12 +1414,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "raphf",
+      "track_url": "https://github.com/m6w6/ext-raphf",
+      "type": "pecl"
     },
     "rdkafka": {
-      "type": "pecl",
-      "pecl_name": "rdkafka",
-      "track_url": "https://github.com/arnaud-lb/php-rdkafka",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1193,12 +1437,27 @@
             "librdkafka1"
           ]
         }
-      }
+      },
+      "pecl_name": "rdkafka",
+      "track_url": "https://github.com/arnaud-lb/php-rdkafka",
+      "type": "pecl"
     },
     "redis": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "redis",
       "track_url": "https://github.com/phpredis/phpredis",
+      "type": "pecl"
+    },
+    "relay": {
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1208,27 +1467,73 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "relay",
+      "track_url": "https://github.com/cachewerk/relay",
+      "type": "git"
+    },
+    "rpminfo": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "rpm-dev"
+          ],
+          "runtime": [
+            "rpm"
+          ]
+        },
+        "debian": {
+          "build": [
+            "librpm-dev"
+          ],
+          "runtime": [
+            "librpm9"
+          ]
+        }
+      },
+      "pecl_name": "rpminfo",
+      "track_url": "https://github.com/remicollet/php-rpminfo",
+      "type": "git"
+    },
+    "selinux": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "libselinux-dev"
+          ],
+          "runtime": [
+            "libselinux"
+          ]
+        },
+        "debian": {
+          "build": [
+            "libselinux1-dev"
+          ],
+          "runtime": [
+            "libselinux1"
+          ]
+        }
+      },
+      "pecl_name": "selinux",
+      "track_url": "https://github.com/php/pecl-security-selinux",
+      "type": "git"
     },
     "simdjson": {
-      "type": "git",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "simdjson",
       "track_url": "https://github.com/crazyxman/simdjson_php",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "git"
     },
     "simdutf": {
-      "type": "git",
-      "pecl_name": "simdutf",
-      "track_url": "https://github.com/awesomized/simdutf-php-ext",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1238,12 +1543,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "simdutf",
+      "track_url": "https://github.com/awesomized/simdutf-php-ext",
+      "type": "git"
     },
     "smbclient": {
-      "type": "pecl",
-      "pecl_name": "smbclient",
-      "track_url": "https://github.com/eduardok/libsmbclient-php",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1261,12 +1566,28 @@
             "libsmbclient"
           ]
         }
-      }
+      },
+      "pecl_name": "smbclient",
+      "track_url": "https://github.com/eduardok/libsmbclient-php",
+      "type": "pecl"
+    },
+    "snappy": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "notes": "Uses bundled snappy library by default",
+      "pecl_name": "snappy",
+      "track_url": "https://github.com/kjdev/php-ext-snappy",
+      "type": "git"
     },
     "solr": {
-      "type": "git",
-      "pecl_name": "solr",
-      "track_url": "https://github.com/php/pecl-search_engine-solr",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1291,12 +1612,57 @@
           ]
         }
       },
-      "notes": "Apache Solr client - requires libcurl >= 7.15.5, libxml2, and json extension"
+      "notes": "Apache Solr client - requires libcurl >= 7.15.5, libxml2, and json extension",
+      "pecl_name": "solr",
+      "track_url": "https://github.com/php/pecl-search_engine-solr",
+      "type": "git"
+    },
+    "spi": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "linux-headers"
+          ],
+          "runtime": []
+        },
+        "debian": {
+          "build": [
+            "linux-libc-dev"
+          ],
+          "runtime": []
+        }
+      },
+      "pecl_name": "spi",
+      "track_url": "https://github.com/embedded-php/ext-spi",
+      "type": "git"
+    },
+    "spx": {
+      "configure_options": [
+        "--with-zlib-dir=/usr"
+      ],
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "zlib-dev"
+          ],
+          "runtime": [
+            "zlib"
+          ]
+        },
+        "debian": {
+          "build": [
+            "zlib1g-dev"
+          ],
+          "runtime": [
+            "zlib1g"
+          ]
+        }
+      },
+      "pecl_name": "spx",
+      "track_url": "https://github.com/NoiseByNorthwest/php-spx",
+      "type": "git"
     },
     "stomp": {
-      "type": "pecl",
-      "pecl_name": "stomp",
-      "track_url": "https://github.com/php/pecl-tools-stomp",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1314,12 +1680,12 @@
             "libssl3"
           ]
         }
-      }
+      },
+      "pecl_name": "stomp",
+      "track_url": "https://github.com/php/pecl-tools-stomp",
+      "type": "pecl"
     },
     "swoole": {
-      "type": "pecl",
-      "pecl_name": "swoole",
-      "track_url": "https://github.com/swoole/swoole-src",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1342,12 +1708,27 @@
             "libcurl4"
           ]
         }
-      }
+      },
+      "pecl_name": "swoole",
+      "track_url": "https://github.com/swoole/swoole-src",
+      "type": "pecl"
     },
     "taint": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "taint",
       "track_url": "https://github.com/laruence/taint",
+      "type": "pecl"
+    },
+    "timezonedb": {
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1357,27 +1738,72 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "timezonedb",
+      "track_url": "https://github.com/php/pecl-datetime-timezonedb",
+      "type": "git"
+    },
+    "traitify": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "traitify",
+      "track_url": "https://github.com/arshidkv12/traitify",
+      "type": "git"
+    },
+    "translit": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "translit",
+      "track_url": "https://github.com/derickr/pecl-translit",
+      "type": "git"
+    },
+    "uart": {
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
+      "pecl_name": "uart",
+      "track_url": "https://github.com/embedded-php/ext-uart",
+      "type": "git"
     },
     "uopz": {
-      "type": "git",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "uopz",
       "track_url": "https://github.com/krakjoe/uopz",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "git"
     },
     "uploadprogress": {
-      "type": "pecl",
-      "pecl_name": "uploadprogress",
-      "track_url": "https://github.com/php/pecl-php-uploadprogress",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1387,12 +1813,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "uploadprogress",
+      "track_url": "https://github.com/php/pecl-php-uploadprogress",
+      "type": "pecl"
     },
     "uuid": {
-      "type": "pecl",
-      "pecl_name": "uuid",
-      "track_url": "https://github.com/php/pecl-networking-uuid",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1410,12 +1836,12 @@
             "libuuid1"
           ]
         }
-      }
+      },
+      "pecl_name": "uuid",
+      "track_url": "https://github.com/php/pecl-networking-uuid",
+      "type": "pecl"
     },
     "uv": {
-      "type": "pecl",
-      "pecl_name": "uv",
-      "track_url": "https://github.com/amphp/ext-uv",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1433,12 +1859,12 @@
             "libuv1"
           ]
         }
-      }
+      },
+      "pecl_name": "uv",
+      "track_url": "https://github.com/amphp/ext-uv",
+      "type": "pecl"
     },
     "vld": {
-      "type": "pecl",
-      "pecl_name": "vld",
-      "track_url": "https://github.com/derickr/vld",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1448,12 +1874,35 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "vld",
+      "track_url": "https://github.com/derickr/vld",
+      "type": "pecl"
+    },
+    "xattr": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "attr-dev"
+          ],
+          "runtime": [
+            "attr"
+          ]
+        },
+        "debian": {
+          "build": [
+            "libattr1-dev"
+          ],
+          "runtime": [
+            "libattr1"
+          ]
+        }
+      },
+      "pecl_name": "xattr",
+      "track_url": "https://github.com/php/pecl-file_system-xattr",
+      "type": "git"
     },
     "xdebug": {
-      "type": "pecl",
-      "pecl_name": "xdebug",
-      "track_url": "https://github.com/xdebug/xdebug",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1465,12 +1914,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "xdebug",
+      "track_url": "https://github.com/xdebug/xdebug",
+      "type": "pecl"
     },
     "xdiff": {
-      "type": "pecl",
-      "pecl_name": "xdiff",
-      "track_url": "https://github.com/php/pecl-text-xdiff",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1488,27 +1937,73 @@
             "libxdiff0"
           ]
         }
-      }
+      },
+      "pecl_name": "xdiff",
+      "track_url": "https://github.com/php/pecl-text-xdiff",
+      "type": "pecl"
     },
     "xhprof": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "xhprof",
       "track_url": "https://github.com/longxinH/xhprof",
+      "type": "pecl"
+    },
+    "xlswriter": {
       "dependencies": {
         "alpine": {
-          "build": [],
-          "runtime": []
+          "build": [
+            "zlib-dev"
+          ],
+          "runtime": [
+            "zlib"
+          ]
         },
         "debian": {
-          "build": [],
-          "runtime": []
+          "build": [
+            "zlib1g-dev"
+          ],
+          "runtime": [
+            "zlib1g"
+          ]
         }
-      }
+      },
+      "pecl_name": "xlswriter",
+      "track_url": "https://github.com/viest/php-ext-xlswriter",
+      "type": "git"
+    },
+    "xpass": {
+      "dependencies": {
+        "alpine": {
+          "build": [
+            "libxcrypt-dev"
+          ],
+          "runtime": [
+            "libxcrypt"
+          ]
+        },
+        "debian": {
+          "build": [
+            "libcrypt-dev"
+          ],
+          "runtime": [
+            "libcrypt1"
+          ]
+        }
+      },
+      "pecl_name": "xpass",
+      "track_url": "https://github.com/remicollet/php-xpass",
+      "type": "git"
     },
     "xxtea": {
-      "type": "pecl",
-      "pecl_name": "xxtea",
-      "track_url": "https://github.com/xxtea/xxtea-pecl",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1518,12 +2013,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "xxtea",
+      "track_url": "https://github.com/xxtea/xxtea-pecl",
+      "type": "pecl"
     },
     "xz": {
-      "type": "git",
-      "pecl_name": "xz",
-      "track_url": "https://github.com/codemasher/php-ext-xz",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1543,42 +2038,42 @@
             "liblzma5"
           ]
         }
-      }
+      },
+      "pecl_name": "xz",
+      "track_url": "https://github.com/codemasher/php-ext-xz",
+      "type": "git"
     },
     "yac": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "yac",
       "track_url": "https://github.com/laruence/yac",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "pecl"
     },
     "yaconf": {
-      "type": "pecl",
+      "dependencies": {
+        "alpine": {
+          "build": [],
+          "runtime": []
+        },
+        "debian": {
+          "build": [],
+          "runtime": []
+        }
+      },
       "pecl_name": "yaconf",
       "track_url": "https://github.com/laruence/yaconf",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "type": "pecl"
     },
     "yaf": {
-      "type": "pecl",
-      "pecl_name": "yaf",
-      "track_url": "https://github.com/laruence/yaf",
       "dependencies": {
         "alpine": {
           "build": [],
@@ -1588,12 +2083,12 @@
           "build": [],
           "runtime": []
         }
-      }
+      },
+      "pecl_name": "yaf",
+      "track_url": "https://github.com/laruence/yaf",
+      "type": "pecl"
     },
     "yaml": {
-      "type": "pecl",
-      "pecl_name": "yaml",
-      "track_url": "https://github.com/php/pecl-file_formats-yaml",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1611,12 +2106,12 @@
             "libyaml-0-2"
           ]
         }
-      }
+      },
+      "pecl_name": "yaml",
+      "track_url": "https://github.com/php/pecl-file_formats-yaml",
+      "type": "pecl"
     },
     "yar": {
-      "type": "pecl",
-      "pecl_name": "yar",
-      "track_url": "https://github.com/laruence/yar",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1634,12 +2129,12 @@
             "libcurl4"
           ]
         }
-      }
+      },
+      "pecl_name": "yar",
+      "track_url": "https://github.com/laruence/yar",
+      "type": "pecl"
     },
     "zip": {
-      "type": "pecl",
-      "pecl_name": "zip",
-      "track_url": "https://github.com/pierrejoye/php_zip",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1657,12 +2152,12 @@
             "libzip4"
           ]
         }
-      }
+      },
+      "pecl_name": "zip",
+      "track_url": "https://github.com/pierrejoye/php_zip",
+      "type": "pecl"
     },
     "zmq": {
-      "type": "pecl",
-      "pecl_name": "zmq",
-      "track_url": "https://github.com/zeromq/php-zmq",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1680,12 +2175,12 @@
             "libzmq5"
           ]
         }
-      }
+      },
+      "pecl_name": "zmq",
+      "track_url": "https://github.com/zeromq/php-zmq",
+      "type": "pecl"
     },
     "zstd": {
-      "type": "git",
-      "pecl_name": "zstd",
-      "track_url": "https://github.com/kjdev/php-ext-zstd",
       "dependencies": {
         "alpine": {
           "build": [
@@ -1703,505 +2198,10 @@
             "libzstd1"
           ]
         }
-      }
-    },
-    "apfd": {
-      "type": "git",
-      "pecl_name": "apfd",
-      "track_url": "https://github.com/m6w6/ext-apfd",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "bitset": {
-      "type": "git",
-      "pecl_name": "bitset",
-      "track_url": "https://github.com/php/pecl-numbers-bitset",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "dio": {
-      "type": "git",
-      "pecl_name": "dio",
-      "track_url": "https://github.com/php/pecl-system-dio",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "ev": {
-      "type": "git",
-      "pecl_name": "ev",
-      "track_url": "https://github.com/osmanov/pecl-ev",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "libev-dev"
-          ],
-          "runtime": [
-            "libev"
-          ]
-        },
-        "debian": {
-          "build": [
-            "libev-dev"
-          ],
-          "runtime": [
-            "libev4"
-          ]
-        }
-      }
-    },
-    "geospatial": {
-      "type": "git",
-      "pecl_name": "geospatial",
-      "track_url": "https://github.com/php-geospatial/geospatial",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "gpio": {
-      "type": "git",
-      "pecl_name": "gpio",
-      "track_url": "https://github.com/embedded-php/ext-gpio",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "i2c": {
-      "type": "git",
-      "pecl_name": "i2c",
-      "track_url": "https://github.com/embedded-php/ext-i2c",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "linux-headers"
-          ],
-          "runtime": []
-        },
-        "debian": {
-          "build": [
-            "linux-libc-dev"
-          ],
-          "runtime": []
-        }
-      }
-    },
-    "json_post": {
-      "type": "git",
-      "pecl_name": "json_post",
-      "track_url": "https://github.com/m6w6/ext-json_post",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
       },
-      "notes": "Depends on json extension (built-in)"
-    },
-    "jsonpath": {
-      "type": "git",
-      "pecl_name": "jsonpath",
-      "track_url": "https://github.com/supermetrics-public/pecl-jsonpath",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "mcrypt": {
-      "type": "git",
-      "pecl_name": "mcrypt",
-      "track_url": "https://github.com/php/pecl-encryption-mcrypt",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "libmcrypt-dev"
-          ],
-          "runtime": [
-            "libmcrypt"
-          ]
-        },
-        "debian": {
-          "build": [
-            "libmcrypt-dev"
-          ],
-          "runtime": [
-            "libmcrypt4"
-          ]
-        }
-      }
-    },
-    "oci8": {
-      "type": "git",
-      "pecl_name": "oci8",
-      "track_url": "https://github.com/php/pecl-database-oci8",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "libaio-dev"
-          ],
-          "runtime": [
-            "libaio"
-          ]
-        },
-        "debian": {
-          "build": [
-            "libaio-dev"
-          ],
-          "runtime": [
-            "libaio1"
-          ]
-        }
-      },
-      "notes": "Requires Oracle Instant Client or ORACLE_HOME (not auto-installed)"
-    },
-    "oqs": {
-      "type": "git",
-      "pecl_name": "oqs",
-      "track_url": "https://github.com/secudoc/php-liboqs",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "cmake",
-            "openssl-dev"
-          ],
-          "runtime": []
-        },
-        "debian": {
-          "build": [
-            "cmake",
-            "libssl-dev"
-          ],
-          "runtime": []
-        }
-      },
-      "notes": "Requires liboqs >= 0.14.0 (post-quantum cryptography library) - user must install"
-    },
-    "opentelemetry": {
-      "type": "git",
-      "pecl_name": "opentelemetry",
-      "track_url": "https://github.com/open-telemetry/opentelemetry-php-instrumentation",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "parallel": {
-      "type": "git",
-      "pecl_name": "parallel",
-      "track_url": "https://github.com/krakjoe/parallel",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "relay": {
-      "type": "git",
-      "pecl_name": "relay",
-      "track_url": "https://github.com/cachewerk/relay",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "rpminfo": {
-      "type": "git",
-      "pecl_name": "rpminfo",
-      "track_url": "https://github.com/remicollet/php-rpminfo",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "rpm-dev"
-          ],
-          "runtime": [
-            "rpm"
-          ]
-        },
-        "debian": {
-          "build": [
-            "librpm-dev"
-          ],
-          "runtime": [
-            "librpm9"
-          ]
-        }
-      }
-    },
-    "selinux": {
-      "type": "git",
-      "pecl_name": "selinux",
-      "track_url": "https://github.com/php/pecl-security-selinux",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "libselinux-dev"
-          ],
-          "runtime": [
-            "libselinux"
-          ]
-        },
-        "debian": {
-          "build": [
-            "libselinux1-dev"
-          ],
-          "runtime": [
-            "libselinux1"
-          ]
-        }
-      }
-    },
-    "snappy": {
-      "type": "git",
-      "pecl_name": "snappy",
-      "track_url": "https://github.com/kjdev/php-ext-snappy",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      },
-      "notes": "Uses bundled snappy library by default"
-    },
-    "spx": {
-      "type": "git",
-      "pecl_name": "spx",
-      "track_url": "https://github.com/NoiseByNorthwest/php-spx",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "zlib-dev"
-          ],
-          "runtime": [
-            "zlib"
-          ]
-        },
-        "debian": {
-          "build": [
-            "zlib1g-dev"
-          ],
-          "runtime": [
-            "zlib1g"
-          ]
-        }
-      },
-      "configure_options": [
-        "--with-zlib-dir=/usr"
-      ]
-    },
-    "spi": {
-      "type": "git",
-      "pecl_name": "spi",
-      "track_url": "https://github.com/embedded-php/ext-spi",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "linux-headers"
-          ],
-          "runtime": []
-        },
-        "debian": {
-          "build": [
-            "linux-libc-dev"
-          ],
-          "runtime": []
-        }
-      }
-    },
-    "timezonedb": {
-      "type": "git",
-      "pecl_name": "timezonedb",
-      "track_url": "https://github.com/php/pecl-datetime-timezonedb",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "translit": {
-      "type": "git",
-      "pecl_name": "translit",
-      "track_url": "https://github.com/derickr/pecl-translit",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "uart": {
-      "type": "git",
-      "pecl_name": "uart",
-      "track_url": "https://github.com/embedded-php/ext-uart",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
-    },
-    "xattr": {
-      "type": "git",
-      "pecl_name": "xattr",
-      "track_url": "https://github.com/php/pecl-file_system-xattr",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "attr-dev"
-          ],
-          "runtime": [
-            "attr"
-          ]
-        },
-        "debian": {
-          "build": [
-            "libattr1-dev"
-          ],
-          "runtime": [
-            "libattr1"
-          ]
-        }
-      }
-    },
-    "xlswriter": {
-      "type": "git",
-      "pecl_name": "xlswriter",
-      "track_url": "https://github.com/viest/php-ext-xlswriter",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "zlib-dev"
-          ],
-          "runtime": [
-            "zlib"
-          ]
-        },
-        "debian": {
-          "build": [
-            "zlib1g-dev"
-          ],
-          "runtime": [
-            "zlib1g"
-          ]
-        }
-      }
-    },
-    "xpass": {
-      "type": "git",
-      "pecl_name": "xpass",
-      "track_url": "https://github.com/remicollet/php-xpass",
-      "dependencies": {
-        "alpine": {
-          "build": [
-            "libxcrypt-dev"
-          ],
-          "runtime": [
-            "libxcrypt"
-          ]
-        },
-        "debian": {
-          "build": [
-            "libcrypt-dev"
-          ],
-          "runtime": [
-            "libcrypt1"
-          ]
-        }
-      }
-    },
-    "traitify": {
-      "type": "git",
-      "pecl_name": "traitify",
-      "track_url": "https://github.com/arshidkv12/traitify",
-      "dependencies": {
-        "alpine": {
-          "build": [],
-          "runtime": []
-        },
-        "debian": {
-          "build": [],
-          "runtime": []
-        }
-      }
+      "pecl_name": "zstd",
+      "track_url": "https://github.com/kjdev/php-ext-zstd",
+      "type": "git"
     }
   }
 }
