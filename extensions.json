@@ -1,4 +1,5 @@
 {
+  "base_image_registry": "ghcr.io/flavioheleno/php-ext-farm/php",
   "architectures": [
     "amd64",
     "arm64",
@@ -14,12 +15,11 @@
   ],
   "platforms": {
     "alpine": {
-      "base_image": "php:{php_version}-cli-alpine{alpine_version}",
-      "common_build_deps": [
-        "autoconf",
-        "gcc",
-        "g++",
-        "make"
+      "supported_architectures": [
+        "amd64",
+        "arm64",
+        "arm32v6",
+        "arm32v7"
       ],
       "versions": [
         "3.19",
@@ -30,12 +30,11 @@
       ]
     },
     "debian": {
-      "base_image": "php:{php_version}-cli-{debian_version}",
-      "common_build_deps": [
-        "autoconf",
-        "gcc",
-        "g++",
-        "make"
+      "supported_architectures": [
+        "amd64",
+        "arm64",
+        "arm32v6",
+        "arm32v7"
       ],
       "versions": [
         "bookworm",

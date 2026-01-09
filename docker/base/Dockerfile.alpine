@@ -1,0 +1,73 @@
+ARG ALPINE_VERSION=3.20
+FROM alpine:${ALPINE_VERSION}
+
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
+# Arguments for PHP version
+ARG PHP_VERSION_TAG
+ARG PHP_VERSION_BRANCH=master
+
+# Upgrade system packages
+RUN apk upgrade --no-cache --available
+
+# Install PHP build dependencies and common extension build tools
+# hadolint ignore=DL3018
+RUN apk add --no-cache \
+      autoconf \
+      bison \
+      build-base \
+      curl-dev \
+      dpkg-dev \
+      file \
+      g++ \
+      gcc \
+      git \
+      jq \
+      libc-dev \
+      libsodium-dev \
+      libxml2-dev \
+      linux-headers \
+      make \
+      oniguruma-dev \
+      openssl-dev \
+      pkgconf \
+      re2c \
+      readline-dev \
+      sqlite-dev \
+      zlib-dev
+
+# Build PHP from source
+WORKDIR /usr/src/php
+RUN if [ -n "$PHP_VERSION_TAG" ]; then \
+      git clone --depth 1 --branch "$PHP_VERSION_TAG" https://github.com/php/php-src.git .; \
+    else \
+      git clone --depth 1 --branch "$PHP_VERSION_BRANCH" https://github.com/php/php-src.git .; \
+    fi && \
+    ./buildconf --force && \
+    ./configure \
+      --prefix=/usr/local \
+      --enable-cli \
+      --with-config-file-path=/usr/local/etc/php \
+      --with-config-file-scan-dir=/usr/local/etc/php/conf.d \
+      --disable-cgi \
+      --enable-mbstring \
+      --enable-mysqlnd \
+      --enable-opcache \
+      --enable-pcntl \
+      --enable-sockets \
+      --with-curl \
+      --with-openssl \
+      --with-readline \
+      --with-sodium \
+      --with-zlib && \
+    make -j"$(nproc)" && \
+    make install && \
+    strip --strip-all /usr/local/bin/php /usr/local/bin/phpize /usr/local/bin/php-config 2>/dev/null || true && \
+    mkdir -p /usr/local/etc/php/conf.d && \
+    rm -rf /usr/src/php
+
+# Verify PHP installation
+RUN php --version && php -m
+
+# Set up working directory for extension builds
+WORKDIR /tmp/extension

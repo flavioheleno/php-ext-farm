@@ -1,0 +1,99 @@
+name: Check PHP Releases
+
+on:
+  schedule:
+    # Run daily at 4 AM UTC
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  check-php-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for new PHP releases
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          UPDATES="[]"
+          
+          for php_version in $(jq -r 'keys[]' php-versions.json); do
+            BRANCH=$(jq -r --arg v "$php_version" '.[$v].branch // ""' php-versions.json)
+            CURRENT_TAG=$(jq -r --arg v "$php_version" '.[$v].tag // ""' php-versions.json)
+            
+            # Skip 'next' version - it always tracks master HEAD
+            if [[ "$php_version" == "next" ]]; then
+              echo "Skipping next (tracks master HEAD)"
+              continue
+            fi
+            
+            # Skip if no branch defined
+            if [[ -z "$BRANCH" ]]; then
+              echo "No branch defined for PHP $php_version, skipping"
+              continue
+            fi
+            
+            # Get latest tag for this branch
+            LATEST_TAG=$(gh api "repos/php/php-src/tags?per_page=100" --jq \
+              "[.[] | select(.name | startswith(\"php-${php_version}.\"))] | sort_by(.name | split(\".\") | map(tonumber? // 0)) | last | .name // \"\"" 2>/dev/null || echo "")
+            
+            if [[ -z "$LATEST_TAG" ]]; then
+              echo "Could not find tags for PHP $php_version"
+              continue
+            fi
+            
+            echo "PHP $php_version: current=$CURRENT_TAG, latest=$LATEST_TAG"
+            
+            if [[ -n "$LATEST_TAG" && "$LATEST_TAG" != "$CURRENT_TAG" ]]; then
+              echo "Update found: $php_version ($CURRENT_TAG -> $LATEST_TAG)"
+              UPDATES=$(echo "$UPDATES" | jq --arg v "$php_version" --arg t "$LATEST_TAG" '. + [{"version": $v, "tag": $t}]')
+            fi
+          done
+          
+          echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
+          echo "Found $(echo "$UPDATES" | jq 'length') updates"
+
+      - name: Update php-versions.json
+        if: steps.check.outputs.updates != '[]'
+        run: |
+          echo '${{ steps.check.outputs.updates }}' | jq -c '.[]' | while read -r update; do
+            VERSION=$(echo "$update" | jq -r '.version')
+            TAG=$(echo "$update" | jq -r '.tag')
+            
+            echo "Updating PHP $VERSION to $TAG"
+            
+            # Update the tag in php-versions.json
+            jq --arg v "$VERSION" --arg t "$TAG" '.[$v].tag = $t' php-versions.json > php-versions.json.tmp
+            mv php-versions.json.tmp php-versions.json
+          done
+          
+          cat php-versions.json
+
+      - name: Commit and push changes
+        if: steps.check.outputs.updates != '[]'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add php-versions.json
+          git diff --staged --quiet || git commit -m "Update PHP versions
+
+          $(echo '${{ steps.check.outputs.updates }}' | jq -r '.[] | "- PHP \(.version): \(.tag)"')"
+          git push
+
+      - name: Trigger base image builds
+        if: steps.check.outputs.updates != '[]'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo '${{ steps.check.outputs.updates }}' | jq -c '.[]' | while read -r update; do
+            VERSION=$(echo "$update" | jq -r '.version')
+            
+            echo "Triggering base image build for PHP $VERSION"
+            gh workflow run build-base-images.yml -f php_version="$VERSION"
+          done

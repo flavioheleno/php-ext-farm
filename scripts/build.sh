@@ -140,12 +140,8 @@ RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime 
 EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "$CONFIG_FILE")
 CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options // [] | join(\" \")" "$CONFIG_FILE")
 
-# Determine dockerfile
-if [[ "$PHP_VERSION" == "next" ]]; then
-    DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}.next"
-else
-    DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}"
-fi
+# Determine dockerfile (all PHP versions use the same Dockerfile now)
+DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}"
 
 if [[ ! -f "$DOCKERFILE" ]]; then
     echo "Error: Dockerfile not found: $DOCKERFILE"

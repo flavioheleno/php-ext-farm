@@ -1,15 +1,10 @@
 ARG PHP_VERSION=8.3
 ARG DEBIAN_VERSION=bookworm
-FROM php:${PHP_VERSION}-cli-${DEBIAN_VERSION}
+FROM ghcr.io/flavioheleno/php-ext-farm/php:${PHP_VERSION}-${DEBIAN_VERSION}
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Upgrade system packages (cached per PHP/Debian version)
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    rm -rf /var/lib/apt/lists/*
-
-# Extension-specific ARGs (declared after base setup for better caching)
+# Extension-specific ARGs
 ARG EXTENSION_NAME
 ARG EXTENSION_VERSION
 ARG EXTENSION_REPO_URL
@@ -19,17 +14,12 @@ ARG RUNTIME_DEPS=""
 ARG EXTERNAL_LIBS=""
 ARG CONFIGURE_OPTIONS=""
 
-# Install build and runtime dependencies
+# Install extension-specific build and runtime dependencies
 # hadolint ignore=DL3008
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      autoconf \
-      g++ \
-      gcc \
-      git \
-      jq \
-      make \
-      ${BUILD_DEPS} && \
+    if [ -n "$BUILD_DEPS" ]; then \
+      apt-get install -y --no-install-recommends ${BUILD_DEPS}; \
+    fi && \
     if [ -n "$RUNTIME_DEPS" ]; then \
       apt-get install -y --no-install-recommends ${RUNTIME_DEPS}; \
     fi && \
@@ -65,7 +55,7 @@ RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${E
     ./configure ${CONFIGURE_OPTIONS} && \
     make -j"$(nproc)" && \
     make install && \
-    docker-php-ext-enable "${EXTENSION_NAME}" && \
+    echo "extension=${EXTENSION_NAME}.so" > /usr/local/etc/php/conf.d/50-${EXTENSION_NAME}.ini && \
     php -m | grep -i "${EXTENSION_NAME}" && \
     EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
     mkdir -p /output/extension /output/libs && \

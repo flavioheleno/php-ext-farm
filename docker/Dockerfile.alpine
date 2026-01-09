@@ -1,13 +1,10 @@
 ARG PHP_VERSION=8.3
 ARG ALPINE_VERSION=3.20
-FROM php:${PHP_VERSION}-cli-alpine${ALPINE_VERSION}
+FROM ghcr.io/flavioheleno/php-ext-farm/php:${PHP_VERSION}-alpine${ALPINE_VERSION}
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-# Upgrade system packages (cached per PHP/Alpine version)
-RUN apk upgrade --no-cache --available
-
-# Extension-specific ARGs (declared after base setup for better caching)
+# Extension-specific ARGs
 ARG EXTENSION_NAME
 ARG EXTENSION_VERSION
 ARG EXTENSION_REPO_URL
@@ -17,16 +14,11 @@ ARG RUNTIME_DEPS=""
 ARG EXTERNAL_LIBS=""
 ARG CONFIGURE_OPTIONS=""
 
-# Install build and runtime dependencies
+# Install extension-specific build and runtime dependencies
 # hadolint ignore=DL3018
-RUN apk add --no-cache --virtual .build-deps \
-      autoconf \
-      g++ \
-      gcc \
-      git \
-      jq \
-      make \
-      ${BUILD_DEPS} && \
+RUN if [ -n "$BUILD_DEPS" ]; then \
+      apk add --no-cache --virtual .ext-build-deps ${BUILD_DEPS}; \
+    fi && \
     if [ -n "$RUNTIME_DEPS" ]; then \
       apk add --no-cache ${RUNTIME_DEPS}; \
     fi
@@ -61,7 +53,7 @@ RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${E
     ./configure ${CONFIGURE_OPTIONS} && \
     make -j"$(nproc)" && \
     make install && \
-    docker-php-ext-enable "${EXTENSION_NAME}" && \
+    echo "extension=${EXTENSION_NAME}.so" > /usr/local/etc/php/conf.d/50-${EXTENSION_NAME}.ini && \
     php -m | grep -i "${EXTENSION_NAME}" && \
     EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
     mkdir -p /output/extension /output/libs && \
@@ -71,5 +63,5 @@ RUN git clone --depth 1 ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${E
       find /usr/local/lib -name '*.so*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true && \
       find /usr/local/lib -name '*.dylib*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true; \
     fi && \
-    apk del .build-deps && \
+    if [ -n "$BUILD_DEPS" ]; then apk del .ext-build-deps; fi && \
     rm -rf /tmp/extension
