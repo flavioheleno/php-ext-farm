@@ -9,7 +9,7 @@ set -eu
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG_FILE="${ROOT_DIR}/extensions.json"
-GITHUB_REPO="php-ext-farm/php-ext-farm"  # Update with actual repo owner/name
+GITHUB_REPO="flavioheleno/php-ext-farm"  # Update with actual repo owner/name
 TEMP_DIR=""
 
 # Colors for output (using printf for POSIX compatibility)
