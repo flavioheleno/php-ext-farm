@@ -1,7 +1,22 @@
 {
-  "8.2": {"tag": "php-8.2.27", "branch": "PHP-8.2"},
-  "8.3": {"tag": "php-8.3.15", "branch": "PHP-8.3"},
-  "8.4": {"tag": "php-8.4.2", "branch": "PHP-8.4"},
-  "8.5": {"tag": "php-8.5.2", "branch": "PHP-8.5"},
-  "next": {"tag": null, "branch": "master"}
+  "8.2": {
+    "tag": "php-8.2.27",
+    "branch": "PHP-8.2"
+  },
+  "8.3": {
+    "tag": "php-8.3.29",
+    "branch": "PHP-8.3"
+  },
+  "8.4": {
+    "tag": "php-8.4.16",
+    "branch": "PHP-8.4"
+  },
+  "8.5": {
+    "tag": "php-8.5.1",
+    "branch": "PHP-8.5"
+  },
+  "next": {
+    "tag": null,
+    "branch": "master"
+  }
 }
