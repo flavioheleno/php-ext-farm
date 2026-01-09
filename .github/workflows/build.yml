@@ -74,54 +74,37 @@ jobs:
       - name: Generate build matrix
         id: matrix
         run: |
-          EXT="${{ inputs.extension }}"
-          PHP_VERS="${{ inputs.php_versions || 'all' }}"
-          PLATFORMS="${{ inputs.platforms || 'all' }}"
-          ARCHS="${{ inputs.architectures || 'all' }}"
+          # Generate entire matrix in a single jq call for efficiency
+          MATRIX=$(jq -c --arg php_vers "${{ inputs.php_versions || 'all' }}" \
+                        --arg platforms "${{ inputs.platforms || 'all' }}" \
+                        --arg archs "${{ inputs.architectures || 'all' }}" '
+            # Parse inputs
+            (if $php_vers == "all" then .php_versions else ($php_vers | split(",")) end) as $php_versions |
+            (if $archs == "all" then .architectures else ($archs | split(",")) end) as $architectures |
+            (if $platforms == "all" then ["alpine", "debian"] else ($platforms | split(",")) end) as $platform_list |
+            
+            # Generate matrix
+            {include: [
+              # Alpine builds
+              if ($platform_list | index("alpine")) then
+                .platforms.alpine.versions[] as $osv |
+                $php_versions[] as $php |
+                $architectures[] as $arch |
+                {php_version: $php, platform: "alpine", platform_version: $osv, arch: $arch}
+              else empty end,
+              
+              # Debian builds  
+              if ($platform_list | index("debian")) then
+                .platforms.debian.versions[] as $osv |
+                $php_versions[] as $php |
+                $architectures[] as $arch |
+                {php_version: $php, platform: "debian", platform_version: $osv, arch: $arch}
+              else empty end
+            ]}
+          ' extensions.json)
           
-          # Get PHP versions
-          if [[ "$PHP_VERS" == "all" ]]; then
-            PHP_VERSIONS=$(jq -c '.php_versions' extensions.json)
-          else
-            PHP_VERSIONS=$(echo "$PHP_VERS" | jq -Rc 'split(",")')
-          fi
-          
-          # Get architectures
-          if [[ "$ARCHS" == "all" ]]; then
-            ARCHITECTURES=$(jq -c '.architectures' extensions.json)
-          else
-            ARCHITECTURES=$(echo "$ARCHS" | jq -Rc 'split(",")')
-          fi
-          
-          # Build matrix
-          MATRIX='{"include":[]}'
-          
-          # Alpine builds
-          if [[ "$PLATFORMS" == "all" || "$PLATFORMS" == *"alpine"* ]]; then
-            for php in $(echo "$PHP_VERSIONS" | jq -r '.[]'); do
-              for alpine in $(jq -r '.platforms.alpine.versions[]' extensions.json); do
-                for arch in $(echo "$ARCHITECTURES" | jq -r '.[]'); do
-                  MATRIX=$(echo "$MATRIX" | jq --arg php "$php" --arg os "alpine" --arg osv "$alpine" --arg arch "$arch" \
-                    '.include += [{"php_version": $php, "platform": $os, "platform_version": $osv, "arch": $arch}]')
-                done
-              done
-            done
-          fi
-          
-          # Debian builds
-          if [[ "$PLATFORMS" == "all" || "$PLATFORMS" == *"debian"* ]]; then
-            for php in $(echo "$PHP_VERSIONS" | jq -r '.[]'); do
-              for debian in $(jq -r '.platforms.debian.versions[]' extensions.json); do
-                for arch in $(echo "$ARCHITECTURES" | jq -r '.[]'); do
-                  MATRIX=$(echo "$MATRIX" | jq --arg php "$php" --arg os "debian" --arg osv "$debian" --arg arch "$arch" \
-                    '.include += [{"php_version": $php, "platform": $os, "platform_version": $osv, "arch": $arch}]')
-                done
-              done
-            done
-          fi
-          
-          echo "matrix=$(echo "$MATRIX" | jq -c)" >> $GITHUB_OUTPUT
-          echo "Generated matrix: $MATRIX"
+          echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
+          echo "Generated $(echo "$MATRIX" | jq '.include | length') matrix entries"
 
   build:
     needs: prepare
