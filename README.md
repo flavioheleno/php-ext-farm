@@ -295,8 +295,9 @@ Build extensions against the upcoming PHP version from the master branch of php/
 - CI/CD testing against future PHP
 
 **How it works:**
-- PHP "next" builds PHP from source (master branch) before building the extension
-- Uses custom Dockerfiles: `Dockerfile.alpine.next` and `Dockerfile.debian.next`
+- All PHP versions (including "next") use custom base images built from source
+- Base images are stored in `ghcr.io/flavioheleno/php-ext-farm/php`
+- PHP "next" tracks the master branch of php/php-src
 - Reported as `php_version: "next"` in build reports
 - Artifacts: `redis-6.3.0-phpnext-alpine-3.20-amd64.tar.gz`
 
@@ -370,19 +371,28 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 
 ```
 .
-├── .github/workflows/
-│   ├── check-releases.yml   # Daily check for new extension/PHP releases
-│   ├── build.yml            # Build workflow (called by other workflows)
-│   ├── release.yml          # Create GitHub releases with artifacts
-│   └── build-all.yml        # Weekly full rebuild
+├── .github/
+│   ├── workflows/
+│   │   ├── build.yml              # Build single extension
+│   │   ├── build-all.yml          # Weekly full rebuild of all extensions
+│   │   ├── build-base-images.yml  # Build custom PHP base images
+│   │   ├── check-releases.yml     # Daily check for new extension releases
+│   │   ├── check-php-releases.yml # Daily check for new PHP releases
+│   │   └── release.yml            # Create GitHub releases with artifacts
+│   └── dependabot.yml             # Automated dependency updates
 ├── docker/
-│   ├── Dockerfile.alpine    # Alpine build image
-│   └── Dockerfile.debian    # Debian build image
+│   ├── base/
+│   │   ├── Dockerfile.alpine      # Base image: PHP on Alpine (built from source)
+│   │   └── Dockerfile.debian      # Base image: PHP on Debian (built from source)
+│   ├── Dockerfile.alpine          # Extension build image (Alpine)
+│   └── Dockerfile.debian          # Extension build image (Debian)
 ├── scripts/
-│   ├── build.sh             # Local build script
-│   ├── install.sh           # Install pre-built extensions
-│   └── check-releases.sh    # Check upstream releases
-├── extensions.json          # Extension configuration
+│   ├── build.sh                   # Local build script
+│   ├── install.sh                 # Install pre-built extensions
+│   ├── check-releases.sh          # Check upstream releases
+│   └── normalize-version.sh       # Version string normalization
+├── extensions.json                # Extension configuration
+├── php-versions.json              # PHP version/tag/branch mapping
 └── README.md
 ```
 
@@ -392,6 +402,7 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 
 The main configuration file defines:
 
+- `base_image_registry`: Container registry for custom PHP base images
 - `php_versions`: List of PHP versions to build for
 - `architectures`: List of architectures to build for (amd64, arm64, arm32v6, arm32v7)
 - `platforms`: Platform configurations (Alpine/Debian versions)
@@ -400,6 +411,22 @@ The main configuration file defines:
   - `pecl_name`: PECL package name
   - `track_url`: GitHub repository to track releases
   - `dependencies`: Build and runtime dependencies per platform
+
+### php-versions.json
+
+Maps PHP versions to their git tags and branches:
+
+```json
+{
+  "8.2": {"tag": "php-8.2.27", "branch": "PHP-8.2"},
+  "8.3": {"tag": "php-8.3.15", "branch": "PHP-8.3"},
+  "8.4": {"tag": "php-8.4.2", "branch": "PHP-8.4"},
+  "8.5": {"tag": "php-8.5.2", "branch": "PHP-8.5"},
+  "next": {"tag": "", "branch": "master"}
+}
+```
+
+This file is automatically updated by `check-php-releases.yml` when new PHP versions are released.
 
 ### Adding a New Extension
 
@@ -515,11 +542,27 @@ This approach works for any compiled library dependency. **Examples:**
 
 ### Daily Checks
 - `check-releases.yml` runs daily to detect new extension releases
+- `check-php-releases.yml` runs daily to detect new PHP releases
 - Automatically triggers builds when new versions are found
 
 ### Weekly Builds
-- `build-all.yml` runs weekly to rebuild all extensions with latest base images
+- `build-all.yml` runs weekly to rebuild all extensions
+- `build-base-images.yml` runs weekly to rebuild PHP base images
 - Ensures security updates from base images are included
+
+### Base Image Pipeline
+The build system uses custom PHP base images instead of Docker Hub images:
+
+1. **PHP Release Detection**: `check-php-releases.yml` monitors php/php-src for new releases
+2. **Base Image Build**: `build-base-images.yml` compiles PHP from source for all platforms/architectures
+3. **Image Storage**: Base images are pushed to `ghcr.io/flavioheleno/php-ext-farm/php`
+4. **Extension Builds**: `build.yml` uses these base images to compile extensions
+
+This approach provides:
+- Full control over PHP compilation options
+- Support for all architectures (including arm32v6/arm32v7)
+- Consistent builds across all PHP versions
+- Faster detection of new PHP releases
 
 ### Manual Triggers
 All workflows can be triggered manually:
@@ -534,8 +577,11 @@ gh workflow run build.yml -f extension=redis -f php_versions=8.3 -f architecture
 # Create release
 gh workflow run release.yml -f extension=redis -f extension_version=6.0.2
 
-# Rebuild all
+# Rebuild all extensions
 gh workflow run build-all.yml -f force_rebuild=true
+
+# Rebuild base images for specific PHP version
+gh workflow run build-base-images.yml -f php_version=8.4 -f force_rebuild=true
 ```
 
 ## 📋 Artifact Naming Convention
