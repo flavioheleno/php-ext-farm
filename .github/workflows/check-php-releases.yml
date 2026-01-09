@@ -15,6 +15,11 @@ on:
           - self-hosted
         default: 'ubuntu-latest'
 
+# Only one PHP release check should run at a time
+concurrency:
+  group: check-php-releases
+  cancel-in-progress: false
+
 permissions:
   contents: write
   actions: write

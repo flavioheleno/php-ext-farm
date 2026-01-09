@@ -34,6 +34,11 @@ on:
       - 'docker/base/**'
       - 'php-versions.json'
 
+# Prevent concurrent base image builds
+concurrency:
+  group: build-base-images-${{ inputs.php_version || 'all' }}-${{ inputs.platform || 'all' }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
   packages: write

@@ -60,6 +60,11 @@ on:
         type: string
         default: 'ubuntu-latest'
 
+# Prevent concurrent builds of the same extension version
+concurrency:
+  group: build-${{ inputs.extension }}-${{ inputs.extension_version }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 

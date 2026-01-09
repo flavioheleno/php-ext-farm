@@ -14,6 +14,11 @@ on:
           - self-hosted
         default: 'ubuntu-latest'
 
+# Only one release check should run at a time
+concurrency:
+  group: check-releases
+  cancel-in-progress: false
+
 permissions:
   contents: read
   actions: write

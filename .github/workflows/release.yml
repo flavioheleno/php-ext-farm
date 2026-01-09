@@ -26,6 +26,11 @@ on:
           - self-hosted
         default: 'ubuntu-latest'
 
+# Prevent concurrent releases of the same extension version
+concurrency:
+  group: release-${{ inputs.extension }}-${{ inputs.extension_version }}
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
