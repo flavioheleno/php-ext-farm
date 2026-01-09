@@ -180,6 +180,7 @@ BUILD_ARGS=(
     --build-arg "EXTENSION_REPO_URL=${TRACK_URL}"
     --build-arg "BUILD_DEPS=${BUILD_DEPS}"
     --build-arg "RUNTIME_DEPS=${RUNTIME_DEPS}"
+    --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 )
 
 # Only pass PHP_VERSION for non-next builds (next builds use master branch)

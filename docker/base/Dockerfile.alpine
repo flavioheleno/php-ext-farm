@@ -1,6 +1,16 @@
 ARG ALPINE_VERSION=3.20
 FROM alpine:${ALPINE_VERSION}
 
+# OCI Image Labels
+ARG BUILD_DATE
+ARG PHP_VERSION
+LABEL org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="PHP ${PHP_VERSION} on Alpine" \
+      org.opencontainers.image.description="Custom PHP base image built from source for extension compilation" \
+      org.opencontainers.image.vendor="php-ext-farm" \
+      org.opencontainers.image.licenses="MIT"
+
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # Arguments for PHP version

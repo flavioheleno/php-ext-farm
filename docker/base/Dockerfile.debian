@@ -1,6 +1,16 @@
 ARG DEBIAN_VERSION=bookworm
 FROM debian:${DEBIAN_VERSION}
 
+# OCI Image Labels
+ARG BUILD_DATE
+ARG PHP_VERSION
+LABEL org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="PHP ${PHP_VERSION} on Debian" \
+      org.opencontainers.image.description="Custom PHP base image built from source for extension compilation" \
+      org.opencontainers.image.vendor="php-ext-farm" \
+      org.opencontainers.image.licenses="MIT"
+
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 # Arguments for PHP version
