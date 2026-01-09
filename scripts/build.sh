@@ -214,11 +214,32 @@ BUILD_STATUS="success"
 BUILD_REASON=""
 BUILD_ERROR=""
 
-# Build the image and capture output
+# Determine cache key components
+CACHE_KEY="${EXTENSION}-${PHP_VERSION}-${PLATFORM}-${PLATFORM_VERSION}-${ARCH}"
+
+# Build the image using buildx with caching
 BUILD_LOG=$(mktemp)
-if ! docker build \
+
+# Check if we're in GitHub Actions (use GHA cache) or local (use local cache)
+if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+    CACHE_ARGS=(
+        --cache-from "type=gha,scope=${CACHE_KEY}"
+        --cache-to "type=gha,mode=max,scope=${CACHE_KEY}"
+    )
+else
+    # Local builds use registry cache or inline cache
+    CACHE_ARGS=(
+        --cache-from "type=local,src=/tmp/.buildx-cache-${CACHE_KEY}"
+        --cache-to "type=local,dest=/tmp/.buildx-cache-${CACHE_KEY},mode=max"
+    )
+    mkdir -p "/tmp/.buildx-cache-${CACHE_KEY}"
+fi
+
+if ! docker buildx build \
     --platform "$DOCKER_PLATFORM" \
     "${BUILD_ARGS[@]}" \
+    "${CACHE_ARGS[@]}" \
+    --load \
     -t "$IMAGE_TAG" \
     -f "$DOCKERFILE" \
     "$ROOT_DIR" 2>&1 | tee "$BUILD_LOG"; then
