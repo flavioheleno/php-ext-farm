@@ -20,8 +20,12 @@ ARG CONFIGURE_OPTIONS=""
 # Install build and runtime dependencies
 # hadolint ignore=DL3018
 RUN apk add --no-cache --virtual .build-deps \
+      autoconf \
+      g++ \
+      gcc \
       git \
       jq \
+      make \
       ${BUILD_DEPS} && \
     if [ -n "$RUNTIME_DEPS" ]; then \
       apk add --no-cache ${RUNTIME_DEPS}; \

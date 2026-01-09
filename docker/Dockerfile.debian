@@ -23,8 +23,12 @@ ARG CONFIGURE_OPTIONS=""
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+      autoconf \
+      g++ \
+      gcc \
       git \
       jq \
+      make \
       ${BUILD_DEPS} && \
     if [ -n "$RUNTIME_DEPS" ]; then \
       apt-get install -y --no-install-recommends ${RUNTIME_DEPS}; \
