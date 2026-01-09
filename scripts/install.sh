@@ -1,9 +1,12 @@
 #!/bin/sh
-set -eu
-
 # Install script for pre-built PHP extensions from php-ext-farm
 # Usage: ./install.sh <extension> <extension_version>
 # Example: ./install.sh redis 6.3.0
+#
+# Note: This script uses POSIX sh for maximum portability across target systems
+# (Alpine, Debian, Ubuntu, etc.) where bash may not be available.
+
+set -eu
 
 # Get script directory (POSIX compatible)
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

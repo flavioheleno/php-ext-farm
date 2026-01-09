@@ -1,8 +1,11 @@
 #!/bin/bash
-set -euo pipefail
-
 # Script to check for new releases of extensions
 # Outputs JSON with latest versions
+#
+# Note: This script uses bash (not POSIX sh) because it runs in CI environments
+# and uses bash features like local variables and [[ ]].
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"

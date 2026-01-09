@@ -1,8 +1,12 @@
 #!/bin/bash
-set -euo pipefail
-
 # Build script for PHP extensions
 # Usage: ./build.sh <extension> <php_version> <platform> <platform_version> <extension_version> [arch]
+#
+# Note: This script uses bash (not POSIX sh) because it runs in CI environments
+# (GitHub Actions, Ubuntu) where bash is always available and we need features
+# like [[ ]], arrays, and pipefail.
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"

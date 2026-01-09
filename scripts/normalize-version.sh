@@ -3,6 +3,8 @@
 # Usage: ./normalize-version.sh <extension_name> <version>
 # Example: ./normalize-version.sh redis v6.0.2 -> 6.0.2
 #          ./normalize-version.sh yar yar-2.3.3 -> 2.3.3
+#
+# Note: This script uses POSIX sh for portability (runs on target systems)
 
 set -eu
 
@@ -15,7 +17,8 @@ if [ -z "$VERSION" ]; then
 fi
 
 # Strip extension name prefix if present (e.g., "yar-2.3.3" -> "2.3.3")
-VERSION="${VERSION#${EXTENSION}-}"
+# shellcheck disable=SC2295 # Pattern matching is intentional here
+VERSION="${VERSION#"${EXTENSION}"-}"
 
 # Strip common prefixes
 VERSION="${VERSION#v}"
