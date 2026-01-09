@@ -281,35 +281,64 @@ jobs:
 
       - name: Push to dataset branch
         if: steps.aggregate.outputs.has_reports == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          YEAR="${{ steps.aggregate.outputs.year }}"
+          TIMESTAMP="${{ steps.aggregate.outputs.timestamp }}"
+          EXTENSION="${{ inputs.extension }}"
+          VERSION="${{ steps.prepare.outputs.clean_version }}"
           
-          # Try to fetch the dataset branch
-          if git fetch origin dataset:dataset 2>/dev/null; then
-            echo "Dataset branch exists, checking out"
-            git checkout dataset
-          else
-            echo "Dataset branch does not exist, creating orphan branch"
-            git checkout --orphan dataset
-            git rm -rf . 2>/dev/null || true
-          fi
+          # Read report content and encode as base64
+          LATEST_CONTENT=$(base64 -w 0 dataset/latest.json)
+          YEARLY_CONTENT=$(base64 -w 0 "dataset/${YEAR}/${TIMESTAMP}.json")
           
-          # Clean workspace except dataset directory
-          git clean -fdx -e dataset
+          # Function to create or update file via GitHub API
+          update_file() {
+            local path="$1"
+            local content="$2"
+            local message="$3"
+            
+            # Get current file SHA if it exists
+            SHA=$(gh api "repos/${{ github.repository }}/contents/${path}?ref=dataset" --jq '.sha' 2>/dev/null || echo "")
+            
+            if [ -n "$SHA" ]; then
+              # Update existing file
+              gh api -X PUT "repos/${{ github.repository }}/contents/${path}" \
+                -f message="${message}" \
+                -f content="${content}" \
+                -f sha="${SHA}" \
+                -f branch="dataset"
+            else
+              # Create new file
+              gh api -X PUT "repos/${{ github.repository }}/contents/${path}" \
+                -f message="${message}" \
+                -f content="${content}" \
+                -f branch="dataset" 2>/dev/null || \
+              # If branch doesn't exist, create it first
+              {
+                # Get default branch SHA
+                DEFAULT_SHA=$(gh api "repos/${{ github.repository }}/git/refs/heads/main" --jq '.object.sha')
+                # Create dataset branch
+                gh api -X POST "repos/${{ github.repository }}/git/refs" \
+                  -f ref="refs/heads/dataset" \
+                  -f sha="${DEFAULT_SHA}" || true
+                # Try creating file again
+                gh api -X PUT "repos/${{ github.repository }}/contents/${path}" \
+                  -f message="${message}" \
+                  -f content="${content}" \
+                  -f branch="dataset"
+              }
+            fi
+          }
           
-          # Move dataset files to root, preserving directory structure
-          cp dataset/latest.json . 2>/dev/null || true
-          mkdir -p ${{ steps.aggregate.outputs.year }}
-          cp dataset/${{ steps.aggregate.outputs.year }}/*.json ${{ steps.aggregate.outputs.year }}/ 2>/dev/null || true
-          rm -rf dataset
+          # Update latest.json
+          update_file "latest.json" "$LATEST_CONTENT" "Update build reports - ${YEAR}-${TIMESTAMP} - ${EXTENSION} v${VERSION}"
           
-          # Add and commit
-          git add latest.json ${{ steps.aggregate.outputs.year }}/
-          git commit -m "Update build reports - ${{ steps.aggregate.outputs.year }}-${{ steps.aggregate.outputs.timestamp }}" -m "Extension: ${{ inputs.extension }} v${{ steps.prepare.outputs.clean_version }}" || echo "No changes to commit"
+          # Update yearly report
+          update_file "${YEAR}/${TIMESTAMP}.json" "$YEARLY_CONTENT" "Add ${YEAR}/${TIMESTAMP} report - ${EXTENSION} v${VERSION}"
           
-          # Push to dataset branch
-          git push origin dataset
+          echo "Successfully pushed reports to dataset branch via GitHub API"
 
       - name: Create GitHub Release
         if: steps.prepare.outputs.has_artifacts == 'true' && inputs.create_release
