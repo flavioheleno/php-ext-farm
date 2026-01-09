@@ -55,8 +55,8 @@ jobs:
             PHP_VERSIONS=$(echo "[\"$PHP_VER\"]" | jq -c '.')
           fi
           
-          # Get architectures
-          ARCHITECTURES='["amd64", "arm64", "arm32v6", "arm32v7"]'
+          # Get architectures from extensions.json
+          ARCHITECTURES=$(jq -c '.architectures' extensions.json)
           
           MATRIX='{"include":[]}'
           
