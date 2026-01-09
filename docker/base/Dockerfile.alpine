@@ -6,7 +6,8 @@ ARG BUILD_DATE
 ARG PHP_VERSION
 ARG TARGETARCH
 ARG TARGETVARIANT
-LABEL org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm" \
+LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
+      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/base/Dockerfile.alpine" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.title="PHP ${PHP_VERSION} on Alpine ${ALPINE_VERSION}" \
       org.opencontainers.image.description="Custom PHP ${PHP_VERSION} base image for ${TARGETARCH}${TARGETVARIANT} built from source for extension compilation" \
