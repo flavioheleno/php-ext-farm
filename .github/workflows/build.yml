@@ -184,14 +184,7 @@ jobs:
         if: steps.build.outputs.artifact_exists == 'true'
         run: |
           EXT="${{ inputs.extension }}"
-          EXT_VERSION="${{ inputs.extension_version }}"
-          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
-          EXT_VERSION="${EXT_VERSION#${EXT}-}"
-          # Also strip common prefixes like "v" or "release-"
-          EXT_VERSION="${EXT_VERSION#v}"
-          EXT_VERSION="${EXT_VERSION#release-}"
-          EXT_VERSION="${EXT_VERSION#release_}"
-          EXT_VERSION="${EXT_VERSION//_/.}"
+          EXT_VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
           ARTIFACT_NAME="${EXT}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}-${{ matrix.arch }}"
           cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}/${{ matrix.arch }}
           tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json libs/ 2>/dev/null || tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
@@ -230,14 +223,7 @@ jobs:
         id: prepare
         run: |
           EXT="${{ inputs.extension }}"
-          VERSION="${{ inputs.extension_version }}"
-          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
-          VERSION="${VERSION#${EXT}-}"
-          # Also strip common prefixes like "v" or "release-"
-          VERSION="${VERSION#v}"
-          VERSION="${VERSION#release-}"
-          VERSION="${VERSION#release_}"
-          VERSION="${VERSION//_/.}"
+          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
           
           mkdir -p release
@@ -331,14 +317,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXT="${{ inputs.extension }}"
-          VERSION="${{ inputs.extension_version }}"
-          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
-          VERSION="${VERSION#${EXT}-}"
-          # Also strip common prefixes like "v" or "release-"
-          VERSION="${VERSION#v}"
-          VERSION="${VERSION#release-}"
-          VERSION="${VERSION#release_}"
-          VERSION="${VERSION//_/.}"
+          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
           RELEASE_TAG="${EXT}-${VERSION}"
           
           # Delete existing release if it exists

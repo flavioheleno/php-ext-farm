@@ -45,14 +45,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXT="${{ inputs.extension }}"
-          VERSION="${{ inputs.extension_version }}"
-          # Strip extension name prefix from version if present (e.g., "yar-2.3.3" -> "2.3.3")
-          VERSION="${VERSION#${EXT}-}"
-          # Also strip common prefixes like "v" or "release-"
-          VERSION="${VERSION#v}"
-          VERSION="${VERSION#release-}"
-          VERSION="${VERSION#release_}"
-          VERSION="${VERSION//_/.}"
+          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
           RELEASE_TAG="${EXT}-${VERSION}"
           echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT

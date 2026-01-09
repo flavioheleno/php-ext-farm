@@ -360,11 +360,8 @@ fi
 # Generate build report
 BUILD_END_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-# Normalize extension version (strip v prefix if present)
-NORMALIZED_VERSION="${EXTENSION_VERSION#v}"
-NORMALIZED_VERSION="${NORMALIZED_VERSION#release-}"
-NORMALIZED_VERSION="${NORMALIZED_VERSION#release_}"
-NORMALIZED_VERSION="${NORMALIZED_VERSION//_/.}"
+# Normalize extension version
+NORMALIZED_VERSION=$("${SCRIPT_DIR}/normalize-version.sh" "$EXTENSION" "$EXTENSION_VERSION")
 
 # Construct asset name
 ASSET_NAME="${EXTENSION}-${NORMALIZED_VERSION}-php${PHP_VERSION}-${PLATFORM}-${PLATFORM_VERSION}-${ARCH}.tar.gz"
