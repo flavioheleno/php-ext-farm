@@ -114,6 +114,7 @@ jobs:
   build:
     needs: prepare
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -188,6 +189,7 @@ jobs:
   create-manifest:
     needs: [prepare, build]
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
