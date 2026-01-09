@@ -250,9 +250,9 @@ if [[ "$BUILD_STATUS" == "success" ]]; then
         BUILD_ERROR="Failed to extract extension from container - extension may not have been compiled"
     fi
     
-    # Extract external libraries if they exist
-    if [[ "$BUILD_STATUS" == "success" ]] && docker exec "$CONTAINER_ID" test -d /output/libs 2>/dev/null; then
-        docker cp "${CONTAINER_ID}:/output/libs" "${OUTPUT_DIR}/" || true
+    # Extract external libraries if they exist (try to copy, ignore if not present)
+    if [[ "$BUILD_STATUS" == "success" ]]; then
+        docker cp "${CONTAINER_ID}:/output/libs" "${OUTPUT_DIR}/" 2>/dev/null || true
     fi
     
     docker rm "$CONTAINER_ID"
