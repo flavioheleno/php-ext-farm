@@ -207,48 +207,6 @@ RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime 
 EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "$CONFIG_FILE")
 CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options // [] | join(\" \")" "$CONFIG_FILE")
 
-# Check if dependencies are defined
-if [[ "$BUILD_DEPS" == "null" || "$RUNTIME_DEPS" == "null" ]]; then
-    echo "Error: Dependencies not defined for platform $PLATFORM"
-    
-    # Create report directory and report skip
-    REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
-    mkdir -p "$REPORT_DIR"
-    
-    # Generate skip report
-    jq -n \
-      --arg extension "$EXTENSION" \
-      --arg extension_version "$EXTENSION_VERSION" \
-      --arg channel "$CHANNEL" \
-      --arg php_version "$PHP_VERSION" \
-      --arg platform "$PLATFORM" \
-      --arg platform_version "$PLATFORM_VERSION" \
-      --arg arch "$ARCH" \
-      --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
-      --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
-      --argjson run_attempt "${GITHUB_RUN_ATTEMPT:-1}" \
-      '{
-        extension: $extension,
-        extension_version: $extension_version,
-        channel: $channel,
-        php_version: $php_version,
-        platform: $platform,
-        platform_version: $platform_version,
-        arch: $arch,
-        status: "skipped",
-        reason: "deps_missing",
-        started_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-        finished_at: (now | strftime("%Y-%m-%dT%H:%M:%SZ")),
-        workflow_run_id: $workflow_run_id,
-        run_attempt: $run_attempt,
-        git_sha: $git_sha,
-        log_url: null,
-        asset_name: null
-      }' > "${REPORT_DIR}/${ARCH}.json"
-    
-    exit 0
-fi
-
 # Determine dockerfile
 if [[ "$PHP_VERSION" == "next" ]]; then
     DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}.next"
