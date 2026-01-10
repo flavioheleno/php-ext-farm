@@ -11,6 +11,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 CONFIG_FILE="${ROOT_DIR}/extensions.json"
+OS_VERSIONS_FILE="${ROOT_DIR}/os-versions.json"
 
 EXTENSION="${1:-}"
 EXTENSION_VERSION="${2:-}"
@@ -117,7 +118,7 @@ if [[ "${PHP_SUPPORTED}" == "false" ]]; then
 fi
 
 # Check if platform is supported
-SUPPORTED_PLATFORMS=$(jq -r '.platforms | keys[]' "${CONFIG_FILE}")
+SUPPORTED_PLATFORMS=$(jq -r 'keys[]' "${OS_VERSIONS_FILE}")
 PLATFORM_SUPPORTED=false
 for p in ${SUPPORTED_PLATFORMS}; do
     if [[ "$p" == "${PLATFORM}" ]]; then

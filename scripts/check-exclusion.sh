@@ -1,6 +1,6 @@
 #!/bin/bash
 # Check if a build combination is excluded
-# Usage: ./check-exclusion.sh <extension> <os> <version> <arch> <config_file>
+# Usage: ./check-exclusion.sh <extension> <os> <version> <arch> <config_file> [os_versions_file]
 # Exit codes: 0 = excluded, 1 = allowed
 
 set -euo pipefail
@@ -10,6 +10,7 @@ OS="${2:-}"
 VERSION="${3:-}"
 ARCH="${4:-}"
 CONFIG_FILE="${5:-}"
+OS_VERSIONS_FILE="${6:-$(dirname "${CONFIG_FILE}")/os-versions.json}"
 
 if [[ -z "${EXTENSION}" || -z "${OS}" || -z "${VERSION}" || -z "${ARCH}" || -z "${CONFIG_FILE}" ]]; then
     echo "Usage: $0 <extension> <os> <version> <arch> <config_file>" >&2
@@ -39,8 +40,8 @@ wildcard_match() {
     fi
 }
 
-# Check platform-level exclusions (no 'os' field, implicit from context)
-platform_excludes=$(jq -r --arg os "${OS}" '.platforms[$os].exclude // []' "${CONFIG_FILE}")
+# Check platform-level exclusions (from os-versions.json)
+platform_excludes=$(jq -r --arg os "${OS}" '.[$os].exclude // []' "${OS_VERSIONS_FILE}")
 
 if [[ "$platform_excludes" != "[]" ]]; then
     # Parse each exclusion rule

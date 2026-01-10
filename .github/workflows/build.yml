@@ -96,7 +96,7 @@ jobs:
             {include: [
               # Alpine builds
               if ($platform_list | index("alpine")) then
-                $os_versions[0].alpine[] as $osv |
+                $os_versions[0].alpine.versions[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
                 {php_version: $php, platform: "alpine", platform_version: $osv, arch: $arch}
@@ -104,7 +104,7 @@ jobs:
               
               # Debian builds  
               if ($platform_list | index("debian")) then
-                $os_versions[0].debian[] as $osv |
+                $os_versions[0].debian.versions[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
                 {php_version: $php, platform: "debian", platform_version: $osv, arch: $arch}

@@ -122,9 +122,9 @@ jobs:
             echo "$ALPINE_UPDATES" | jq -c '.[]' | while read -r update; do
               VERSION=$(echo "$update" | jq -r '.version')
               
-              echo "Adding Alpine $VERSION to os-versions.json"
-              jq --arg v "$VERSION" \
-                '.alpine += [$v] | .alpine |= sort' \
+              echo "Adding Alpine ${VERSION} to os-versions.json"
+              jq --arg v "${VERSION}" \
+                '.alpine.versions += [$v] | .alpine.versions |= sort' \
                 os-versions.json > os-versions.json.tmp
               mv os-versions.json.tmp os-versions.json
               
@@ -137,9 +137,9 @@ jobs:
             echo "$DEBIAN_UPDATES" | jq -c '.[]' | while read -r update; do
               VERSION=$(echo "$update" | jq -r '.version')
               
-              echo "Adding Debian $VERSION to os-versions.json"
-              jq --arg v "$VERSION" \
-                '.debian += [$v]' \
+              echo "Adding Debian ${VERSION} to os-versions.json"
+              jq --arg v "${VERSION}" \
+                '.debian.versions += [$v]' \
                 os-versions.json > os-versions.json.tmp
               mv os-versions.json.tmp os-versions.json
               

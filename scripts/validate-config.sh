@@ -1,15 +1,21 @@
 #!/bin/bash
-# Validate extensions.json schema and exclusion rules
-# Usage: ./validate-config.sh [config_file]
+# Validate extensions.json and os-versions.json schema and exclusion rules
+# Usage: ./validate-config.sh [extensions_file] [os_versions_file]
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 CONFIG_FILE="${1:-${ROOT_DIR}/extensions.json}"
+OS_VERSIONS_FILE="${2:-${ROOT_DIR}/os-versions.json}"
 
 if [[ ! -f "${CONFIG_FILE}" ]]; then
     echo "Error: Config file not found: ${CONFIG_FILE}" >&2
+    exit 1
+fi
+
+if [[ ! -f "${OS_VERSIONS_FILE}" ]]; then
+    echo "Error: OS versions file not found: ${OS_VERSIONS_FILE}" >&2
     exit 1
 fi
 
@@ -18,7 +24,7 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-echo "Validating ${CONFIG_FILE}..."
+echo "Validating ${CONFIG_FILE} and ${OS_VERSIONS_FILE}..."
 echo
 
 ERRORS=0
@@ -26,15 +32,21 @@ WARNINGS=0
 
 # Validate JSON syntax
 if ! jq empty "${CONFIG_FILE}" 2>/dev/null; then
-    echo "✗ Invalid JSON syntax"
+    echo "✗ Invalid JSON syntax in ${CONFIG_FILE}"
     exit 1
 fi
-echo "✓ Valid JSON syntax"
+echo "✓ Valid JSON syntax in ${CONFIG_FILE}"
 
-# Check platform excludes don't have 'os' field
-platforms=$(jq -r '.platforms | keys[]' "${CONFIG_FILE}")
+if ! jq empty "${OS_VERSIONS_FILE}" 2>/dev/null; then
+    echo "✗ Invalid JSON syntax in ${OS_VERSIONS_FILE}"
+    exit 1
+fi
+echo "✓ Valid JSON syntax in ${OS_VERSIONS_FILE}"
+
+# Check platform excludes don't have 'os' field (from os-versions.json)
+platforms=$(jq -r 'keys[]' "${OS_VERSIONS_FILE}")
 for platform in $platforms; do
-    excludes=$(jq -r --arg p "$platform" '.platforms[$p].exclude // []' "${CONFIG_FILE}")
+    excludes=$(jq -r --arg p "$platform" '.[$p].exclude // []' "${OS_VERSIONS_FILE}")
     
     if [[ "$excludes" != "[]" ]]; then
         num_rules=$(echo "$excludes" | jq 'length')
@@ -107,8 +119,8 @@ fi
 
 # Check for platform version references that don't exist
 for platform in $platforms; do
-    platform_versions=$(jq -r --arg p "$platform" '.platforms[$p].versions[]' "${CONFIG_FILE}")
-    excludes=$(jq -r --arg p "$platform" '.platforms[$p].exclude // []' "${CONFIG_FILE}")
+    platform_versions=$(jq -r --arg p "$platform" '.[$p].versions[]' "${OS_VERSIONS_FILE}")
+    excludes=$(jq -r --arg p "$platform" '.[$p].exclude // []' "${OS_VERSIONS_FILE}")
     
     if [[ "$excludes" != "[]" ]]; then
         num_rules=$(echo "$excludes" | jq 'length')
@@ -141,7 +153,7 @@ done
 # Check for architecture references that don't exist
 all_archs=$(jq -r '.architectures[]' "${CONFIG_FILE}")
 for platform in $platforms; do
-    excludes=$(jq -r --arg p "$platform" '.platforms[$p].exclude // []' "${CONFIG_FILE}")
+    excludes=$(jq -r --arg p "$platform" '.[$p].exclude // []' "${OS_VERSIONS_FILE}")
     
     if [[ "$excludes" != "[]" ]]; then
         num_rules=$(echo "$excludes" | jq 'length')

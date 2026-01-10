@@ -1,14 +1,24 @@
 {
-  "alpine": [
-    "3.19",
-    "3.20",
-    "3.21",
-    "3.22",
-    "3.23"
-  ],
-  "debian": [
-    "bullseye",
-    "bookworm",
-    "trixie"
-  ]
+  "alpine": {
+    "versions": [
+      "3.19",
+      "3.20",
+      "3.21",
+      "3.22",
+      "3.23"
+    ],
+    "exclude": []
+  },
+  "debian": {
+    "versions": [
+      "bullseye",
+      "bookworm",
+      "trixie"
+    ],
+    "exclude": [
+      {"version": "trixie", "arch": "arm32v6"},
+      {"version": "bullseye", "arch": "arm32v6"},
+      {"version": "bookworm", "arch": "arm32v6"}
+    ]
+  }
 }

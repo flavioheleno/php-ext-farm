@@ -106,11 +106,11 @@ jobs:
             
             {include: [
               if ($platform_list | index("alpine")) then
-                $os_versions[0].alpine[] as $osv |
+                $os_versions[0].alpine.versions[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
                 # Check if this combination is excluded
-                if (($extensions[0].platforms.alpine.exclude // []) | any(.version == $osv and .arch == $arch)) then
+                if (($os_versions[0].alpine.exclude // []) | any(.version == $osv and .arch == $arch)) then
                   empty
                 else
                   ($php_versions[0][$php].tag // "") as $php_tag |
@@ -121,11 +121,11 @@ jobs:
               else empty end,
               
               if ($platform_list | index("debian")) then
-                $os_versions[0].debian[] as $osv |
+                $os_versions[0].debian.versions[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
                 # Check if this combination is excluded
-                if (($extensions[0].platforms.debian.exclude // []) | any(.version == $osv and .arch == $arch)) then
+                if (($os_versions[0].debian.exclude // []) | any(.version == $osv and .arch == $arch)) then
                   empty
                 else
                   ($php_versions[0][$php].tag // "") as $php_tag |
@@ -147,13 +147,13 @@ jobs:
             
             {include: [
               if ($platform_list | index("alpine")) then
-                $os_versions[0].alpine[] as $osv |
+                $os_versions[0].alpine.versions[] as $osv |
                 $php_list[] as $php |
                 {php_version: $php, platform: "alpine", platform_version: $osv}
               else empty end,
               
               if ($platform_list | index("debian")) then
-                $os_versions[0].debian[] as $osv |
+                $os_versions[0].debian.versions[] as $osv |
                 $php_list[] as $php |
                 {php_version: $php, platform: "debian", platform_version: $osv}
               else empty end
