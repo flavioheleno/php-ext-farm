@@ -1,56 +1,26 @@
-ARG ALPINE_VERSION=3.20
-FROM alpine:${ALPINE_VERSION}
+ARG BASE_IMAGE_REGISTRY=ghcr.io/flavioheleno/php-ext-farm
+ARG DEBIAN_VERSION=bookworm
+FROM ${BASE_IMAGE_REGISTRY}/debian:${DEBIAN_VERSION}
 
 # OCI Image Labels
 ARG BUILD_DATE
 ARG PHP_VERSION
-ARG ALPINE_VERSION
 ARG TARGETARCH
 ARG TARGETVARIANT
 LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
-      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/base/Dockerfile.alpine" \
+      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/base/php/Dockerfile.debian" \
       org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="PHP ${PHP_VERSION} on Alpine ${ALPINE_VERSION}" \
+      org.opencontainers.image.title="PHP ${PHP_VERSION} on Debian ${DEBIAN_VERSION}" \
       org.opencontainers.image.description="Custom PHP ${PHP_VERSION} base image for ${TARGETARCH}${TARGETVARIANT} built from source for extension compilation" \
       org.opencontainers.image.vendor="php-ext-farm" \
       org.opencontainers.image.licenses="MIT"
 
-SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 # Arguments for PHP version
 ARG PHP_VERSION_TAG
 ARG PHP_VERSION_SHA256
 ARG PHP_VERSION_BRANCH=master
-
-# Upgrade system packages
-RUN apk upgrade --no-cache --available
-
-# Install PHP build dependencies and common extension build tools
-# hadolint ignore=DL3018
-RUN apk add --no-cache \
-      autoconf \
-      bison \
-      build-base \
-      curl \
-      curl-dev \
-      dpkg-dev \
-      file \
-      g++ \
-      gcc \
-      git \
-      jq \
-      libc-dev \
-      libsodium-dev \
-      libxml2-dev \
-      linux-headers \
-      make \
-      oniguruma-dev \
-      openssl-dev \
-      pkgconf \
-      re2c \
-      readline-dev \
-      sqlite-dev \
-      zlib-dev
 
 # Build PHP from source
 WORKDIR /usr/src/php

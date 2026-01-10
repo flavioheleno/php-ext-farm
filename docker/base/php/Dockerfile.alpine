@@ -1,55 +1,26 @@
-ARG DEBIAN_VERSION=bookworm
-FROM debian:${DEBIAN_VERSION}
+ARG BASE_IMAGE_REGISTRY=ghcr.io/flavioheleno/php-ext-farm
+ARG ALPINE_VERSION=3.20
+FROM ${BASE_IMAGE_REGISTRY}/alpine:${ALPINE_VERSION}
 
 # OCI Image Labels
 ARG BUILD_DATE
 ARG PHP_VERSION
-ARG DEBIAN_VERSION
 ARG TARGETARCH
 ARG TARGETVARIANT
 LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
-      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/base/Dockerfile.debian" \
+      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/base/php/Dockerfile.alpine" \
       org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="PHP ${PHP_VERSION} on Debian ${DEBIAN_VERSION}" \
+      org.opencontainers.image.title="PHP ${PHP_VERSION} on Alpine ${ALPINE_VERSION}" \
       org.opencontainers.image.description="Custom PHP ${PHP_VERSION} base image for ${TARGETARCH}${TARGETVARIANT} built from source for extension compilation" \
       org.opencontainers.image.vendor="php-ext-farm" \
       org.opencontainers.image.licenses="MIT"
 
-SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 # Arguments for PHP version
 ARG PHP_VERSION_TAG
 ARG PHP_VERSION_SHA256
 ARG PHP_VERSION_BRANCH=master
-
-# Upgrade system packages and install PHP build dependencies
-# hadolint ignore=DL3008
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
-      autoconf \
-      bison \
-      build-essential \
-      ca-certificates \
-      curl \
-      dpkg-dev \
-      file \
-      g++ \
-      gcc \
-      git \
-      jq \
-      libcurl4-openssl-dev \
-      libonig-dev \
-      libreadline-dev \
-      libsodium-dev \
-      libsqlite3-dev \
-      libssl-dev \
-      libxml2-dev \
-      make \
-      pkg-config \
-      re2c \
-      zlib1g-dev && \
-    rm -rf /var/lib/apt/lists/*
 
 # Build PHP from source
 WORKDIR /usr/src/php

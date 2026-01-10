@@ -1,0 +1,179 @@
+name: Check OS Releases
+
+on:
+  schedule:
+    # Run weekly on Sundays at 5 AM UTC
+    - cron: '0 5 * * 0'
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: 'Runner to use'
+        required: false
+        type: choice
+        options:
+          - ubuntu-latest
+          - self-hosted
+        default: 'ubuntu-latest'
+
+# Only one OS release check should run at a time
+concurrency:
+  group: check-os-releases
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-alpine-releases:
+    name: Check for new Alpine releases
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    outputs:
+      updates: ${{ steps.check.outputs.updates }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Check Alpine releases
+        id: check
+        run: |
+          UPDATES="[]"
+          
+          # Fetch Alpine releases from their API
+          echo "Fetching Alpine releases..."
+          ALPINE_RELEASES=$(curl -fsSL https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/latest-releases.yaml)
+          
+          # Get the latest stable version
+          LATEST_STABLE=$(echo "$ALPINE_RELEASES" | grep -A 10 'flavor: alpine-standard' | grep 'version:' | head -1 | awk '{print $2}' | cut -d. -f1,2)
+          
+          if [[ -n "$LATEST_STABLE" ]]; then
+            echo "Latest stable Alpine: $LATEST_STABLE"
+            
+            # Check if this version exists in our os-versions.json
+            if ! jq -e --arg v "$LATEST_STABLE" '.alpine | index($v)' os-versions.json > /dev/null 2>&1; then
+              echo "New Alpine version found: $LATEST_STABLE"
+              UPDATES=$(echo "$UPDATES" | jq --arg v "$LATEST_STABLE" \
+                '. + [{"platform": "alpine", "version": $v}]')
+            fi
+          fi
+          
+          echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
+          echo "Found $(echo "$UPDATES" | jq 'length') Alpine updates"
+
+  check-debian-releases:
+    name: Check for new Debian releases
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    outputs:
+      updates: ${{ steps.check.outputs.updates }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Check Debian releases
+        id: check
+        run: |
+          UPDATES="[]"
+          
+          # Check Debian stable releases
+          echo "Fetching Debian releases..."
+          
+          # Get current stable codename from Debian
+          CURRENT_STABLE=$(curl -fsSL https://www.debian.org/releases/stable/ | grep -oP 'Debian [0-9]+ <em>\K[a-z]+' | head -1)
+          
+          if [[ -n "$CURRENT_STABLE" ]]; then
+            echo "Current stable Debian: $CURRENT_STABLE"
+            
+            # Check if this version exists in our os-versions.json
+            if ! jq -e --arg v "$CURRENT_STABLE" '.debian | index($v)' os-versions.json > /dev/null 2>&1; then
+              echo "New Debian version found: $CURRENT_STABLE"
+              UPDATES=$(echo "$UPDATES" | jq --arg v "$CURRENT_STABLE" \
+                '. + [{"platform": "debian", "version": $v}]')
+            fi
+          fi
+          
+          echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
+          echo "Found $(echo "$UPDATES" | jq 'length') Debian updates"
+
+  create-pr:
+    name: Create PR for new OS versions
+    needs: [check-alpine-releases, check-debian-releases]
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    if: needs.check-alpine-releases.outputs.updates != '[]' || needs.check-debian-releases.outputs.updates != '[]'
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Create update branch
+        id: branch
+        run: |
+          BRANCH_NAME="bot/update-os-versions-$(date +%Y%m%d)"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH_NAME"
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Update os-versions.json
+        env:
+          ALPINE_UPDATES: ${{ needs.check-alpine-releases.outputs.updates }}
+          DEBIAN_UPDATES: ${{ needs.check-debian-releases.outputs.updates }}
+        run: |
+          PR_BODY="## New OS Versions Detected\n\n"
+          
+          # Process Alpine updates
+          if [[ "$ALPINE_UPDATES" != "[]" ]]; then
+            echo "$ALPINE_UPDATES" | jq -c '.[]' | while read -r update; do
+              VERSION=$(echo "$update" | jq -r '.version')
+              
+              echo "Adding Alpine $VERSION to os-versions.json"
+              jq --arg v "$VERSION" \
+                '.alpine += [$v] | .alpine |= sort' \
+                os-versions.json > os-versions.json.tmp
+              mv os-versions.json.tmp os-versions.json
+              
+              PR_BODY="${PR_BODY}### Alpine $VERSION\n\n"
+            done
+          fi
+          
+          # Process Debian updates
+          if [[ "$DEBIAN_UPDATES" != "[]" ]]; then
+            echo "$DEBIAN_UPDATES" | jq -c '.[]' | while read -r update; do
+              VERSION=$(echo "$update" | jq -r '.version')
+              
+              echo "Adding Debian $VERSION to os-versions.json"
+              jq --arg v "$VERSION" \
+                '.debian += [$v]' \
+                os-versions.json > os-versions.json.tmp
+              mv os-versions.json.tmp os-versions.json
+              
+              PR_BODY="${PR_BODY}### Debian $VERSION\n\n"
+            done
+          fi
+          
+          cat os-versions.json
+          
+          echo "PR_BODY<<EOF" >> $GITHUB_ENV
+          echo -e "$PR_BODY" >> $GITHUB_ENV
+          echo "**Action required:** Please add these versions to \`extensions.json\` platforms section." >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Commit changes
+        run: |
+          git add os-versions.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git commit -m "Update OS versions
+
+          $(echo '${{ needs.check-alpine-releases.outputs.updates }}${{ needs.check-debian-releases.outputs.updates }}' | jq -r '.[] | "- \(.platform | ascii_upcase): \(.version)"')"
+          git push origin "${{ steps.branch.outputs.branch }}"
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "Update OS versions" \
+            --body "${{ env.PR_BODY }}" \
+            --base main \
+            --head "${{ steps.branch.outputs.branch }}" \
+            --label "dependencies" \
+            --label "automated"

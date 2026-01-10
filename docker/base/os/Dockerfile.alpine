@@ -1,0 +1,48 @@
+ARG ALPINE_VERSION=3.20
+FROM alpine:${ALPINE_VERSION}
+
+# OCI Image Labels
+ARG BUILD_DATE
+ARG TARGETARCH
+ARG TARGETVARIANT
+LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
+      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/base/os/Dockerfile.alpine" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="Alpine ${ALPINE_VERSION} Build Base" \
+      org.opencontainers.image.description="Alpine ${ALPINE_VERSION} base image for ${TARGETARCH}${TARGETVARIANT} with PHP build tools" \
+      org.opencontainers.image.vendor="php-ext-farm" \
+      org.opencontainers.image.licenses="MIT"
+
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
+# Upgrade system packages
+RUN apk upgrade --no-cache --available
+
+# Install PHP build dependencies and common extension build tools
+# hadolint ignore=DL3018
+RUN apk add --no-cache \
+      autoconf \
+      bison \
+      build-base \
+      curl \
+      curl-dev \
+      dpkg-dev \
+      file \
+      g++ \
+      gcc \
+      git \
+      jq \
+      libc-dev \
+      libsodium-dev \
+      libxml2-dev \
+      linux-headers \
+      make \
+      oniguruma-dev \
+      openssl-dev \
+      pkgconf \
+      re2c \
+      readline-dev \
+      sqlite-dev \
+      zlib-dev
+
+WORKDIR /tmp

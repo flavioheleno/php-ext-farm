@@ -104,15 +104,15 @@ jobs:
           ## Supported Configurations
           
           ### PHP Versions
-          $(jq -r '.php_versions | map("- PHP " + .) | join("\n")' extensions.json)
+          $(jq -r 'keys | map("- PHP " + .) | join("\n")' php-versions.json)
           
           ### Platforms
           
           **Alpine Linux:**
-          $(jq -r '.platforms.alpine.versions | map("- Alpine " + .) | join("\n")' extensions.json)
+          $(jq -r '.alpine | map("- Alpine " + .) | join("\n")' os-versions.json)
           
           **Debian:**
-          $(jq -r '.platforms.debian.versions | map("- " + .) | join("\n")' extensions.json)
+          $(jq -r '.debian | map("- " + .) | join("\n")' os-versions.json)
           
           ## Installation
           

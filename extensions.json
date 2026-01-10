@@ -6,30 +6,11 @@
     "arm32v6",
     "arm32v7"
   ],
-  "php_versions": [
-    "8.2",
-    "8.3",
-    "8.4",
-    "8.5",
-    "next"
-  ],
   "platforms": {
     "alpine": {
-      "versions": [
-        "3.19",
-        "3.20",
-        "3.21",
-        "3.22",
-        "3.23"
-      ],
       "exclude": []
     },
     "debian": {
-      "versions": [
-        "bookworm",
-        "bullseye",
-        "trixie"
-      ],
       "exclude": [
         {"version":"trixie","arch":"arm32v6"},
         {"version":"bullseye","arch":"arm32v6"},

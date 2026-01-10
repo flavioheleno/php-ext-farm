@@ -1,0 +1,47 @@
+ARG DEBIAN_VERSION=bookworm
+FROM debian:${DEBIAN_VERSION}
+
+# OCI Image Labels
+ARG BUILD_DATE
+ARG TARGETARCH
+ARG TARGETVARIANT
+LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
+      org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/base/os/Dockerfile.debian" \
+      org.opencontainers.image.created="${BUILD_DATE}" \
+      org.opencontainers.image.title="Debian ${DEBIAN_VERSION} Build Base" \
+      org.opencontainers.image.description="Debian ${DEBIAN_VERSION} base image for ${TARGETARCH}${TARGETVARIANT} with PHP build tools" \
+      org.opencontainers.image.vendor="php-ext-farm" \
+      org.opencontainers.image.licenses="MIT"
+
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+
+# Upgrade system packages and install PHP build dependencies
+# hadolint ignore=DL3008
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+      autoconf \
+      bison \
+      build-essential \
+      ca-certificates \
+      curl \
+      dpkg-dev \
+      file \
+      g++ \
+      gcc \
+      git \
+      jq \
+      libcurl4-openssl-dev \
+      libonig-dev \
+      libreadline-dev \
+      libsodium-dev \
+      libsqlite3-dev \
+      libssl-dev \
+      libxml2-dev \
+      make \
+      pkg-config \
+      re2c \
+      zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp

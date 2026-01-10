@@ -50,36 +50,176 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/php
+  OS_IMAGE_NAME: ${{ github.repository }}
+  PHP_IMAGE_NAME: ${{ github.repository }}/php
 
 jobs:
-  prepare:
-    name: Prepare build matrix
+  prepare-os:
+    name: Prepare OS build matrix
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Generate build matrix
+      - name: Generate OS build matrix
         id: matrix
         run: |
-          # Generate entire matrix in a single jq call for efficiency
+          MATRIX=$(jq -c -n --arg platform "${{ inputs.platform || 'all' }}" \
+                           --arg archs "${{ inputs.architectures || 'all' }}" \
+                           --slurpfile os_versions os-versions.json \
+                           --slurpfile extensions extensions.json '
+            (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
+            (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
+            
+            {include: [
+              if ($platform_list | index("alpine")) then
+                $os_versions[0].alpine[] as $osv |
+                $architectures[] as $arch |
+                {platform: "alpine", platform_version: $osv, arch: $arch}
+              else empty end,
+              
+              if ($platform_list | index("debian")) then
+                $os_versions[0].debian[] as $osv |
+                $architectures[] as $arch |
+                {platform: "debian", platform_version: $osv, arch: $arch}
+              else empty end
+            ]}
+          ')
+          
+          echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
+          echo "Generated $(echo "$MATRIX" | jq '.include | length') OS build jobs"
+
+  build-os:
+    name: Build ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
+    needs: prepare-os
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare-os.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate image tag
+        id: tag
+        run: |
+          echo "tag=${{ matrix.platform_version }}" >> $GITHUB_OUTPUT
+
+      - name: Check if image exists
+        id: check
+        if: ${{ inputs.force_rebuild != true }}
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}/${{ matrix.platform }}:${{ steps.tag.outputs.tag }}"
+          if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Image $IMAGE already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Image $IMAGE does not exist, will build"
+          fi
+
+      - name: Map architecture to Docker platform
+        id: platform
+        run: |
+          case "${{ matrix.arch }}" in
+            amd64)   PLATFORM="linux/amd64" ;;
+            arm64)   PLATFORM="linux/arm64" ;;
+            arm32v7) PLATFORM="linux/arm/v7" ;;
+            arm32v6) PLATFORM="linux/arm/v6" ;;
+            *)       echo "Unknown arch: ${{ matrix.arch }}"; exit 1 ;;
+          esac
+          echo "platform=${PLATFORM}" >> $GITHUB_OUTPUT
+
+      - name: Build and push OS image
+        if: steps.check.outputs.exists != 'true'
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: .
+          file: docker/base/os/Dockerfile.${{ matrix.platform }}
+          platforms: ${{ steps.platform.outputs.platform }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}/${{ matrix.platform }}:${{ steps.tag.outputs.tag }}-${{ matrix.arch }}
+          build-args: |
+            ${{ matrix.platform == 'alpine' && format('ALPINE_VERSION={0}', matrix.platform_version) || format('DEBIAN_VERSION={0}', matrix.platform_version) }}
+            BUILD_DATE=${{ github.event.repository.updated_at }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  create-os-manifest:
+    name: Create OS manifest for ${{ matrix.platform }} ${{ matrix.platform_version }}
+    needs: [prepare-os, build-os]
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.prepare-os.outputs.matrix) }}
+    steps:
+      - name: Log in to Container Registry
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push OS manifest
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}/${{ matrix.platform }}:${{ matrix.platform_version }}"
+          
+          IMAGES=""
+          for arch in amd64 arm64 arm32v7 arm32v6; do
+            ARCH_IMAGE="${IMAGE}-${arch}"
+            if docker manifest inspect "$ARCH_IMAGE" > /dev/null 2>&1; then
+              IMAGES="$IMAGES $ARCH_IMAGE"
+            fi
+          done
+          
+          if [ -n "$IMAGES" ]; then
+            echo "Creating OS manifest for: $IMAGES"
+            docker manifest create "$IMAGE" $IMAGES --amend || true
+            docker manifest push "$IMAGE" || true
+          else
+            echo "No arch-specific images found for $IMAGE"
+          fi
+
+  prepare-php:
+    name: Prepare PHP build matrix
+    needs: create-os-manifest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Generate PHP build matrix
+        id: matrix
+        run: |
           MATRIX=$(jq -c -n --arg php_ver "${{ inputs.php_version || 'all' }}" \
                            --arg platform "${{ inputs.platform || 'all' }}" \
                            --arg archs "${{ inputs.architectures || 'all' }}" \
                            --slurpfile php_versions php-versions.json \
+                           --slurpfile os_versions os-versions.json \
                            --slurpfile extensions extensions.json '
-            # Parse inputs
             (if $php_ver == "all" then ($php_versions[0] | keys) else [$php_ver] end) as $php_list |
             (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
             (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
             
-            # Generate matrix
             {include: [
-              # Alpine builds
               if ($platform_list | index("alpine")) then
-                $extensions[0].platforms.alpine.versions[] as $osv |
+                $os_versions[0].alpine[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
                 ($php_versions[0][$php].tag // "") as $php_tag |
@@ -88,9 +228,8 @@ jobs:
                 {php_version: $php, php_tag: $php_tag, php_branch: $php_branch, php_sha256: $php_sha256, platform: "alpine", platform_version: $osv, arch: $arch}
               else empty end,
               
-              # Debian builds
               if ($platform_list | index("debian")) then
-                $extensions[0].platforms.debian.versions[] as $osv |
+                $os_versions[0].debian[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
                 ($php_versions[0][$php].tag // "") as $php_tag |
@@ -102,16 +241,16 @@ jobs:
           ')
           
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
-          echo "Generated $(echo "$MATRIX" | jq '.include | length') build jobs"
+          echo "Generated $(echo "$MATRIX" | jq '.include | length') PHP build jobs"
 
-  build:
+  build-php:
     name: Build PHP ${{ matrix.php_version }} on ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
-    needs: prepare
+    needs: prepare-php
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 90
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.prepare-php.outputs.matrix) }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -143,7 +282,7 @@ jobs:
         id: check
         if: ${{ inputs.force_rebuild != true }}
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.PHP_IMAGE_NAME }}:${{ steps.tag.outputs.tag }}"
           if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Image $IMAGE already exists"
@@ -164,16 +303,17 @@ jobs:
           esac
           echo "platform=${PLATFORM}" >> $GITHUB_OUTPUT
 
-      - name: Build and push image
+      - name: Build and push PHP image
         if: steps.check.outputs.exists != 'true'
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: .
-          file: docker/base/Dockerfile.${{ matrix.platform }}
+          file: docker/base/php/Dockerfile.${{ matrix.platform }}
           platforms: ${{ steps.platform.outputs.platform }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}-${{ matrix.arch }}
+          tags: ${{ env.REGISTRY }}/${{ env.PHP_IMAGE_NAME }}:${{ steps.tag.outputs.tag }}-${{ matrix.arch }}
           build-args: |
+            BASE_IMAGE_REGISTRY=${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}
             ${{ matrix.platform == 'alpine' && format('ALPINE_VERSION={0}', matrix.platform_version) || format('DEBIAN_VERSION={0}', matrix.platform_version) }}
             PHP_VERSION_TAG=${{ matrix.php_tag }}
             PHP_VERSION_BRANCH=${{ matrix.php_branch }}
@@ -183,14 +323,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  create-manifest:
-    name: Create manifest for PHP ${{ matrix.php_version }} on ${{ matrix.platform }} ${{ matrix.platform_version }}
-    needs: [prepare, build]
+  create-php-manifest:
+    name: Create PHP manifest for PHP ${{ matrix.php_version }} on ${{ matrix.platform }} ${{ matrix.platform_version }}
+    needs: [prepare-php, build-php]
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.prepare-php.outputs.matrix) }}
     steps:
       - name: Log in to Container Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
@@ -209,9 +349,9 @@ jobs:
           fi
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
-      - name: Create and push manifest
+      - name: Create and push PHP manifest
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.PHP_IMAGE_NAME }}:${{ steps.tag.outputs.tag }}"
           
           # Build list of arch-specific images
           IMAGES=""
@@ -223,9 +363,10 @@ jobs:
           done
           
           if [ -n "$IMAGES" ]; then
-            echo "Creating manifest for: $IMAGES"
+            echo "Creating PHP manifest for: $IMAGES"
             docker manifest create "$IMAGE" $IMAGES --amend || true
             docker manifest push "$IMAGE" || true
           else
             echo "No arch-specific images found for $IMAGE"
+          fi
           fi
