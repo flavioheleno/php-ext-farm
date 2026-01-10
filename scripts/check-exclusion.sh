@@ -11,7 +11,7 @@ VERSION="${3:-}"
 ARCH="${4:-}"
 CONFIG_FILE="${5:-}"
 
-if [[ -z "$EXTENSION" || -z "$OS" || -z "$VERSION" || -z "$ARCH" || -z "$CONFIG_FILE" ]]; then
+if [[ -z "${EXTENSION}" || -z "${OS}" || -z "${VERSION}" || -z "${ARCH}" || -z "${CONFIG_FILE}" ]]; then
     echo "Usage: $0 <extension> <os> <version> <arch> <config_file>" >&2
     exit 2
 fi
@@ -40,7 +40,7 @@ wildcard_match() {
 }
 
 # Check platform-level exclusions (no 'os' field, implicit from context)
-platform_excludes=$(jq -r --arg os "$OS" '.platforms[$os].exclude // []' "$CONFIG_FILE")
+platform_excludes=$(jq -r --arg os "${OS}" '.platforms[$os].exclude // []' "${CONFIG_FILE}")
 
 if [[ "$platform_excludes" != "[]" ]]; then
     # Parse each exclusion rule
@@ -51,9 +51,9 @@ if [[ "$platform_excludes" != "[]" ]]; then
         arch_pattern=$(echo "$rule" | jq -r '.arch')
         
         # Check if version matches
-        if wildcard_match "$version_pattern" "$VERSION"; then
+        if wildcard_match "$version_pattern" "${VERSION}"; then
             # Check if arch matches
-            if wildcard_match "$arch_pattern" "$ARCH"; then
+            if wildcard_match "$arch_pattern" "${ARCH}"; then
                 echo "excluded_by_platform"
                 exit 0
             fi
@@ -62,7 +62,7 @@ if [[ "$platform_excludes" != "[]" ]]; then
 fi
 
 # Check extension-level exclusions (must have 'os' field)
-extension_excludes=$(jq -r --arg ext "$EXTENSION" '.extensions[$ext].exclude // []' "$CONFIG_FILE")
+extension_excludes=$(jq -r --arg ext "${EXTENSION}" '.extensions[$ext].exclude // []' "${CONFIG_FILE}")
 
 if [[ "$extension_excludes" != "[]" ]]; then
     # Parse each exclusion rule
@@ -74,11 +74,11 @@ if [[ "$extension_excludes" != "[]" ]]; then
         arch_pattern=$(echo "$rule" | jq -r '.arch')
         
         # Check if os matches
-        if wildcard_match "$os_pattern" "$OS"; then
+        if wildcard_match "$os_pattern" "${OS}"; then
             # Check if version matches
-            if wildcard_match "$version_pattern" "$VERSION"; then
+            if wildcard_match "$version_pattern" "${VERSION}"; then
                 # Check if arch matches
-                if wildcard_match "$arch_pattern" "$ARCH"; then
+                if wildcard_match "$arch_pattern" "${ARCH}"; then
                     echo "excluded_by_extension"
                     exit 0
                 fi

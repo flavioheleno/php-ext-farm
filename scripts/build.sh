@@ -9,7 +9,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 CONFIG_FILE="${ROOT_DIR}/extensions.json"
 
 EXTENSION="${1:-}"
@@ -44,13 +44,13 @@ generate_skip_report() {
     mkdir -p "$report_dir"
     
     jq -n \
-      --arg extension "$EXTENSION" \
-      --arg extension_version "$EXTENSION_VERSION" \
-      --arg channel "$CHANNEL" \
-      --arg php_version "$PHP_VERSION" \
-      --arg platform "$PLATFORM" \
-      --arg platform_version "$PLATFORM_VERSION" \
-      --arg arch "$ARCH" \
+      --arg extension "${EXTENSION}" \
+      --arg extension_version "${EXTENSION_VERSION}" \
+      --arg channel "${CHANNEL}" \
+      --arg php_version "${PHP_VERSION}" \
+      --arg platform "${PLATFORM}" \
+      --arg platform_version "${PLATFORM_VERSION}" \
+      --arg arch "${ARCH}" \
       --arg reason "$reason" \
       --arg git_sha "${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}" \
       --argjson workflow_run_id "${GITHUB_RUN_ID:-null}" \
@@ -77,7 +77,7 @@ generate_skip_report() {
     exit 0
 }
 
-if [[ -z "$EXTENSION" || -z "$EXTENSION_VERSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" ]]; then
+if [[ -z "${EXTENSION}" || -z "${EXTENSION_VERSION}" || -z "${PHP_VERSION}" || -z "${PLATFORM}" || -z "${PLATFORM_VERSION}" ]]; then
     echo "Usage: $0 <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel] [--local]"
     echo "Example: $0 redis 6.0.2 8.3 alpine 3.20 amd64 release"
     echo "         $0 redis 6.0.2 8.3 alpine 3.20 arm64 dev"
@@ -94,46 +94,46 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-EXT_TYPE=$(jq -r ".extensions.${EXTENSION}.type" "$CONFIG_FILE")
-if [[ "$EXT_TYPE" == "null" ]]; then
-    echo "Error: Extension '$EXTENSION' not found in config"
+EXT_TYPE=$(jq -r ".extensions.${EXTENSION}.type" "${CONFIG_FILE}")
+if [[ "${EXT_TYPE}" == "null" ]]; then
+    echo "Error: Extension '${EXTENSION}' not found in config"
     exit 1
 fi
 
 # Check if PHP version is supported
-SUPPORTED_PHP_VERSIONS=$(jq -r '.php_versions[]' "$CONFIG_FILE")
+SUPPORTED_PHP_VERSIONS=$(jq -r '.php_versions[]' "${CONFIG_FILE}")
 PHP_SUPPORTED=false
-for v in $SUPPORTED_PHP_VERSIONS; do
-    if [[ "$v" == "$PHP_VERSION" ]]; then
+for v in ${SUPPORTED_PHP_VERSIONS}; do
+    if [[ "$v" == "${PHP_VERSION}" ]]; then
         PHP_SUPPORTED=true
         break
     fi
 done
 
-if [[ "$PHP_SUPPORTED" == "false" ]]; then
-    echo "Error: PHP version $PHP_VERSION is not supported"
-    echo "Supported versions: $(echo $SUPPORTED_PHP_VERSIONS | tr '\n' ' ')"
+if [[ "${PHP_SUPPORTED}" == "false" ]]; then
+    echo "Error: PHP version ${PHP_VERSION} is not supported"
+    echo "Supported versions: $(echo ${SUPPORTED_PHP_VERSIONS} | tr '\n' ' ')"
     generate_skip_report "unsupported_php"
 fi
 
 # Check if platform is supported
-SUPPORTED_PLATFORMS=$(jq -r '.platforms | keys[]' "$CONFIG_FILE")
+SUPPORTED_PLATFORMS=$(jq -r '.platforms | keys[]' "${CONFIG_FILE}")
 PLATFORM_SUPPORTED=false
-for p in $SUPPORTED_PLATFORMS; do
-    if [[ "$p" == "$PLATFORM" ]]; then
+for p in ${SUPPORTED_PLATFORMS}; do
+    if [[ "$p" == "${PLATFORM}" ]]; then
         PLATFORM_SUPPORTED=true
         break
     fi
 done
 
-if [[ "$PLATFORM_SUPPORTED" == "false" ]]; then
-    echo "Error: Platform $PLATFORM is not supported"
-    echo "Supported platforms: $(echo $SUPPORTED_PLATFORMS | tr '\n' ' ')"
+if [[ "${PLATFORM_SUPPORTED}" == "false" ]]; then
+    echo "Error: Platform ${PLATFORM} is not supported"
+    echo "Supported platforms: $(echo ${SUPPORTED_PLATFORMS} | tr '\n' ' ')"
     generate_skip_report "unsupported_platform"
 fi
 
 # Map architecture names to Docker platform format
-case "$ARCH" in
+case "${ARCH}" in
     amd64|x86_64)
         DOCKER_PLATFORM="linux/amd64"
         ARCH="amd64"
@@ -151,46 +151,46 @@ case "$ARCH" in
         ARCH="arm32v6"
         ;;
     *)
-        echo "Error: Unsupported architecture: $ARCH (supported: amd64, arm64, arm32v7, arm32v6)"
+        echo "Error: Unsupported architecture: ${ARCH} (supported: amd64, arm64, arm32v7, arm32v6)"
         generate_skip_report "unsupported_architecture"
         ;;
 esac
 
 # Check if this combination is excluded
 EXCLUSION_CHECK="${SCRIPT_DIR}/check-exclusion.sh"
-if [[ -f "$EXCLUSION_CHECK" ]]; then
-    EXCLUSION_REASON=$("$EXCLUSION_CHECK" "$EXTENSION" "$PLATFORM" "$PLATFORM_VERSION" "$ARCH" "$CONFIG_FILE" 2>&1) || {
+if [[ -f "${EXCLUSION_CHECK}" ]]; then
+    EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "${EXTENSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${CONFIG_FILE}" 2>&1) || {
         exit_code=$?
         if [[ $exit_code -eq 0 ]]; then
-            echo "Build excluded: $EXCLUSION_REASON"
-            generate_skip_report "$EXCLUSION_REASON"
+            echo "Build excluded: ${EXCLUSION_REASON}"
+            generate_skip_report "${EXCLUSION_REASON}"
         fi
     }
 fi
 
-PECL_NAME=$(jq -r ".extensions.${EXTENSION}.pecl_name" "$CONFIG_FILE")
-TRACK_URL=$(jq -r ".extensions.${EXTENSION}.track_url" "$CONFIG_FILE")
-BUILD_PATH=$(jq -r ".extensions.${EXTENSION}.build_path // empty" "$CONFIG_FILE")
-BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.build // [] | join(\" \")" "$CONFIG_FILE")
-RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime // [] | join(\" \")" "$CONFIG_FILE")
-EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "$CONFIG_FILE")
-CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options // [] | join(\" \")" "$CONFIG_FILE")
+PECL_NAME=$(jq -r ".extensions.${EXTENSION}.pecl_name" "${CONFIG_FILE}")
+TRACK_URL=$(jq -r ".extensions.${EXTENSION}.track_url" "${CONFIG_FILE}")
+BUILD_PATH=$(jq -r ".extensions.${EXTENSION}.build_path // empty" "${CONFIG_FILE}")
+BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.build // [] | join(\" \")" "${CONFIG_FILE}")
+RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime // [] | join(\" \")" "${CONFIG_FILE}")
+EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "${CONFIG_FILE}")
+CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options // [] | join(\" \")" "${CONFIG_FILE}")
 
 # Determine dockerfile (all PHP versions use the same Dockerfile now)
 DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}"
 
-if [[ ! -f "$DOCKERFILE" ]]; then
-    echo "Error: Dockerfile not found: $DOCKERFILE"
+if [[ ! -f "${DOCKERFILE}" ]]; then
+    echo "Error: Dockerfile not found: ${DOCKERFILE}"
     exit 1
 fi
 
 # Create output directory
 OUTPUT_DIR="${ROOT_DIR}/output/${EXTENSION}/${PHP_VERSION}/${PLATFORM}/${PLATFORM_VERSION}/${ARCH}"
-mkdir -p "$OUTPUT_DIR"
+mkdir -p "${OUTPUT_DIR}"
 
 # Create reports directory
 REPORT_DIR="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
-mkdir -p "$REPORT_DIR"
+mkdir -p "${REPORT_DIR}"
 
 # Capture build start time
 BUILD_START_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
@@ -205,7 +205,7 @@ echo "Runtime deps: ${RUNTIME_DEPS}"
 echo "External libs: ${EXTERNAL_LIBS}"
 echo "Configure options: ${CONFIGURE_OPTIONS}"
 echo "Docker platform: ${DOCKER_PLATFORM}"
-if [[ "$USE_LOCAL_REGISTRY" == "true" ]]; then
+if [[ "${USE_LOCAL_REGISTRY}" == "true" ]]; then
     echo "Base image registry: LOCAL (php-ext-farm/php)"
 else
     echo "Base image registry: GHCR (ghcr.io/flavioheleno/php-ext-farm/php)"
@@ -213,7 +213,7 @@ fi
 
 # Build arguments
 # BASE_IMAGE_REGISTRY and PHP_VERSION must be first as they're used in the FROM statement
-if [[ "$USE_LOCAL_REGISTRY" == "true" ]]; then
+if [[ "${USE_LOCAL_REGISTRY}" == "true" ]]; then
     BUILD_ARGS=(
         --build-arg "BASE_IMAGE_REGISTRY=php-ext-farm"
         --build-arg "PHP_VERSION=${PHP_VERSION}"
@@ -234,25 +234,25 @@ else
     )
 fi
 
-if [[ -n "$BUILD_PATH" ]]; then
+if [[ -n "${BUILD_PATH}" ]]; then
     BUILD_ARGS+=(--build-arg "EXTENSION_BUILD_PATH=${BUILD_PATH}")
 fi
 
-if [[ "$PLATFORM" == "alpine" ]]; then
+if [[ "${PLATFORM}" == "alpine" ]]; then
     BUILD_ARGS+=(--build-arg "ALPINE_VERSION=${PLATFORM_VERSION}")
-elif [[ "$PLATFORM" == "debian" ]]; then
+elif [[ "${PLATFORM}" == "debian" ]]; then
     BUILD_ARGS+=(--build-arg "DEBIAN_VERSION=${PLATFORM_VERSION}")
 fi
 
-if [[ -n "$EXTENSION_VERSION" ]]; then
+if [[ -n "${EXTENSION_VERSION}" ]]; then
     BUILD_ARGS+=(--build-arg "EXTENSION_VERSION=${EXTENSION_VERSION}")
 fi
 
-if [[ "$EXTERNAL_LIBS" != "[]" ]]; then
+if [[ "${EXTERNAL_LIBS}" != "[]" ]]; then
     BUILD_ARGS+=(--build-arg "EXTERNAL_LIBS=${EXTERNAL_LIBS}")
 fi
 
-if [[ -n "$CONFIGURE_OPTIONS" ]]; then
+if [[ -n "${CONFIGURE_OPTIONS}" ]]; then
     BUILD_ARGS+=(--build-arg "CONFIGURE_OPTIONS=${CONFIGURE_OPTIONS}")
 fi
 
@@ -269,7 +269,7 @@ BUILD_LOG=$(mktemp)
 
 # Set up cache options (only for CI, not for local builds)
 CACHE_ARGS=()
-if [[ "$USE_LOCAL_REGISTRY" != "true" ]]; then
+if [[ "${USE_LOCAL_REGISTRY}" != "true" ]]; then
     # Check if we're in GitHub Actions (use GHA cache) or local (use local cache)
     if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
         CACHE_ARGS=(
@@ -287,23 +287,23 @@ if [[ "$USE_LOCAL_REGISTRY" != "true" ]]; then
 fi
 
 if ! docker buildx build \
-    --platform "$DOCKER_PLATFORM" \
+    --platform "${DOCKER_PLATFORM}" \
     "${BUILD_ARGS[@]}" \
     "${CACHE_ARGS[@]}" \
     --load \
-    -t "$IMAGE_TAG" \
-    -f "$DOCKERFILE" \
-    "$ROOT_DIR" 2>&1 | tee "$BUILD_LOG"; then
+    -t "${IMAGE_TAG}" \
+    -f "${DOCKERFILE}" \
+    "${ROOT_DIR}" 2>&1 | tee "${BUILD_LOG}"; then
     BUILD_STATUS="failure"
     
     # Analyze build log to determine reason
-    if grep -qiE "configure: error|configure: WARNING.*not found" "$BUILD_LOG"; then
+    if grep -qiE "configure: error|configure: WARNING.*not found" "${BUILD_LOG}"; then
         BUILD_REASON="deps_missing"
         BUILD_ERROR="Build dependencies missing or configure failed"
-    elif grep -qiE "error:|fatal error|compilation terminated|undefined reference" "$BUILD_LOG"; then
+    elif grep -qiE "error:|fatal error|compilation terminated|undefined reference" "${BUILD_LOG}"; then
         BUILD_REASON="compile_error"
         BUILD_ERROR="Compilation failed"
-    elif grep -qiE "test.*failed|FAIL:|phpunit" "$BUILD_LOG"; then
+    elif grep -qiE "test.*failed|FAIL:|phpunit" "${BUILD_LOG}"; then
         BUILD_REASON="test_failed"
         BUILD_ERROR="Extension tests failed"
     else
@@ -311,11 +311,11 @@ if ! docker buildx build \
         BUILD_ERROR="Docker build failed"
     fi
 fi
-rm -f "$BUILD_LOG"
+rm -f "${BUILD_LOG}"
 
 # Extract the extension
-if [[ "$BUILD_STATUS" == "success" ]]; then
-    CONTAINER_ID=$(docker create --platform "$DOCKER_PLATFORM" "$IMAGE_TAG")
+if [[ "${BUILD_STATUS}" == "success" ]]; then
+    CONTAINER_ID=$(docker create --platform "${DOCKER_PLATFORM}" "${IMAGE_TAG}")
     if ! docker cp "${CONTAINER_ID}:/output/extension/${PECL_NAME}.so" "${OUTPUT_DIR}/${PECL_NAME}.so"; then
         BUILD_STATUS="failure"
         BUILD_REASON="compile_error"
@@ -323,21 +323,21 @@ if [[ "$BUILD_STATUS" == "success" ]]; then
     fi
     
     # Extract external libraries if they exist (try to copy, ignore if not present)
-    if [[ "$BUILD_STATUS" == "success" ]]; then
+    if [[ "${BUILD_STATUS}" == "success" ]]; then
         docker cp "${CONTAINER_ID}:/output/libs" "${OUTPUT_DIR}/" 2>/dev/null || true
     fi
     
-    docker rm "$CONTAINER_ID"
+    docker rm "${CONTAINER_ID}"
 fi
 
 # List external library files for metadata
 EXTERNAL_LIB_FILES=""
-if [[ "$BUILD_STATUS" == "success" ]] && [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
+if [[ "${BUILD_STATUS}" == "success" ]] && [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
     EXTERNAL_LIB_FILES=$(cd "${OUTPUT_DIR}/libs" && ls -1 | jq -R -s -c 'split("\n") | map(select(length > 0))')
 fi
 
 # Generate metadata
-if [[ "$BUILD_STATUS" == "success" ]]; then
+if [[ "${BUILD_STATUS}" == "success" ]]; then
     cat > "${OUTPUT_DIR}/metadata.json" <<EOF
 {
   "extension": "${EXTENSION}",
@@ -366,7 +366,7 @@ fi
 BUILD_END_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Normalize extension version
-NORMALIZED_VERSION=$("${SCRIPT_DIR}/normalize-version.sh" "$EXTENSION" "$EXTENSION_VERSION")
+NORMALIZED_VERSION=$("${SCRIPT_DIR}/normalize-version.sh" "${EXTENSION}" "${EXTENSION_VERSION}")
 
 # Construct asset name
 ASSET_NAME="${EXTENSION}-${NORMALIZED_VERSION}-php${PHP_VERSION}-${PLATFORM}-${PLATFORM_VERSION}-${ARCH}.tar.gz"
@@ -376,28 +376,28 @@ WORKFLOW_RUN_ID="${GITHUB_RUN_ID:-}"
 RUN_ATTEMPT="${GITHUB_RUN_ATTEMPT:-1}"
 GIT_SHA="${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}"
 LOG_URL=""
-if [[ -n "$WORKFLOW_RUN_ID" ]]; then
+if [[ -n "${WORKFLOW_RUN_ID}" ]]; then
     REPO="${GITHUB_REPOSITORY:-}"
     LOG_URL="https://github.com/${REPO}/actions/runs/${WORKFLOW_RUN_ID}"
 fi
 
 # Build JSON report using jq for proper escaping
 jq -n \
-  --arg extension "$EXTENSION" \
-  --arg extension_version "$NORMALIZED_VERSION" \
-  --arg channel "$CHANNEL" \
-  --arg php_version "$PHP_VERSION" \
-  --arg platform "$PLATFORM" \
-  --arg platform_version "$PLATFORM_VERSION" \
-  --arg arch "$ARCH" \
-  --arg status "$BUILD_STATUS" \
-  --arg reason "$BUILD_REASON" \
-  --arg started_at "$BUILD_START_TIME" \
-  --arg finished_at "$BUILD_END_TIME" \
-  --arg git_sha "$GIT_SHA" \
-  --arg log_url "$LOG_URL" \
-  --arg asset_name "$ASSET_NAME" \
-  --arg error "$BUILD_ERROR" \
+  --arg extension "${EXTENSION}" \
+  --arg extension_version "${NORMALIZED_VERSION}" \
+  --arg channel "${CHANNEL}" \
+  --arg php_version "${PHP_VERSION}" \
+  --arg platform "${PLATFORM}" \
+  --arg platform_version "${PLATFORM_VERSION}" \
+  --arg arch "${ARCH}" \
+  --arg status "${BUILD_STATUS}" \
+  --arg reason "${BUILD_REASON}" \
+  --arg started_at "${BUILD_START_TIME}" \
+  --arg finished_at "${BUILD_END_TIME}" \
+  --arg git_sha "${GIT_SHA}" \
+  --arg log_url "${LOG_URL}" \
+  --arg asset_name "${ASSET_NAME}" \
+  --arg error "${BUILD_ERROR}" \
   --argjson workflow_run_id "${WORKFLOW_RUN_ID:-null}" \
   --argjson run_attempt "${RUN_ATTEMPT}" \
   '{
@@ -422,7 +422,7 @@ jq -n \
 echo "Build report: ${REPORT_DIR}/${ARCH}.json"
 
 # Exit with error if build failed
-if [[ "$BUILD_STATUS" != "success" ]]; then
+if [[ "${BUILD_STATUS}" != "success" ]]; then
     echo "Build failed: ${BUILD_ERROR}"
     exit 1
 fi

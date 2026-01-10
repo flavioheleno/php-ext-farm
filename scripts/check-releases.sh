@@ -8,7 +8,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 CONFIG_FILE="${ROOT_DIR}/extensions.json"
 
 check_github_release() {
@@ -65,19 +65,19 @@ echo "{"
 echo '  "checked_at": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",'
 echo '  "extensions": {'
 
-EXTENSIONS=$(jq -r '.extensions | keys[]' "$CONFIG_FILE")
+EXTENSIONS=$(jq -r '.extensions | keys[]' "${CONFIG_FILE}")
 FIRST=true
 
-for ext in $EXTENSIONS; do
-    TRACK_URL=$(jq -r ".extensions.${ext}.track_url" "$CONFIG_FILE")
+for ext in ${EXTENSIONS}; do
+    TRACK_URL=$(jq -r ".extensions.${ext}.track_url" "${CONFIG_FILE}")
     
     # Try releases first, then tags
-    VERSION=$(check_github_release "$TRACK_URL")
-    if [[ -z "$VERSION" ]]; then
-        VERSION=$(check_github_tags "$TRACK_URL")
+    VERSION=$(check_github_release "${TRACK_URL}")
+    if [[ -z "${VERSION}" ]]; then
+        VERSION=$(check_github_tags "${TRACK_URL}")
     fi
     
-    if [[ "$FIRST" == "true" ]]; then
+    if [[ "${FIRST}" == "true" ]]; then
         FIRST=false
     else
         echo ","

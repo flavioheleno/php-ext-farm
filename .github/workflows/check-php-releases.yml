@@ -120,7 +120,7 @@ jobs:
           $(echo '${{ steps.check.outputs.updates }}' | jq -r '.[] | "- PHP \(.version): \(.tag)"')"
           git push
 
-      - name: Trigger base image builds
+      - name: Trigger PHP base image builds
         if: steps.check.outputs.updates != '[]'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -128,6 +128,6 @@ jobs:
           echo '${{ steps.check.outputs.updates }}' | jq -c '.[]' | while read -r update; do
             VERSION=$(echo "$update" | jq -r '.version')
             
-            echo "Triggering base image build for PHP $VERSION"
-            gh workflow run build-base-images.yml -f php_version="$VERSION"
+            echo "Triggering PHP base image build for PHP $VERSION"
+            gh workflow run build-php-base-images.yml -f php_version="$VERSION"
           done

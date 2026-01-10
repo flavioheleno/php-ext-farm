@@ -11,7 +11,7 @@ set -eu
 EXTENSION="${1:-}"
 VERSION="${2:-}"
 
-if [ -z "$VERSION" ]; then
+if [ -z "${VERSION}" ]; then
     echo ""
     exit 0
 fi
@@ -26,6 +26,6 @@ VERSION="${VERSION#release-}"
 VERSION="${VERSION#release_}"
 
 # Replace underscores with dots
-VERSION=$(echo "$VERSION" | tr '_' '.')
+VERSION=$(echo "${VERSION}" | tr '_' '.')
 
-echo "$VERSION"
+echo "${VERSION}"

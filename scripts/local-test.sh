@@ -50,7 +50,7 @@ Workflow:
 EOF
 }
 
-if [[ -z "$EXTENSION" || -z "$EXTENSION_VERSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" ]]; then
+if [[ -z "${EXTENSION}" || -z "${EXTENSION_VERSION}" || -z "${PHP_VERSION}" || -z "${PLATFORM}" || -z "${PLATFORM_VERSION}" ]]; then
     show_usage
     exit 1
 fi
@@ -60,25 +60,25 @@ echo "LOCAL TESTING WORKFLOW"
 echo "=========================================="
 echo ""
 echo "Configuration:"
-echo "  Extension: $EXTENSION v$EXTENSION_VERSION"
-echo "  PHP: $PHP_VERSION"
-echo "  Platform: $PLATFORM $PLATFORM_VERSION"
-echo "  Architecture: $ARCH"
+echo "  Extension: ${EXTENSION} v${EXTENSION_VERSION}"
+echo "  PHP: ${PHP_VERSION}"
+echo "  Platform: ${PLATFORM} ${PLATFORM_VERSION}"
+echo "  Architecture: ${ARCH}"
 echo ""
 
 # Determine base image tag
-if [[ "$PLATFORM" == "alpine" ]]; then
+if [[ "${PLATFORM}" == "alpine" ]]; then
     BASE_IMAGE_TAG="php-ext-farm/php:${PHP_VERSION}-alpine${PLATFORM_VERSION}"
 else
     BASE_IMAGE_TAG="php-ext-farm/php:${PHP_VERSION}-${PLATFORM_VERSION}"
 fi
 
 echo "Step 1: Checking for base image..."
-echo "  Required: $BASE_IMAGE_TAG"
+echo "  Required: ${BASE_IMAGE_TAG}"
 echo ""
 
 # Check if base image exists
-if docker image inspect "$BASE_IMAGE_TAG" &>/dev/null; then
+if docker image inspect "${BASE_IMAGE_TAG}" &>/dev/null; then
     echo "✓ Base image found locally"
     echo ""
 else
@@ -87,7 +87,7 @@ else
     echo "Step 2: Building base image..."
     echo ""
     
-    if "${SCRIPT_DIR}/build-base-image.sh" "$PHP_VERSION" "$PLATFORM" "$PLATFORM_VERSION" "$ARCH" --local; then
+    if "${SCRIPT_DIR}/build-base-image.sh" "${PHP_VERSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" --local; then
         echo ""
         echo "✓ Base image built successfully"
         echo ""
@@ -101,7 +101,7 @@ fi
 echo "Step 3: Building extension..."
 echo ""
 
-if "${SCRIPT_DIR}/build.sh" "$EXTENSION" "$EXTENSION_VERSION" "$PHP_VERSION" "$PLATFORM" "$PLATFORM_VERSION" "$ARCH" release --local; then
+if "${SCRIPT_DIR}/build.sh" "${EXTENSION}" "${EXTENSION_VERSION}" "${PHP_VERSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" release --local; then
     echo ""
     echo "✓ Extension built successfully"
     echo ""
@@ -119,7 +119,7 @@ echo ""
 
 if [[ -f "${OUTPUT_DIR}/metadata.json" ]]; then
     echo "Build artifacts:"
-    echo "  Location: $OUTPUT_DIR"
+    echo "  Location: ${OUTPUT_DIR}"
     echo ""
     echo "  Metadata:"
     jq '.' "${OUTPUT_DIR}/metadata.json" 2>/dev/null || cat "${OUTPUT_DIR}/metadata.json"

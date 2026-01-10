@@ -14,7 +14,7 @@ TESTS_PASSED=0
 TESTS_FAILED=0
 
 # Create test config
-cat > "$TEST_CONFIG" << 'EOF'
+cat > "${TEST_CONFIG}" << 'EOF'
 {
   "platforms": {
     "alpine": {
@@ -59,7 +59,7 @@ run_test() {
     
     local output
     local exit_code
-    output=$("$CHECK_EXCLUSION" "$extension" "$os" "$version" "$arch" "$TEST_CONFIG" 2>&1) || exit_code=$?
+    output=$("${CHECK_EXCLUSION}" "$extension" "$os" "$version" "$arch" "${TEST_CONFIG}" 2>&1) || exit_code=$?
     exit_code=${exit_code:-0}
     
     if [[ $exit_code -eq $expected_exit ]]; then
@@ -126,16 +126,16 @@ run_test "No exclusions: normalext alpine 3.21 arm64 (allowed)" \
     "normalext" "alpine" "3.21" "arm64" 1 "allowed"
 
 # Cleanup
-rm -f "$TEST_CONFIG"
+rm -f "${TEST_CONFIG}"
 
 echo
 echo "================================"
-echo "Tests run: $TESTS_RUN"
-echo "Passed: $TESTS_PASSED"
-echo "Failed: $TESTS_FAILED"
+echo "Tests run: ${TESTS_RUN}"
+echo "Passed: ${TESTS_PASSED}"
+echo "Failed: ${TESTS_FAILED}"
 echo "================================"
 
-if [[ $TESTS_FAILED -eq 0 ]]; then
+if [[ ${TESTS_FAILED} -eq 0 ]]; then
     echo "All tests passed!"
     exit 0
 else
