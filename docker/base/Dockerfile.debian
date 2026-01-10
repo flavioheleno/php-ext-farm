@@ -75,6 +75,9 @@ RUN if [ -n "$PHP_VERSION_TAG" ]; then \
       --with-config-file-path=/usr/local/etc/php \
       --with-config-file-scan-dir=/usr/local/etc/php/conf.d \
       --disable-cgi \
+      --disable-phpdbg \
+      --disable-phar \
+      --disable-fpm \
       --enable-mbstring \
       --enable-mysqlnd \
       --enable-opcache \
