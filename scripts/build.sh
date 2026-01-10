@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build script for PHP extensions
-# Usage: ./build.sh <extension> <php_version> <platform> <platform_version> <extension_version> [arch]
+# Usage: ./build.sh <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel] [--local]
 #
 # Note: This script uses bash (not POSIX sh) because it runs in CI environments
 # (GitHub Actions, Ubuntu) where bash is always available and we need features
@@ -13,12 +13,28 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 CONFIG_FILE="${ROOT_DIR}/extensions.json"
 
 EXTENSION="${1:-}"
-PHP_VERSION="${2:-}"
-PLATFORM="${3:-}"
-PLATFORM_VERSION="${4:-}"
-EXTENSION_VERSION="${5:-}"
+EXTENSION_VERSION="${2:-}"
+PHP_VERSION="${3:-}"
+PLATFORM="${4:-}"
+PLATFORM_VERSION="${5:-}"
 ARCH="${6:-amd64}"
 CHANNEL="${7:-release}"
+USE_LOCAL_REGISTRY=false
+
+# Check for --local flag in any position
+for arg in "$@"; do
+    if [[ "$arg" == "--local" ]]; then
+        USE_LOCAL_REGISTRY=true
+    fi
+done
+
+# Remove --local from args if present
+if [[ "${ARCH}" == "--local" ]]; then
+    ARCH="amd64"
+fi
+if [[ "${CHANNEL}" == "--local" ]]; then
+    CHANNEL="release"
+fi
 
 # Generate a skip report and exit
 # Usage: generate_skip_report <reason>
@@ -61,10 +77,14 @@ generate_skip_report() {
     exit 0
 }
 
-if [[ -z "$EXTENSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" || -z "$EXTENSION_VERSION" ]]; then
-    echo "Usage: $0 <extension> <php_version> <platform> <platform_version> <extension_version> [arch] [channel]"
-    echo "Example: $0 redis 8.3 alpine 3.20 6.0.2 amd64 release"
-    echo "         $0 redis 8.3 alpine 3.20 6.0.2 arm64 dev"
+if [[ -z "$EXTENSION" || -z "$EXTENSION_VERSION" || -z "$PHP_VERSION" || -z "$PLATFORM" || -z "$PLATFORM_VERSION" ]]; then
+    echo "Usage: $0 <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel] [--local]"
+    echo "Example: $0 redis 6.0.2 8.3 alpine 3.20 amd64 release"
+    echo "         $0 redis 6.0.2 8.3 alpine 3.20 arm64 dev"
+    echo "         $0 redis 6.0.2 8.3 alpine 3.20 --local"
+    echo ""
+    echo "Flags:"
+    echo "  --local   Use local base images (php-ext-farm/php:*) instead of GHCR"
     exit 1
 fi
 
@@ -185,17 +205,34 @@ echo "Runtime deps: ${RUNTIME_DEPS}"
 echo "External libs: ${EXTERNAL_LIBS}"
 echo "Configure options: ${CONFIGURE_OPTIONS}"
 echo "Docker platform: ${DOCKER_PLATFORM}"
+if [[ "$USE_LOCAL_REGISTRY" == "true" ]]; then
+    echo "Base image registry: LOCAL (php-ext-farm/php)"
+else
+    echo "Base image registry: GHCR (ghcr.io/flavioheleno/php-ext-farm/php)"
+fi
 
 # Build arguments
-# PHP_VERSION must be first as it's used in the FROM statement
-BUILD_ARGS=(
-    --build-arg "PHP_VERSION=${PHP_VERSION}"
-    --build-arg "EXTENSION_NAME=${PECL_NAME}"
-    --build-arg "EXTENSION_REPO_URL=${TRACK_URL}"
-    --build-arg "BUILD_DEPS=${BUILD_DEPS}"
-    --build-arg "RUNTIME_DEPS=${RUNTIME_DEPS}"
-    --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-)
+# BASE_IMAGE_REGISTRY and PHP_VERSION must be first as they're used in the FROM statement
+if [[ "$USE_LOCAL_REGISTRY" == "true" ]]; then
+    BUILD_ARGS=(
+        --build-arg "BASE_IMAGE_REGISTRY=php-ext-farm"
+        --build-arg "PHP_VERSION=${PHP_VERSION}"
+        --build-arg "EXTENSION_NAME=${PECL_NAME}"
+        --build-arg "EXTENSION_REPO_URL=${TRACK_URL}"
+        --build-arg "BUILD_DEPS=${BUILD_DEPS}"
+        --build-arg "RUNTIME_DEPS=${RUNTIME_DEPS}"
+        --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    )
+else
+    BUILD_ARGS=(
+        --build-arg "PHP_VERSION=${PHP_VERSION}"
+        --build-arg "EXTENSION_NAME=${PECL_NAME}"
+        --build-arg "EXTENSION_REPO_URL=${TRACK_URL}"
+        --build-arg "BUILD_DEPS=${BUILD_DEPS}"
+        --build-arg "RUNTIME_DEPS=${RUNTIME_DEPS}"
+        --build-arg "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+    )
+fi
 
 if [[ -n "$BUILD_PATH" ]]; then
     BUILD_ARGS+=(--build-arg "EXTENSION_BUILD_PATH=${BUILD_PATH}")
@@ -230,19 +267,23 @@ CACHE_KEY="${EXTENSION}-${PHP_VERSION}-${PLATFORM}-${PLATFORM_VERSION}-${ARCH}"
 # Build the image using buildx with caching
 BUILD_LOG=$(mktemp)
 
-# Check if we're in GitHub Actions (use GHA cache) or local (use local cache)
-if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
-    CACHE_ARGS=(
-        --cache-from "type=gha,scope=${CACHE_KEY}"
-        --cache-to "type=gha,mode=max,scope=${CACHE_KEY}"
-    )
-else
-    # Local builds use registry cache or inline cache
-    CACHE_ARGS=(
-        --cache-from "type=local,src=/tmp/.buildx-cache-${CACHE_KEY}"
-        --cache-to "type=local,dest=/tmp/.buildx-cache-${CACHE_KEY},mode=max"
-    )
-    mkdir -p "/tmp/.buildx-cache-${CACHE_KEY}"
+# Set up cache options (only for CI, not for local builds)
+CACHE_ARGS=()
+if [[ "$USE_LOCAL_REGISTRY" != "true" ]]; then
+    # Check if we're in GitHub Actions (use GHA cache) or local (use local cache)
+    if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+        CACHE_ARGS=(
+            --cache-from "type=gha,scope=${CACHE_KEY}"
+            --cache-to "type=gha,mode=max,scope=${CACHE_KEY}"
+        )
+    else
+        # Local builds without --local flag use local cache
+        CACHE_ARGS=(
+            --cache-from "type=local,src=/tmp/.buildx-cache-${CACHE_KEY}"
+            --cache-to "type=local,dest=/tmp/.buildx-cache-${CACHE_KEY},mode=max"
+        )
+        mkdir -p "/tmp/.buildx-cache-${CACHE_KEY}"
+    fi
 fi
 
 if ! docker buildx build \

@@ -1,13 +1,18 @@
+ARG BASE_IMAGE_REGISTRY=ghcr.io/flavioheleno/php-ext-farm
 ARG PHP_VERSION=8.3
 ARG DEBIAN_VERSION=bookworm
-FROM ghcr.io/flavioheleno/php-ext-farm/php:${PHP_VERSION}-${DEBIAN_VERSION}
+FROM ${BASE_IMAGE_REGISTRY}/php:${PHP_VERSION}-${DEBIAN_VERSION}
 
-# OCI Image Labels
+# Re-declare build args for use after FROM
+ARG PHP_VERSION
+ARG DEBIAN_VERSION
 ARG BUILD_DATE
 ARG EXTENSION_NAME
 ARG EXTENSION_VERSION
 ARG TARGETARCH
 ARG TARGETVARIANT
+
+# OCI Image Labels
 LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
       org.opencontainers.image.source="https://github.com/flavioheleno/php-ext-farm/blob/main/docker/Dockerfile.debian" \
       org.opencontainers.image.created="${BUILD_DATE}" \
