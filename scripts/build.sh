@@ -12,6 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 CONFIG_FILE="${ROOT_DIR}/extensions.json"
 OS_VERSIONS_FILE="${ROOT_DIR}/os-versions.json"
+PHP_VERSIONS_FILE="${ROOT_DIR}/php-versions.json"
 
 EXTENSION="${1:-}"
 EXTENSION_VERSION="${2:-}"
@@ -102,7 +103,7 @@ if [[ "${EXT_TYPE}" == "null" ]]; then
 fi
 
 # Check if PHP version is supported
-SUPPORTED_PHP_VERSIONS=$(jq -r '.php_versions[]' "${CONFIG_FILE}")
+SUPPORTED_PHP_VERSIONS=$(jq -r 'keys[]' "${PHP_VERSIONS_FILE}")
 PHP_SUPPORTED=false
 for v in ${SUPPORTED_PHP_VERSIONS}; do
     if [[ "$v" == "${PHP_VERSION}" ]]; then
