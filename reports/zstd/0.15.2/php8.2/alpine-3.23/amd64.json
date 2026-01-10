@@ -6,14 +6,12 @@
   "platform": "alpine",
   "platform_version": "3.23",
   "arch": "amd64",
-  "status": "failure",
-  "started_at": "2026-01-10T01:57:09Z",
-  "finished_at": "2026-01-10T01:57:09Z",
+  "status": "success",
+  "started_at": "2026-01-10T02:05:39Z",
+  "finished_at": "2026-01-10T02:05:53Z",
   "workflow_run_id": null,
   "run_attempt": 1,
-  "git_sha": "6f7f8263bd6e0a272e642429e1d4f4965d683c7f",
+  "git_sha": "7348aa1cda8dddfbbe7413e867734970293ac566",
   "log_url": null,
-  "asset_name": "zstd-0.15.2-php8.2-alpine-3.23-amd64.tar.gz",
-  "reason": "compile_error",
-  "error": "Compilation failed"
+  "asset_name": "zstd-0.15.2-php8.2-alpine-3.23-amd64.tar.gz"
 }
