@@ -159,10 +159,10 @@ jobs:
           
           ./scripts/build.sh \
             "${{ inputs.extension }}" \
+            "${{ inputs.extension_version }}" \
             "${{ matrix.php_version }}" \
             "${{ matrix.platform }}" \
             "${{ matrix.platform_version }}" \
-            "${{ inputs.extension_version }}" \
             "${{ matrix.arch }}" \
             "${CHANNEL}"
           

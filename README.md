@@ -284,8 +284,8 @@ Build extensions against the upcoming PHP version from the master branch of php/
 ./scripts/install.sh redis 6.3.0 next
 
 # Build locally
-./scripts/build.sh redis 8.3 alpine 3.20 6.0.2 amd64
-./scripts/build.sh redis next alpine 3.20 6.0.2 amd64  # ← PHP next
+./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 amd64
+./scripts/build.sh redis 6.0.2 next alpine 3.20 amd64  # ← PHP next
 ```
 
 **Use cases:**
@@ -337,7 +337,7 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 
 ```bash
 # Build dev extension version on PHP next
-./scripts/build.sh redis dev-abc1234 alpine 3.20 next amd64 dev
+./scripts/build.sh redis dev-abc1234 next alpine 3.20 amd64 dev
 
 # Artifact: redis-dev-abc1234-phpnext-alpine-3.20-amd64.tar.gz
 # Report: {php_version: "next", channel: "dev", ...}
@@ -353,12 +353,12 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 ### Build a single extension
 
 ```bash
-./scripts/build.sh <extension> <php_version> <platform> <platform_version> [extension_version] [arch]
+./scripts/build.sh <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel]
 
 # Examples:
-./scripts/build.sh redis 8.3 alpine 3.20 6.0.2
-./scripts/build.sh redis 8.3 alpine 3.20 6.0.2 arm64
-./scripts/build.sh imagick 8.4 debian bookworm 3.7.0 amd64
+./scripts/build.sh redis 6.0.2 8.3 alpine 3.20
+./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 arm64
+./scripts/build.sh imagick 3.7.0 8.4 debian bookworm amd64
 ```
 
 ### Check for new releases
