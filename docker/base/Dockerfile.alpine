@@ -4,6 +4,7 @@ FROM alpine:${ALPINE_VERSION}
 # OCI Image Labels
 ARG BUILD_DATE
 ARG PHP_VERSION
+ARG ALPINE_VERSION
 ARG TARGETARCH
 ARG TARGETVARIANT
 LABEL org.opencontainers.image.url="https://github.com/flavioheleno/php-ext-farm" \
@@ -53,7 +54,7 @@ RUN apk add --no-cache \
 
 # Build PHP from source
 WORKDIR /usr/src/php
-RUN if [ -n "$PHP_VERSION_TAG" ]; then \
+RUN if [ -n "${PHP_VERSION_TAG}" ]; then \
       # Download official tarball for releases (much faster than git clone)
       echo "Downloading PHP ${PHP_VERSION_TAG} from php.net..." && \
       curl -fsSL "https://www.php.net/distributions/${PHP_VERSION_TAG}.tar.xz" -o php.tar.xz && \
@@ -67,8 +68,11 @@ RUN if [ -n "$PHP_VERSION_TAG" ]; then \
     else \
       # Use git for development versions (next/master)
       echo "Cloning PHP from branch ${PHP_VERSION_BRANCH}..." && \
-      git clone --depth 1 --branch "$PHP_VERSION_BRANCH" https://github.com/php/php-src.git .; \
+      git clone --depth 1 --branch "${PHP_VERSION_BRANCH}" https://github.com/php/php-src.git .; \
     fi && \
+    export CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" && \
+    export CXXFLAGS="${CFLAGS}" && \
+    export LDFLAGS="-Wl,-O1 -pie" && \
     ./buildconf --force && \
     ./configure \
       --prefix=/usr/local \
@@ -90,6 +94,7 @@ RUN if [ -n "$PHP_VERSION_TAG" ]; then \
       --with-sodium \
       --with-zlib && \
     make -j"$(nproc)" && \
+    find -type f -name '*.a' -delete && \
     make install && \
     mkdir -p /usr/local/etc/php/conf.d && \
     php --version && \
