@@ -87,6 +87,7 @@ jobs:
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      manifest_matrix: ${{ steps.matrix.outputs.manifest_matrix }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -126,8 +127,33 @@ jobs:
             ]}
           ')
           
+          # Create manifest matrix (one entry per php_version/platform/version, no arch)
+          MANIFEST_MATRIX=$(jq -c -n --arg php_ver "${{ inputs.php_version || 'all' }}" \
+                           --arg platform "${{ inputs.platform || 'all' }}" \
+                           --slurpfile php_versions php-versions.json \
+                           --slurpfile os_versions os-versions.json '
+            (if $php_ver == "all" then ($php_versions[0] | keys) else [$php_ver] end) as $php_list |
+            (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
+            
+            {include: [
+              if ($platform_list | index("alpine")) then
+                $os_versions[0].alpine[] as $osv |
+                $php_list[] as $php |
+                {php_version: $php, platform: "alpine", platform_version: $osv}
+              else empty end,
+              
+              if ($platform_list | index("debian")) then
+                $os_versions[0].debian[] as $osv |
+                $php_list[] as $php |
+                {php_version: $php, platform: "debian", platform_version: $osv}
+              else empty end
+            ]}
+          ')
+          
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
+          echo "manifest_matrix=${MANIFEST_MATRIX}" >> $GITHUB_OUTPUT
           echo "Generated $(echo "$MATRIX" | jq '.include | length') PHP build jobs"
+          echo "Generated $(echo "$MANIFEST_MATRIX" | jq '.include | length') manifest jobs"
 
   build:
     name: Build PHP ${{ matrix.php_version }} on ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
@@ -216,7 +242,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.prepare.outputs.manifest_matrix) }}
     steps:
       - name: Log in to Container Registry
         uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
