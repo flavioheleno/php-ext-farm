@@ -233,6 +233,7 @@ jobs:
           file: docker/base/php/Dockerfile.${{ matrix.platform }}
           platforms: ${{ steps.platform.outputs.platform }}
           push: true
+          provenance: false
           tags: ${{ env.REGISTRY }}/${{ env.PHP_IMAGE_NAME }}:${{ steps.tag.outputs.tag }}-${{ matrix.arch }}
           build-args: |
             BASE_IMAGE_REGISTRY=${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}

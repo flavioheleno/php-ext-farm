@@ -200,6 +200,7 @@ jobs:
           file: docker/base/os/Dockerfile.${{ matrix.platform }}
           platforms: ${{ steps.platform.outputs.platform }}
           push: true
+          provenance: false
           tags: ${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}/${{ matrix.platform }}:${{ steps.tag.outputs.tag }}-${{ matrix.arch }}
           build-args: |
             ${{ matrix.platform == 'alpine' && format('ALPINE_VERSION={0}', matrix.platform_version) || format('DEBIAN_VERSION={0}', matrix.platform_version) }}
