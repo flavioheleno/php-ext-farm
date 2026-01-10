@@ -33,6 +33,7 @@ permissions:
 
 jobs:
   prepare:
+    name: Prepare extension list
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       extensions: ${{ steps.list.outputs.extensions }}
@@ -47,6 +48,7 @@ jobs:
           echo "Extensions to build: ${EXTENSIONS}"
 
   build-release:
+    name: Build ${{ matrix.extension }} (release)
     needs: prepare
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     strategy:
@@ -87,6 +89,7 @@ jobs:
             -f rebuild="${{ inputs.force_rebuild || 'false' }}"
 
   build-dev:
+    name: Build ${{ matrix.extension }} (dev)
     needs: prepare
     if: inputs.build_dev != false
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}

@@ -25,6 +25,7 @@ permissions:
 
 jobs:
   check-extension-releases:
+    name: Check for new extension releases
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       updates: ${{ steps.check.outputs.updates }}

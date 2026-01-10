@@ -70,6 +70,7 @@ permissions:
 
 jobs:
   prepare:
+    name: Prepare build matrix
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
@@ -112,6 +113,7 @@ jobs:
           echo "Generated $(echo "$MATRIX" | jq '.include | length') matrix entries"
 
   build:
+    name: Build ${{ inputs.extension }} ${{ inputs.extension_version }} on PHP ${{ matrix.php_version }} ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 60

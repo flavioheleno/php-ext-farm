@@ -36,6 +36,7 @@ permissions:
 
 jobs:
   check-release:
+    name: Check if ${{ inputs.extension }} ${{ inputs.extension_version }} needs building
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       should_build: ${{ steps.check.outputs.should_build }}
@@ -69,6 +70,7 @@ jobs:
           fi
 
   build:
+    name: Build ${{ inputs.extension }} ${{ inputs.extension_version }}
     needs: check-release
     if: needs.check-release.outputs.should_build == 'true'
     uses: ./.github/workflows/build.yml
@@ -78,6 +80,7 @@ jobs:
       runner: ${{ inputs.runner || 'ubuntu-latest' }}
 
   release:
+    name: Create GitHub release for ${{ inputs.extension }} ${{ inputs.extension_version }}
     needs: [check-release, build]
     if: needs.check-release.outputs.should_build == 'true'
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
@@ -148,6 +151,7 @@ jobs:
             release/*.tar.gz
 
   update-version-cache:
+    name: Update version cache for ${{ inputs.extension }}
     needs: release
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     permissions:
