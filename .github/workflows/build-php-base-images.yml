@@ -109,20 +109,30 @@ jobs:
                 $os_versions[0].alpine[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
-                ($php_versions[0][$php].tag // "") as $php_tag |
-                ($php_versions[0][$php].branch // "master") as $php_branch |
-                ($php_versions[0][$php].sha256 // "") as $php_sha256 |
-                {php_version: $php, php_tag: $php_tag, php_branch: $php_branch, php_sha256: $php_sha256, platform: "alpine", platform_version: $osv, arch: $arch}
+                # Check if this combination is excluded
+                if (($extensions[0].platforms.alpine.exclude // []) | any(.version == $osv and .arch == $arch)) then
+                  empty
+                else
+                  ($php_versions[0][$php].tag // "") as $php_tag |
+                  ($php_versions[0][$php].branch // "master") as $php_branch |
+                  ($php_versions[0][$php].sha256 // "") as $php_sha256 |
+                  {php_version: $php, php_tag: $php_tag, php_branch: $php_branch, php_sha256: $php_sha256, platform: "alpine", platform_version: $osv, arch: $arch}
+                end
               else empty end,
               
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
-                ($php_versions[0][$php].tag // "") as $php_tag |
-                ($php_versions[0][$php].branch // "master") as $php_branch |
-                ($php_versions[0][$php].sha256 // "") as $php_sha256 |
-                {php_version: $php, php_tag: $php_tag, php_branch: $php_branch, php_sha256: $php_sha256, platform: "debian", platform_version: $osv, arch: $arch}
+                # Check if this combination is excluded
+                if (($extensions[0].platforms.debian.exclude // []) | any(.version == $osv and .arch == $arch)) then
+                  empty
+                else
+                  ($php_versions[0][$php].tag // "") as $php_tag |
+                  ($php_versions[0][$php].branch // "master") as $php_branch |
+                  ($php_versions[0][$php].sha256 // "") as $php_sha256 |
+                  {php_version: $php, php_tag: $php_tag, php_branch: $php_branch, php_sha256: $php_sha256, platform: "debian", platform_version: $osv, arch: $arch}
+                end
               else empty end
             ]}
           ')

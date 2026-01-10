@@ -94,13 +94,23 @@ jobs:
               if ($platform_list | index("alpine")) then
                 $os_versions[0].alpine[] as $osv |
                 $architectures[] as $arch |
-                {platform: "alpine", platform_version: $osv, arch: $arch}
+                # Check if this combination is excluded
+                if (($extensions[0].platforms.alpine.exclude // []) | any(.version == $osv and .arch == $arch)) then
+                  empty
+                else
+                  {platform: "alpine", platform_version: $osv, arch: $arch}
+                end
               else empty end,
               
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian[] as $osv |
                 $architectures[] as $arch |
-                {platform: "debian", platform_version: $osv, arch: $arch}
+                # Check if this combination is excluded
+                if (($extensions[0].platforms.debian.exclude // []) | any(.version == $osv and .arch == $arch)) then
+                  empty
+                else
+                  {platform: "debian", platform_version: $osv, arch: $arch}
+                end
               else empty end
             ]}
           ')
