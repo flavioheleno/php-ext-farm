@@ -406,11 +406,14 @@ The main configuration file defines:
 - `php_versions`: List of PHP versions to build for
 - `architectures`: List of architectures to build for (amd64, arm64, arm32v6, arm32v7)
 - `platforms`: Platform configurations (Alpine/Debian versions)
+  - `versions`: List of OS versions to build for
+  - `exclude`: Optional array of platform-level exclusion rules (see below)
 - `extensions`: Extension definitions including:
   - `type`: Extension type (pecl, git, etc.)
   - `pecl_name`: PECL package name
   - `track_url`: GitHub repository to track releases
   - `dependencies`: Build and runtime dependencies per platform
+  - `exclude`: Optional array of extension-level exclusion rules (see below)
 
 ### php-versions.json
 
@@ -427,6 +430,80 @@ Maps PHP versions to their git tags and branches:
 ```
 
 This file is automatically updated by `check-php-releases.yml` when new PHP versions are released.
+
+### Exclusion Rules
+
+The build system supports excluding specific OS/architecture combinations that are incompatible. This uses a wildcard-based exclusion system with two levels:
+
+#### Platform-Level Exclusions
+
+Defined within each platform object, these apply to all extensions built on that platform:
+
+```json
+{
+  "platforms": {
+    "alpine": {
+      "versions": ["3.19", "3.20", "3.21"],
+      "exclude": [
+        {"version": "3.19", "arch": "arm32*"},
+        {"version": "3.20", "arch": "arm32v6"}
+      ]
+    },
+    "debian": {
+      "versions": ["bookworm", "bullseye"],
+      "exclude": [
+        {"version": "bullseye", "arch": "arm32v6"}
+      ]
+    }
+  }
+}
+```
+
+**Note:** Platform-level excludes don't include an `os` field (it's implicit from the parent context).
+
+#### Extension-Level Exclusions
+
+Defined within each extension, these override or supplement platform exclusions:
+
+```json
+{
+  "extensions": {
+    "myext": {
+      "type": "pecl",
+      "pecl_name": "myext",
+      "exclude": [
+        {"os": "alpine", "version": "3.21", "arch": "amd64"},
+        {"os": "*", "version": "bullseye", "arch": "arm64"}
+      ],
+      "dependencies": { ... }
+    }
+  }
+}
+```
+
+**Note:** Extension-level excludes require an `os` field for cross-platform rules.
+
+#### Wildcard Patterns
+
+- `*` matches anything (e.g., `"os": "*"` matches all OSes)
+- `arm32*` matches `arm32v6` and `arm32v7`
+- `3.*` matches `3.19`, `3.20`, `3.21`, etc.
+- Literal values match exactly
+
+#### Validation
+
+Run the validation script to check your configuration:
+
+```bash
+./scripts/validate-config.sh
+```
+
+This checks for:
+- Valid JSON syntax
+- Platform excludes don't have `os` field
+- Extension excludes have required `os` field
+- Version/architecture references exist
+- No conflicting rules
 
 ### Adding a New Extension
 
