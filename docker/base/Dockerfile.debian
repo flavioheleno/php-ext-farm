@@ -18,6 +18,7 @@ SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
 # Arguments for PHP version
 ARG PHP_VERSION_TAG
+ARG PHP_VERSION_SHA256
 ARG PHP_VERSION_BRANCH=master
 
 # Upgrade system packages and install PHP build dependencies
@@ -52,8 +53,19 @@ RUN apt-get update && \
 # Build PHP from source
 WORKDIR /usr/src/php
 RUN if [ -n "$PHP_VERSION_TAG" ]; then \
-      git clone --depth 1 --branch "$PHP_VERSION_TAG" https://github.com/php/php-src.git .; \
+      # Download official tarball for releases (much faster than git clone)
+      echo "Downloading PHP ${PHP_VERSION_TAG} from php.net..." && \
+      curl -fsSL "https://www.php.net/distributions/${PHP_VERSION_TAG}.tar.xz" -o php.tar.xz && \
+      \
+      # Verify SHA256 checksum
+      echo "${PHP_VERSION_SHA256}  php.tar.xz" | sha256sum -c - && \
+      \
+      # Extract tarball
+      tar -xf php.tar.xz --strip-components=1 && \
+      rm php.tar.xz; \
     else \
+      # Use git for development versions (next/master)
+      echo "Cloning PHP from branch ${PHP_VERSION_BRANCH}..." && \
       git clone --depth 1 --branch "$PHP_VERSION_BRANCH" https://github.com/php/php-src.git .; \
     fi && \
     ./buildconf --force && \

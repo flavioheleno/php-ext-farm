@@ -113,6 +113,7 @@ fi
 
 PHP_VERSION_TAG=$(jq -r ".\"$PHP_VERSION\".tag // \"\"" "$PHP_VERSIONS_FILE")
 PHP_VERSION_BRANCH=$(jq -r ".\"$PHP_VERSION\".branch // \"master\"" "$PHP_VERSIONS_FILE")
+PHP_VERSION_SHA256=$(jq -r ".\"$PHP_VERSION\".sha256 // \"\"" "$PHP_VERSIONS_FILE")
 
 # Determine Dockerfile
 DOCKERFILE="${ROOT_DIR}/docker/base/Dockerfile.${PLATFORM}"
@@ -158,6 +159,7 @@ BUILD_ARGS=(
     --build-arg "PHP_VERSION=${PHP_VERSION}"
     --build-arg "PHP_VERSION_TAG=${PHP_VERSION_TAG}"
     --build-arg "PHP_VERSION_BRANCH=${PHP_VERSION_BRANCH}"
+    --build-arg "PHP_VERSION_SHA256=${PHP_VERSION_SHA256}"
 )
 
 if [[ "$PLATFORM" == "alpine" ]]; then
