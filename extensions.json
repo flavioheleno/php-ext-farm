@@ -30,7 +30,11 @@
         "bullseye",
         "trixie"
       ],
-      "exclude": []
+      "exclude": [
+        {"version":"trixie","arch":"arm32v6"},
+        {"version":"bullseye","arch":"arm32v6"},
+        {"version":"bookworm","arch":"arm32v6"}
+      ]
     }
   },
   "extensions": {
