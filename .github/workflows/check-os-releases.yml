@@ -38,17 +38,17 @@ jobs:
         id: check
         run: |
           UPDATES="[]"
-          
+
           # Fetch Alpine releases from their API
           echo "Fetching Alpine releases..."
           ALPINE_RELEASES=$(curl -fsSL https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/latest-releases.yaml)
-          
+
           # Get the latest stable version
           LATEST_STABLE=$(echo "$ALPINE_RELEASES" | grep -A 10 'flavor: alpine-standard' | grep 'version:' | head -1 | awk '{print $2}' | cut -d. -f1,2)
-          
+
           if [[ -n "$LATEST_STABLE" ]]; then
             echo "Latest stable Alpine: $LATEST_STABLE"
-            
+
             # Check if this version exists in our os-versions.json
             if ! jq -e --arg v "$LATEST_STABLE" '.alpine | index($v)' os-versions.json > /dev/null 2>&1; then
               echo "New Alpine version found: $LATEST_STABLE"
@@ -56,7 +56,7 @@ jobs:
                 '. + [{"platform": "alpine", "version": $v}]')
             fi
           fi
-          
+
           echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
           echo "Found $(echo "$UPDATES" | jq 'length') Alpine updates"
 
@@ -72,16 +72,16 @@ jobs:
         id: check
         run: |
           UPDATES="[]"
-          
+
           # Check Debian stable releases
           echo "Fetching Debian releases..."
-          
+
           # Get current stable codename from Debian
           CURRENT_STABLE=$(curl -fsSL https://www.debian.org/releases/stable/ | grep -oP 'Debian [0-9]+ <em>\K[a-z]+' | head -1)
-          
+
           if [[ -n "$CURRENT_STABLE" ]]; then
             echo "Current stable Debian: $CURRENT_STABLE"
-            
+
             # Check if this version exists in our os-versions.json
             if ! jq -e --arg v "$CURRENT_STABLE" '.debian | index($v)' os-versions.json > /dev/null 2>&1; then
               echo "New Debian version found: $CURRENT_STABLE"
@@ -89,7 +89,7 @@ jobs:
                 '. + [{"platform": "debian", "version": $v}]')
             fi
           fi
-          
+
           echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
           echo "Found $(echo "$UPDATES" | jq 'length') Debian updates"
 
@@ -116,39 +116,39 @@ jobs:
           DEBIAN_UPDATES: ${{ needs.check-debian-releases.outputs.updates }}
         run: |
           PR_BODY="## New OS Versions Detected\n\n"
-          
+
           # Process Alpine updates
           if [[ "$ALPINE_UPDATES" != "[]" ]]; then
             echo "$ALPINE_UPDATES" | jq -c '.[]' | while read -r update; do
               VERSION=$(echo "$update" | jq -r '.version')
-              
+
               echo "Adding Alpine ${VERSION} to os-versions.json"
               jq --arg v "${VERSION}" \
                 '.alpine.versions += [$v] | .alpine.versions |= sort' \
                 os-versions.json > os-versions.json.tmp
               mv os-versions.json.tmp os-versions.json
-              
+
               PR_BODY="${PR_BODY}### Alpine $VERSION\n\n"
             done
           fi
-          
+
           # Process Debian updates
           if [[ "$DEBIAN_UPDATES" != "[]" ]]; then
             echo "$DEBIAN_UPDATES" | jq -c '.[]' | while read -r update; do
               VERSION=$(echo "$update" | jq -r '.version')
-              
+
               echo "Adding Debian ${VERSION} to os-versions.json"
               jq --arg v "${VERSION}" \
                 '.debian.versions += [$v]' \
                 os-versions.json > os-versions.json.tmp
               mv os-versions.json.tmp os-versions.json
-              
+
               PR_BODY="${PR_BODY}### Debian $VERSION\n\n"
             done
           fi
-          
+
           cat os-versions.json
-          
+
           echo "PR_BODY<<EOF" >> $GITHUB_ENV
           echo -e "$PR_BODY" >> $GITHUB_ENV
           echo "**Action required:** Please add these versions to \`extensions.json\` platforms section." >> $GITHUB_ENV
@@ -161,7 +161,7 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
-          
+
           git commit -m "Update OS versions
 
           $(echo '${{ needs.check-alpine-releases.outputs.updates }}${{ needs.check-debian-releases.outputs.updates }}' | jq -r '.[] | "- \(.platform | ascii_upcase): \(.version)"')"

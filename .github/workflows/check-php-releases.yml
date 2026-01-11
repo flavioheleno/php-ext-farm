@@ -38,55 +38,55 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           UPDATES="[]"
-          
+
           # Fetch active PHP releases from php.net
           echo "Fetching active PHP releases from php.net..."
           ACTIVE_RELEASES=$(curl -fsSL https://www.php.net/releases/active.php)
-          
+
           for php_version in $(jq -r 'keys[]' php-versions.json); do
             BRANCH=$(jq -r --arg v "$php_version" '.[$v].branch // ""' php-versions.json)
             CURRENT_TAG=$(jq -r --arg v "$php_version" '.[$v].tag // ""' php-versions.json)
-            
+
             # Skip 'next' version - it always tracks master HEAD
             if [[ "$php_version" == "next" ]]; then
               echo "Skipping next (tracks master HEAD)"
               continue
             fi
-            
+
             # Skip if no branch defined
             if [[ -z "$BRANCH" ]]; then
               echo "No branch defined for PHP $php_version, skipping"
               continue
             fi
-            
+
             # Get latest version and SHA256 from active.php
             VERSION_DATA=$(echo "$ACTIVE_RELEASES" | jq -r --arg v "$php_version" '."8"[$v] // empty')
-            
+
             if [[ -z "$VERSION_DATA" ]]; then
               echo "Could not find PHP $php_version in active releases"
               continue
             fi
-            
+
             LATEST_VERSION=$(echo "$VERSION_DATA" | jq -r '.version // ""')
             LATEST_TAG="php-${LATEST_VERSION}"
-            
+
             # Get SHA256 for tar.xz (we use this format)
             SHA256=$(echo "$VERSION_DATA" | jq -r '.source[] | select(.filename | endswith(".tar.xz")) | .sha256 // ""')
-            
+
             if [[ -z "$LATEST_VERSION" || -z "$SHA256" ]]; then
               echo "Could not get version or SHA256 for PHP $php_version"
               continue
             fi
-            
+
             echo "PHP $php_version: current=$CURRENT_TAG, latest=$LATEST_TAG, sha256=$SHA256"
-            
+
             if [[ -n "$LATEST_TAG" && "$LATEST_TAG" != "$CURRENT_TAG" ]]; then
               echo "Update found: $php_version ($CURRENT_TAG -> $LATEST_TAG)"
               UPDATES=$(echo "$UPDATES" | jq --arg v "$php_version" --arg t "$LATEST_TAG" --arg s "$SHA256" \
                 '. + [{"version": $v, "tag": $t, "sha256": $s}]')
             fi
           done
-          
+
           echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
           echo "Found $(echo "$UPDATES" | jq 'length') updates"
 
@@ -97,16 +97,16 @@ jobs:
             VERSION=$(echo "$update" | jq -r '.version')
             TAG=$(echo "$update" | jq -r '.tag')
             SHA256=$(echo "$update" | jq -r '.sha256')
-            
+
             echo "Updating PHP $VERSION to $TAG (sha256: ${SHA256:0:16}...)"
-            
+
             # Update the tag and sha256 in php-versions.json
             jq --arg v "$VERSION" --arg t "$TAG" --arg s "$SHA256" \
               '.[$v].tag = $t | .[$v].sha256 = $s' \
               php-versions.json > php-versions.json.tmp
             mv php-versions.json.tmp php-versions.json
           done
-          
+
           cat php-versions.json
 
       - name: Commit and push changes
@@ -127,7 +127,7 @@ jobs:
         run: |
           echo '${{ steps.check.outputs.updates }}' | jq -c '.[]' | while read -r update; do
             VERSION=$(echo "$update" | jq -r '.version')
-            
+
             echo "Triggering PHP base image build for PHP $VERSION"
             gh workflow run build-php-base-images.yml -f php_version="$VERSION"
           done

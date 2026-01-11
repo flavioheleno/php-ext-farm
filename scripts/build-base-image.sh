@@ -171,7 +171,7 @@ fi
 # Build the image
 if docker buildx version &> /dev/null; then
     echo "Building with docker buildx..."
-    
+
     if ! docker buildx build \
         --platform "${DOCKER_PLATFORM}" \
         "${BUILD_ARGS[@]}" \
@@ -185,7 +185,7 @@ if docker buildx version &> /dev/null; then
 else
     echo "Building with standard docker build..."
     echo "Note: Cross-platform builds require docker buildx"
-    
+
     if ! docker build \
         "${BUILD_ARGS[@]}" \
         -t "${FULL_TAG}" \

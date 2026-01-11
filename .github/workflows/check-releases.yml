@@ -38,48 +38,48 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           UPDATES="[]"
-          
+
           for ext in $(jq -r '.extensions | keys[]' extensions.json); do
             TRACK_URL=$(jq -r ".extensions.${ext}.track_url" extensions.json)
-            
+
             # Skip non-GitHub URLs
             if [[ "$TRACK_URL" != *"github.com"* ]]; then
               echo "Skipping ${ext}: non-GitHub URL"
               continue
             fi
-            
+
             REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||')
-            
+
             # Get latest release or tag (with proper error handling)
             LATEST=""
             if RELEASE_DATA=$(gh api "repos/${REPO_PATH}/releases/latest" 2>/dev/null); then
               LATEST=$(echo "$RELEASE_DATA" | jq -r '.tag_name // empty')
             fi
-            
+
             if [[ -z "$LATEST" ]]; then
               if TAG_DATA=$(gh api "repos/${REPO_PATH}/tags?per_page=1" 2>/dev/null); then
                 LATEST=$(echo "$TAG_DATA" | jq -r '.[0].name // empty')
               fi
             fi
-            
+
             if [[ -z "$LATEST" ]]; then
               echo "Warning: Could not get version for ${ext}"
               continue
             fi
-            
+
             # Get cached version
             CACHED_FILE=".versions/${ext}.txt"
             CACHED=""
             if [[ -f "$CACHED_FILE" ]]; then
               CACHED=$(cat "$CACHED_FILE")
             fi
-            
+
             if [[ -n "$LATEST" && "$LATEST" != "$CACHED" ]]; then
               UPDATES=$(echo "$UPDATES" | jq --arg ext "$ext" --arg ver "$LATEST" '. + [{"extension": $ext, "version": $ver}]')
               echo "Update found: ${ext} ${CACHED:-<none>} -> ${LATEST}"
             fi
           done
-          
+
           echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
           echo "Found $(echo "$UPDATES" | jq length) updates"
 
@@ -91,7 +91,7 @@ jobs:
           echo '${{ steps.check.outputs.updates }}' | jq -c '.[]' | while read -r update; do
             EXT=$(echo "$update" | jq -r '.extension')
             VER=$(echo "$update" | jq -r '.version')
-            
+
             gh workflow run build.yml \
               -f extension="$EXT" \
               -f extension_version="$VER"

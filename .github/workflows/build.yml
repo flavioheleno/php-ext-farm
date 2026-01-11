@@ -91,27 +91,34 @@ jobs:
             (if $php_vers == "all" then ($php_versions[0] | keys) else ($php_vers | split(",")) end) as $php_list |
             (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
             (if $platforms == "all" then ["alpine", "debian"] else ($platforms | split(",")) end) as $platform_list |
-            
-            # Generate matrix
+
+            # Helper function to check if combination is excluded
+            def is_excluded($platform; $osv; $arch):
+              $os_versions[0][$platform].exclude // [] |
+              any(. as $excl | ($excl.version == $osv) and ($excl.arch == $arch));
+
+            # Generate matrix with exclude filtering
             {include: [
               # Alpine builds
               if ($platform_list | index("alpine")) then
                 $os_versions[0].alpine.versions[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
+                select(is_excluded("alpine"; $osv; $arch) | not) |
                 {php_version: $php, platform: "alpine", platform_version: $osv, arch: $arch}
               else empty end,
-              
-              # Debian builds  
+
+              # Debian builds
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian.versions[] as $osv |
                 $php_list[] as $php |
                 $architectures[] as $arch |
+                select(is_excluded("debian"; $osv; $arch) | not) |
                 {php_version: $php, platform: "debian", platform_version: $osv, arch: $arch}
               else empty end
             ]}
           ')
-          
+
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
           echo "Generated $(echo "$MATRIX" | jq '.include | length') matrix entries"
 
@@ -139,7 +146,7 @@ jobs:
           PECL_NAME=$(jq -r ".extensions.${EXT}.pecl_name" extensions.json)
           BUILD_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.build // [] | join(\" \")" extensions.json)
           RUNTIME_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.runtime // [] | join(\" \")" extensions.json)
-          
+
           echo "pecl_name=${PECL_NAME}" >> $GITHUB_OUTPUT
           echo "build_deps=${BUILD_DEPS}" >> $GITHUB_OUTPUT
           echo "runtime_deps=${RUNTIME_DEPS}" >> $GITHUB_OUTPUT
@@ -148,7 +155,7 @@ jobs:
         id: build
         run: |
           chmod +x scripts/build.sh
-          
+
           # Determine channel based on version format
           VERSION="${{ inputs.extension_version }}"
           if [[ "$VERSION" == dev-* ]]; then
@@ -156,7 +163,7 @@ jobs:
           else
             CHANNEL="release"
           fi
-          
+
           ./scripts/build.sh \
             "${{ inputs.extension }}" \
             "${{ inputs.extension_version }}" \
@@ -165,7 +172,7 @@ jobs:
             "${{ matrix.platform_version }}" \
             "${{ matrix.arch }}" \
             "${CHANNEL}"
-          
+
           # Check if artifact was generated
           ARTIFACT_DIR="output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}/${{ matrix.arch }}"
           if [ -d "$ARTIFACT_DIR" ] && ls "$ARTIFACT_DIR"/*.so 1>/dev/null 2>&1; then
@@ -220,7 +227,7 @@ jobs:
           EXT="${{ inputs.extension }}"
           VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
-          
+
           mkdir -p release
           find artifacts/ -name "*.tar.gz" -exec cp {} release/ \; 2>/dev/null || true
           if [ -d release ] && [ "$(ls -A release 2>/dev/null)" ]; then
@@ -245,32 +252,32 @@ jobs:
         run: |
           # Collect all JSON reports
           mkdir -p dataset
-          
+
           # Find all report JSON files
           REPORTS=$(find artifacts/ -name "*.json" -path "*/reports/*" 2>/dev/null || true)
-          
+
           if [ -z "$REPORTS" ]; then
             echo "No reports found"
             echo "has_reports=false" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           echo "Found reports:"
           echo "$REPORTS"
-          
+
           # Merge all reports into a single JSON array
           jq -s '.' $REPORTS > dataset/latest.json
-          
+
           # Create timestamped version organized by year
           YEAR=$(date -u +"%Y")
           TIMESTAMP=$(date -u +"%m-%d")
           mkdir -p "dataset/${YEAR}"
           cp dataset/latest.json "dataset/${YEAR}/${TIMESTAMP}.json"
-          
+
           echo "has_reports=true" >> $GITHUB_OUTPUT
           echo "year=${YEAR}" >> $GITHUB_OUTPUT
           echo "timestamp=${TIMESTAMP}" >> $GITHUB_OUTPUT
-          
+
           echo "Aggregated $(jq length dataset/latest.json) reports"
           jq '.' dataset/latest.json
 
@@ -283,20 +290,20 @@ jobs:
           TIMESTAMP="${{ steps.aggregate.outputs.timestamp }}"
           EXTENSION="${{ inputs.extension }}"
           VERSION="${{ steps.prepare.outputs.clean_version }}"
-          
+
           # Read report content and encode as base64
           LATEST_CONTENT=$(base64 -w 0 dataset/latest.json)
           YEARLY_CONTENT=$(base64 -w 0 "dataset/${YEAR}/${TIMESTAMP}.json")
-          
+
           # Function to create or update file via GitHub API
           update_file() {
             local path="$1"
             local content="$2"
             local message="$3"
-            
+
             # Get current file SHA if it exists
             SHA=$(gh api "repos/${{ github.repository }}/contents/${path}?ref=dataset" --jq '.sha' 2>/dev/null || echo "")
-            
+
             if [ -n "$SHA" ]; then
               # Update existing file
               gh api -X PUT "repos/${{ github.repository }}/contents/${path}" \
@@ -326,13 +333,13 @@ jobs:
               }
             fi
           }
-          
+
           # Update latest.json
           update_file "latest.json" "$LATEST_CONTENT" "Update build reports - ${YEAR}-${TIMESTAMP} - ${EXTENSION} v${VERSION}"
-          
+
           # Update yearly report
           update_file "${YEAR}/${TIMESTAMP}.json" "$YEARLY_CONTENT" "Add ${YEAR}/${TIMESTAMP} report - ${EXTENSION} v${VERSION}"
-          
+
           echo "Successfully pushed reports to dataset branch via GitHub API"
 
       - name: Create GitHub Release
@@ -343,37 +350,37 @@ jobs:
           EXT="${{ inputs.extension }}"
           VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
           RELEASE_TAG="${EXT}-${VERSION}"
-          
+
           # Delete existing release if it exists
           gh release delete "$RELEASE_TAG" --yes 2>/dev/null || true
           git push origin --delete "$RELEASE_TAG" 2>/dev/null || true
-          
+
           # Create release notes
           cat > release_notes.md << EOF
           # ${EXT} ${VERSION}
-          
+
           Pre-compiled PHP extension binaries.
-          
+
           ## Supported Configurations
-          
+
           - **PHP Versions**: $(jq -r 'keys | join(", ")' php-versions.json)
           - **Architectures**: $(jq -r '.architectures | join(", ")' extensions.json)
           - **Alpine Linux**: $(jq -r '.alpine | join(", ")' os-versions.json)
           - **Debian**: $(jq -r '.debian | join(", ")' os-versions.json)
-          
+
           ## Installation
-          
+
           \`\`\`bash
           tar -xzf ${EXT}-${VERSION}-php<version>-<platform>-<platform_version>-<arch>.tar.gz
           cp ${EXT}.so \$(php -r "echo ini_get('extension_dir');")
           echo "extension=${EXT}.so" >> \$(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
           \`\`\`
-          
+
           Check \`metadata.json\` inside each archive for runtime dependencies.
-          
+
           Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           EOF
-          
+
           # Create release with artifacts
           gh release create "$RELEASE_TAG" \
             --title "${EXT} ${VERSION}" \

@@ -89,7 +89,7 @@ jobs:
                            --slurpfile extensions extensions.json '
             (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
             (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
-            
+
             {include: [
               if ($platform_list | index("alpine")) then
                 $os_versions[0].alpine.versions[] as $osv |
@@ -101,7 +101,7 @@ jobs:
                   {platform: "alpine", platform_version: $osv, arch: $arch}
                 end
               else empty end,
-              
+
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian.versions[] as $osv |
                 $architectures[] as $arch |
@@ -114,25 +114,25 @@ jobs:
               else empty end
             ]}
           ')
-          
+
           # Create manifest matrix (one entry per platform/version, no arch)
           MANIFEST_MATRIX=$(jq -c -n --arg platform "${{ inputs.platform || 'all' }}" \
                            --slurpfile os_versions os-versions.json '
             (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
-            
+
             {include: [
               if ($platform_list | index("alpine")) then
                 $os_versions[0].alpine.versions[] as $osv |
                 {platform: "alpine", platform_version: $osv}
               else empty end,
-              
+
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian.versions[] as $osv |
                 {platform: "debian", platform_version: $osv}
               else empty end
             ]}
           ')
-          
+
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
           echo "manifest_matrix=${MANIFEST_MATRIX}" >> $GITHUB_OUTPUT
           echo "Generated $(echo "$MATRIX" | jq '.include | length') OS build jobs"
@@ -227,7 +227,7 @@ jobs:
       - name: Create and push OS manifest
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}/${{ matrix.platform }}:${{ matrix.platform_version }}"
-          
+
           IMAGES=""
           for arch in amd64 arm64 arm32v7 arm32v6; do
             ARCH_IMAGE="${IMAGE}-${arch}"
@@ -235,7 +235,7 @@ jobs:
               IMAGES="$IMAGES $ARCH_IMAGE"
             fi
           done
-          
+
           if [ -n "$IMAGES" ]; then
             echo "Creating OS manifest for: $IMAGES"
             docker manifest create "$IMAGE" $IMAGES --amend || true

@@ -54,14 +54,14 @@ run_test() {
     local arch="$5"
     local expected_exit="$6"  # 0 = excluded, 1 = allowed
     local expected_msg="$7"
-    
+
     TESTS_RUN=$((TESTS_RUN + 1))
-    
+
     local output
     local exit_code
     output=$("${CHECK_EXCLUSION}" "$extension" "$os" "$version" "$arch" "${TEST_CONFIG}" 2>&1) || exit_code=$?
     exit_code=${exit_code:-0}
-    
+
     if [[ $exit_code -eq $expected_exit ]]; then
         if [[ -z "$expected_msg" ]] || [[ "$output" == "$expected_msg" ]]; then
             echo "✓ $test_name"

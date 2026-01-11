@@ -44,7 +44,7 @@ generate_skip_report() {
     local reason="$1"
     local report_dir="${ROOT_DIR}/reports/${EXTENSION}/${EXTENSION_VERSION}/php${PHP_VERSION}/${PLATFORM}-${PLATFORM_VERSION}"
     mkdir -p "$report_dir"
-    
+
     jq -n \
       --arg extension "${EXTENSION}" \
       --arg extension_version "${EXTENSION_VERSION}" \
@@ -75,7 +75,7 @@ generate_skip_report() {
         log_url: null,
         asset_name: null
       }' > "${report_dir}/${ARCH}.json"
-    
+
     exit 0
 }
 
@@ -297,7 +297,7 @@ if ! docker buildx build \
     -f "${DOCKERFILE}" \
     "${ROOT_DIR}" 2>&1 | tee "${BUILD_LOG}"; then
     BUILD_STATUS="failure"
-    
+
     # Analyze build log to determine reason
     if grep -qiE "configure: error|configure: WARNING.*not found" "${BUILD_LOG}"; then
         BUILD_REASON="deps_missing"
@@ -323,12 +323,12 @@ if [[ "${BUILD_STATUS}" == "success" ]]; then
         BUILD_REASON="compile_error"
         BUILD_ERROR="Failed to extract extension from container - extension may not have been compiled"
     fi
-    
+
     # Extract external libraries if they exist (try to copy, ignore if not present)
     if [[ "${BUILD_STATUS}" == "success" ]]; then
         docker cp "${CONTAINER_ID}:/output/libs" "${OUTPUT_DIR}/" 2>/dev/null || true
     fi
-    
+
     docker rm "${CONTAINER_ID}"
 fi
 

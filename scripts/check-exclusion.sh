@@ -27,12 +27,12 @@ fi
 wildcard_match() {
     local pattern="$1"
     local value="$2"
-    
+
     # Convert wildcard pattern to regex
     # Escape special regex chars except *
     local regex_pattern="${pattern//./\\.}"
     regex_pattern="${regex_pattern//\*/.*}"
-    
+
     if [[ "$value" =~ ^${regex_pattern}$ ]]; then
         return 0
     else
@@ -50,7 +50,7 @@ if [[ "$platform_excludes" != "[]" ]]; then
         rule=$(echo "$platform_excludes" | jq ".[$i]")
         version_pattern=$(echo "$rule" | jq -r '.version')
         arch_pattern=$(echo "$rule" | jq -r '.arch')
-        
+
         # Check if version matches
         if wildcard_match "$version_pattern" "${VERSION}"; then
             # Check if arch matches
@@ -73,7 +73,7 @@ if [[ "$extension_excludes" != "[]" ]]; then
         os_pattern=$(echo "$rule" | jq -r '.os')
         version_pattern=$(echo "$rule" | jq -r '.version')
         arch_pattern=$(echo "$rule" | jq -r '.arch')
-        
+
         # Check if os matches
         if wildcard_match "$os_pattern" "${OS}"; then
             # Check if version matches

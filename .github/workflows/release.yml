@@ -55,12 +55,12 @@ jobs:
           RELEASE_TAG="${EXT}-${VERSION}"
           echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
-          
+
           if [[ "${{ inputs.rebuild }}" == "true" ]]; then
             echo "should_build=true" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           if gh release view "$RELEASE_TAG" &>/dev/null; then
             echo "Release $RELEASE_TAG already exists"
             echo "should_build=false" >> $GITHUB_OUTPUT
@@ -100,34 +100,34 @@ jobs:
         run: |
           cat > release_notes.md << EOF
           # ${{ inputs.extension }} v${{ needs.check-release.outputs.clean_version }}
-          
+
           ## Supported Configurations
-          
+
           ### PHP Versions
           $(jq -r 'keys | map("- PHP " + .) | join("\n")' php-versions.json)
-          
+
           ### Platforms
-          
+
           **Alpine Linux:**
           $(jq -r '.alpine | map("- Alpine " + .) | join("\n")' os-versions.json)
-          
+
           **Debian:**
           $(jq -r '.debian | map("- " + .) | join("\n")' os-versions.json)
-          
+
           ## Installation
-          
+
           Download the appropriate \`.tar.gz\` file for your PHP version and platform, then:
-          
+
           \`\`\`bash
           tar -xzf ${{ inputs.extension }}-<php_version>-<platform>-<platform_version>.tar.gz
           cp ${{ inputs.extension }}.so \$(php -r "echo ini_get('extension_dir');")
           echo "extension=${{ inputs.extension }}.so" >> \$(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
           \`\`\`
-          
+
           ## Runtime Dependencies
-          
+
           Check the \`metadata.json\` inside each archive for platform-specific runtime dependencies.
-          
+
           ---
           Built on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           EOF
@@ -137,13 +137,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RELEASE_TAG="${{ needs.check-release.outputs.release_tag }}"
-          
+
           # Delete existing release if rebuilding
           if [[ "${{ inputs.rebuild }}" == "true" ]]; then
             gh release delete "$RELEASE_TAG" --yes || true
             git push origin --delete "$RELEASE_TAG" || true
           fi
-          
+
           # Create release with all artifacts
           gh release create "$RELEASE_TAG" \
             --title "${{ inputs.extension }} v${{ needs.check-release.outputs.clean_version }}" \
@@ -165,10 +165,10 @@ jobs:
           VERSION="${{ inputs.extension_version }}"
           FILE_PATH=".versions/${EXTENSION}.txt"
           CONTENT=$(echo -n "$VERSION" | base64)
-          
+
           # Get current file SHA if it exists
           SHA=$(gh api "repos/${{ github.repository }}/contents/${FILE_PATH}" --jq '.sha' 2>/dev/null || echo "")
-          
+
           if [ -n "$SHA" ]; then
             # Update existing file
             gh api -X PUT "repos/${{ github.repository }}/contents/${FILE_PATH}" \
@@ -181,5 +181,5 @@ jobs:
               -f message="Add ${EXTENSION} version cache (${VERSION})" \
               -f content="${CONTENT}"
           fi
-          
+
           echo "Updated version cache for ${EXTENSION} to ${VERSION}"

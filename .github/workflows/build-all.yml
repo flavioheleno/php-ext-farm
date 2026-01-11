@@ -66,15 +66,15 @@ jobs:
           EXT="${{ matrix.extension }}"
           TRACK_URL=$(jq -r ".extensions.${EXT}.track_url" extensions.json)
           REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||')
-          
+
           # Get latest release or tag
           LATEST=$(gh api "repos/${REPO_PATH}/releases/latest" --jq '.tag_name' 2>/dev/null || \
                    gh api "repos/${REPO_PATH}/tags?per_page=1" --jq '.[0].name' 2>/dev/null || \
                    echo "")
-          
+
           # Clean version (remove 'v' prefix if present)
           CLEAN_VERSION=$(echo "$LATEST" | sed 's/^v//')
-          
+
           echo "version=${CLEAN_VERSION}" >> $GITHUB_OUTPUT
           echo "Latest release version for ${EXT}: ${CLEAN_VERSION}"
 
@@ -108,21 +108,21 @@ jobs:
           EXT="${{ matrix.extension }}"
           TRACK_URL=$(jq -r ".extensions.${EXT}.track_url" extensions.json)
           REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||' | sed 's|https://bitbucket.org/||')
-          
+
           # Get default branch name and HEAD commit
           DEFAULT_BRANCH=$(gh api "repos/${REPO_PATH}" --jq '.default_branch' 2>/dev/null || echo "main")
           HEAD_SHA=$(gh api "repos/${REPO_PATH}/commits/${DEFAULT_BRANCH}" --jq '.sha' 2>/dev/null || echo "")
-          
+
           if [[ -z "$HEAD_SHA" ]]; then
             echo "Could not get HEAD SHA for ${EXT}, skipping dev build"
             echo "version=" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           # Use short SHA as version (first 7 characters)
           SHORT_SHA="${HEAD_SHA:0:7}"
           DEV_VERSION="dev-${SHORT_SHA}"
-          
+
           echo "version=${DEV_VERSION}" >> $GITHUB_OUTPUT
           echo "Dev version for ${EXT}: ${DEV_VERSION} (branch: ${DEFAULT_BRANCH})"
 

@@ -851,7 +851,7 @@ jq 'group_by(.php_version) | map({
 })' latest.json
 
 # Extensions failing on PHP next but working on stable
-jq '[.[] | select(.extension as $ext | 
+jq '[.[] | select(.extension as $ext |
   (.php_version == "next" and .status == "failure") and
   (map(select(.extension == $ext and .php_version != "next" and .status == "success")) | length > 0)
 )] | unique_by(.extension) | .[].extension' latest.json
@@ -912,11 +912,11 @@ done
 gh workflow run build.yml -f php_versions=next
 
 # Check which extensions work on PHP next
-jq '[.[] | select(.php_version == "next" and .status == "success")] | 
+jq '[.[] | select(.php_version == "next" and .status == "success")] |
     unique_by(.extension) | .[].extension' latest.json
 
 # Find extensions that need PHP next compatibility fixes
-jq '[.[] | select(.php_version == "next" and .status == "failure")] | 
+jq '[.[] | select(.php_version == "next" and .status == "failure")] |
     unique_by(.extension) | map({extension, reason})' latest.json
 ```
 
@@ -924,7 +924,7 @@ jq '[.[] | select(.php_version == "next" and .status == "failure")] |
 
 ```bash
 # Get latest dev builds
-jq '.[] | select(.channel == "dev") | 
+jq '.[] | select(.channel == "dev") |
     {extension, extension_version, php_version, status}' latest.json
 
 # Compare dev vs release stability
@@ -946,7 +946,7 @@ jq 'group_by(.channel) | map({
 # - 4 architectures (amd64, arm64, arm32v6, arm32v7)
 
 # Example: Find best configuration for production
-jq '[.[] | select(.status == "success" and .channel == "release")] | 
+jq '[.[] | select(.status == "success" and .channel == "release")] |
     group_by(.php_version) | map({
       php: .[0].php_version,
       success_count: length,

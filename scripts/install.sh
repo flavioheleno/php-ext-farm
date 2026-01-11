@@ -196,7 +196,7 @@ log_info "Created temporary directory: ${TEMP_DIR}"
 download_file() {
     url="$1"
     output="$2"
-    
+
     if command -v curl >/dev/null 2>&1; then
         log_info "Downloading with curl..."
         if ! curl -fsSL -o "$output" "$url"; then
@@ -253,10 +253,10 @@ log_info "PHP extension directory: ${EXT_DIR}"
 # Step 9: Install runtime dependencies from metadata.json
 if [ -n "${METADATA_FILE}" ] && [ -f "${METADATA_FILE}" ]; then
     RUNTIME_DEPS=$(jq -r '.runtime_deps // empty' "${METADATA_FILE}")
-    
+
     if [ -n "${RUNTIME_DEPS}" ] && [ "${RUNTIME_DEPS}" != "null" ]; then
         log_info "Installing runtime dependencies: ${RUNTIME_DEPS}"
-        
+
         # Check if running as root or with sudo
         SUDO=""
         if [ "$(id -u)" -ne 0 ]; then
@@ -266,7 +266,7 @@ if [ -n "${METADATA_FILE}" ] && [ -f "${METADATA_FILE}" ]; then
                 log_warn "Not running as root and sudo not available. You may need to install dependencies manually."
             fi
         fi
-        
+
         case "${PLATFORM}" in
             alpine)
                 # shellcheck disable=SC2086
@@ -295,7 +295,7 @@ fi
 LIBS_DIR="${EXTRACT_DIR}/libs"
 if [ -d "${LIBS_DIR}" ] && [ "$(ls -A "${LIBS_DIR}" 2>/dev/null)" ]; then
     log_info "Found external libraries, installing..."
-    
+
     # Check if running as root or with sudo
     SUDO=""
     if [ "$(id -u)" -ne 0 ]; then
@@ -305,11 +305,11 @@ if [ -d "${LIBS_DIR}" ] && [ "$(ls -A "${LIBS_DIR}" 2>/dev/null)" ]; then
             log_warn "Not running as root and sudo not available. You may need to install libraries manually."
         fi
     fi
-    
+
     # Install to /usr/local/lib (standard location)
     LIB_INSTALL_DIR="/usr/local/lib"
     log_info "Installing external libraries to ${LIB_INSTALL_DIR}..."
-    
+
     for lib_file in "${LIBS_DIR}"/*; do
         if [ -f "$lib_file" ]; then
             lib_basename=$(basename "$lib_file")
@@ -317,13 +317,13 @@ if [ -d "${LIBS_DIR}" ] && [ "$(ls -A "${LIBS_DIR}" 2>/dev/null)" ]; then
             ${SUDO} cp -P "$lib_file" "${LIB_INSTALL_DIR}/"
         fi
     done
-    
+
     # Update library cache
     if command -v ldconfig >/dev/null 2>&1; then
         log_info "Updating library cache..."
         ${SUDO} ldconfig || log_warn "Failed to run ldconfig, libraries may not be found"
     fi
-    
+
     log_info "External libraries installed successfully"
 else
     log_info "No external libraries to install"
@@ -355,7 +355,7 @@ CONF_D_DIR=$(php --ini | grep "Scan for additional" | cut -d: -f2 | tr -d ' ')
 
 if [ -n "${CONF_D_DIR}" ] && [ -d "${CONF_D_DIR}" ]; then
     INI_FILE="${CONF_D_DIR}/50-${PECL_NAME}.ini"
-    
+
     # Check if extension is already enabled somewhere
     if [ -f "${INI_FILE}" ]; then
         log_info "Extension config already exists: ${INI_FILE}"

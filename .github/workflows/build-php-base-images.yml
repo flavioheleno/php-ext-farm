@@ -103,7 +103,7 @@ jobs:
             (if $php_ver == "all" then ($php_versions[0] | keys) else [$php_ver] end) as $php_list |
             (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
             (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
-            
+
             {include: [
               if ($platform_list | index("alpine")) then
                 $os_versions[0].alpine.versions[] as $osv |
@@ -119,7 +119,7 @@ jobs:
                   {php_version: $php, php_tag: $php_tag, php_branch: $php_branch, php_sha256: $php_sha256, platform: "alpine", platform_version: $osv, arch: $arch}
                 end
               else empty end,
-              
+
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian.versions[] as $osv |
                 $php_list[] as $php |
@@ -136,7 +136,7 @@ jobs:
               else empty end
             ]}
           ')
-          
+
           # Create manifest matrix (one entry per php_version/platform/version, no arch)
           MANIFEST_MATRIX=$(jq -c -n --arg php_ver "${{ inputs.php_version || 'all' }}" \
                            --arg platform "${{ inputs.platform || 'all' }}" \
@@ -144,14 +144,14 @@ jobs:
                            --slurpfile os_versions os-versions.json '
             (if $php_ver == "all" then ($php_versions[0] | keys) else [$php_ver] end) as $php_list |
             (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
-            
+
             {include: [
               if ($platform_list | index("alpine")) then
                 $os_versions[0].alpine.versions[] as $osv |
                 $php_list[] as $php |
                 {php_version: $php, platform: "alpine", platform_version: $osv}
               else empty end,
-              
+
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian.versions[] as $osv |
                 $php_list[] as $php |
@@ -159,7 +159,7 @@ jobs:
               else empty end
             ]}
           ')
-          
+
           echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
           echo "manifest_matrix=${MANIFEST_MATRIX}" >> $GITHUB_OUTPUT
           echo "Generated $(echo "$MATRIX" | jq '.include | length') PHP build jobs"
@@ -275,7 +275,7 @@ jobs:
       - name: Create and push PHP manifest
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.PHP_IMAGE_NAME }}:${{ steps.tag.outputs.tag }}"
-          
+
           # Build list of arch-specific images
           IMAGES=""
           for arch in amd64 arm64 arm32v7 arm32v6; do
@@ -284,7 +284,7 @@ jobs:
               IMAGES="$IMAGES $ARCH_IMAGE"
             fi
           done
-          
+
           if [ -n "$IMAGES" ]; then
             echo "Creating PHP manifest for: $IMAGES"
             docker manifest create "$IMAGE" $IMAGES --amend || true

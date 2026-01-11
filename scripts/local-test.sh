@@ -86,7 +86,7 @@ else
     echo ""
     echo "Step 2: Building base image..."
     echo ""
-    
+
     if "${SCRIPT_DIR}/build-base-image.sh" "${PHP_VERSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" --local; then
         echo ""
         echo "✓ Base image built successfully"
@@ -124,13 +124,13 @@ if [[ -f "${OUTPUT_DIR}/metadata.json" ]]; then
     echo "  Metadata:"
     jq '.' "${OUTPUT_DIR}/metadata.json" 2>/dev/null || cat "${OUTPUT_DIR}/metadata.json"
     echo ""
-    
+
     if [[ -f "${OUTPUT_DIR}/${EXTENSION}.so" ]]; then
         echo "  Extension file:"
         ls -lh "${OUTPUT_DIR}/${EXTENSION}.so"
         echo ""
     fi
-    
+
     if [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
         echo "  External libraries:"
         ls -lh "${OUTPUT_DIR}/libs/"
