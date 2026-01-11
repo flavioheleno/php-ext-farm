@@ -50,7 +50,7 @@ jobs:
             echo "Latest stable Alpine: $LATEST_STABLE"
 
             # Check if this version exists in our os-versions.json
-            if ! jq -e --arg v "$LATEST_STABLE" '.alpine | index($v)' os-versions.json > /dev/null 2>&1; then
+            if ! jq -e --arg v "$LATEST_STABLE" '.alpine.versions | index($v)' os-versions.json > /dev/null 2>&1; then
               echo "New Alpine version found: $LATEST_STABLE"
               UPDATES=$(echo "$UPDATES" | jq --arg v "$LATEST_STABLE" \
                 '. + [{"platform": "alpine", "version": $v}]')
@@ -83,7 +83,7 @@ jobs:
             echo "Current stable Debian: $CURRENT_STABLE"
 
             # Check if this version exists in our os-versions.json
-            if ! jq -e --arg v "$CURRENT_STABLE" '.debian | index($v)' os-versions.json > /dev/null 2>&1; then
+            if ! jq -e --arg v "$CURRENT_STABLE" '.debian.versions | index($v)' os-versions.json > /dev/null 2>&1; then
               echo "New Debian version found: $CURRENT_STABLE"
               UPDATES=$(echo "$UPDATES" | jq --arg v "$CURRENT_STABLE" \
                 '. + [{"platform": "debian", "version": $v}]')

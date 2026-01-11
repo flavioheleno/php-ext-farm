@@ -365,8 +365,8 @@ jobs:
 
           - **PHP Versions**: $(jq -r 'keys | join(", ")' php-versions.json)
           - **Architectures**: $(jq -r '.architectures | join(", ")' extensions.json)
-          - **Alpine Linux**: $(jq -r '.alpine | join(", ")' os-versions.json)
-          - **Debian**: $(jq -r '.debian | join(", ")' os-versions.json)
+          - **Alpine Linux**: $(jq -r '.alpine.versions | join(", ")' os-versions.json)
+          - **Debian**: $(jq -r '.debian.versions | join(", ")' os-versions.json)
 
           ## Installation
 

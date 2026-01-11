@@ -109,10 +109,10 @@ jobs:
           ### Platforms
 
           **Alpine Linux:**
-          $(jq -r '.alpine | map("- Alpine " + .) | join("\n")' os-versions.json)
+          $(jq -r '.alpine.versions | map("- Alpine " + .) | join("\n")' os-versions.json)
 
           **Debian:**
-          $(jq -r '.debian | map("- " + .) | join("\n")' os-versions.json)
+          $(jq -r '.debian.versions | map("- " + .) | join("\n")' os-versions.json)
 
           ## Installation
 

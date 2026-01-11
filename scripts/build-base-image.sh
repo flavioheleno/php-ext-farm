@@ -129,7 +129,7 @@ PHP_VERSION_BRANCH=$(jq -r ".\"${PHP_VERSION}\".branch // \"master\"" "${PHP_VER
 PHP_VERSION_SHA256=$(jq -r ".\"${PHP_VERSION}\".sha256 // \"\"" "${PHP_VERSIONS_FILE}")
 
 # Determine Dockerfile
-DOCKERFILE="${ROOT_DIR}/docker/base/Dockerfile.${PLATFORM}"
+DOCKERFILE="${ROOT_DIR}/docker/base/php/Dockerfile.${PLATFORM}"
 
 if [[ ! -f "${DOCKERFILE}" ]]; then
     echo "Error: Dockerfile not found: ${DOCKERFILE}"
