@@ -115,20 +115,31 @@ jobs:
             ]}
           ')
 
-          # Create manifest matrix (one entry per platform/version, no arch)
+          # Create manifest matrix (one entry per platform/version, with valid architectures)
           MANIFEST_MATRIX=$(jq -c -n --arg platform "${{ inputs.platform || 'all' }}" \
-                           --slurpfile os_versions os-versions.json '
+                           --arg archs "${{ inputs.architectures || 'all' }}" \
+                           --slurpfile os_versions os-versions.json \
+                           --slurpfile extensions extensions.json '
             (if $platform == "all" then ["alpine", "debian"] else [$platform] end) as $platform_list |
+            (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
+
+            # Helper to get valid architectures for a platform/version combo
+            def valid_archs($plat; $osv):
+              $architectures | map(select(
+                (($os_versions[0][$plat].exclude // []) | any(.version == $osv and .arch == .)) | not
+              ));
 
             {include: [
               if ($platform_list | index("alpine")) then
                 $os_versions[0].alpine.versions[] as $osv |
-                {platform: "alpine", platform_version: $osv}
+                ($architectures - [($os_versions[0].alpine.exclude // [])[] | select(.version == $osv) | .arch]) as $valid_archs |
+                {platform: "alpine", platform_version: $osv, architectures: ($valid_archs | join(","))}
               else empty end,
 
               if ($platform_list | index("debian")) then
                 $os_versions[0].debian.versions[] as $osv |
-                {platform: "debian", platform_version: $osv}
+                ($architectures - [($os_versions[0].debian.exclude // [])[] | select(.version == $osv) | .arch]) as $valid_archs |
+                {platform: "debian", platform_version: $osv, architectures: ($valid_archs | join(","))}
               else empty end
             ]}
           ')
@@ -228,8 +239,10 @@ jobs:
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.OS_IMAGE_NAME }}/${{ matrix.platform }}:${{ matrix.platform_version }}"
 
+          # Use architectures from matrix (respects exclude configuration)
+          IFS=',' read -ra ARCHS <<< "${{ matrix.architectures }}"
           IMAGES=""
-          for arch in amd64 arm64 arm32v7 arm32v6; do
+          for arch in "${ARCHS[@]}"; do
             ARCH_IMAGE="${IMAGE}-${arch}"
             if docker manifest inspect "$ARCH_IMAGE" > /dev/null 2>&1; then
               IMAGES="$IMAGES $ARCH_IMAGE"

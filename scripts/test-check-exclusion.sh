@@ -13,24 +13,30 @@ TESTS_RUN=0
 TESTS_PASSED=0
 TESTS_FAILED=0
 
-# Create test config
+# Create test config (os-versions.json format)
+TEST_OS_VERSIONS="${SCRIPT_DIR}/../test-os-versions.json"
+cat > "${TEST_OS_VERSIONS}" << 'EOF'
+{
+  "alpine": {
+    "versions": ["3.19", "3.20", "3.21"],
+    "exclude": [
+      {"version": "3.19", "arch": "arm32*"},
+      {"version": "3.20", "arch": "arm32v6"}
+    ]
+  },
+  "debian": {
+    "versions": ["bookworm", "bullseye"],
+    "exclude": [
+      {"version": "bullseye", "arch": "arm32v6"}
+    ]
+  }
+}
+EOF
+
+# Create test config (extensions.json format)
 cat > "${TEST_CONFIG}" << 'EOF'
 {
-  "platforms": {
-    "alpine": {
-      "versions": ["3.19", "3.20", "3.21"],
-      "exclude": [
-        {"version": "3.19", "arch": "arm32*"},
-        {"version": "3.20", "arch": "arm32v6"}
-      ]
-    },
-    "debian": {
-      "versions": ["bookworm", "bullseye"],
-      "exclude": [
-        {"version": "bullseye", "arch": "arm32v6"}
-      ]
-    }
-  },
+  "architectures": ["amd64", "arm64", "arm32v6", "arm32v7"],
   "extensions": {
     "testext": {
       "exclude": [
@@ -59,7 +65,7 @@ run_test() {
 
     local output
     local exit_code
-    output=$("${CHECK_EXCLUSION}" "$extension" "$os" "$version" "$arch" "${TEST_CONFIG}" 2>&1) || exit_code=$?
+    output=$("${CHECK_EXCLUSION}" "$extension" "$os" "$version" "$arch" "${TEST_CONFIG}" "${TEST_OS_VERSIONS}" 2>&1) || exit_code=$?
     exit_code=${exit_code:-0}
 
     if [[ $exit_code -eq $expected_exit ]]; then
@@ -126,7 +132,7 @@ run_test "No exclusions: normalext alpine 3.21 arm64 (allowed)" \
     "normalext" "alpine" "3.21" "arm64" 1 "allowed"
 
 # Cleanup
-rm -f "${TEST_CONFIG}"
+rm -f "${TEST_CONFIG}" "${TEST_OS_VERSIONS}"
 
 echo
 echo "================================"

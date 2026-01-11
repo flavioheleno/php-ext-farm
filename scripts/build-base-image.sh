@@ -12,6 +12,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 PHP_VERSIONS_FILE="${ROOT_DIR}/php-versions.json"
+OS_VERSIONS_FILE="${ROOT_DIR}/os-versions.json"
 
 PHP_VERSION="${1:-}"
 PLATFORM="${2:-}"
@@ -109,6 +110,18 @@ if ! jq -e ".\"${PHP_VERSION}\"" "${PHP_VERSIONS_FILE}" > /dev/null 2>&1; then
     echo "Error: PHP version '${PHP_VERSION}' not found in php-versions.json"
     echo "Available versions: $(jq -r 'keys | join(", ")' "${PHP_VERSIONS_FILE}")"
     exit 1
+fi
+
+# Check for platform/architecture exclusions
+if [[ -f "${OS_VERSIONS_FILE}" ]]; then
+    IS_EXCLUDED=$(jq -r --arg platform "${PLATFORM}" --arg version "${PLATFORM_VERSION}" --arg arch "${ARCH}" \
+        '.[$platform].exclude // [] | any(.version == $version and .arch == $arch)' "${OS_VERSIONS_FILE}")
+
+    if [[ "${IS_EXCLUDED}" == "true" ]]; then
+        echo "Error: ${PLATFORM} ${PLATFORM_VERSION} on ${ARCH} is excluded by configuration"
+        echo "See os-versions.json for exclusion rules"
+        exit 1
+    fi
 fi
 
 PHP_VERSION_TAG=$(jq -r ".\"${PHP_VERSION}\".tag // \"\"" "${PHP_VERSIONS_FILE}")
