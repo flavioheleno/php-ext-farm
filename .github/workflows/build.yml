@@ -351,10 +351,6 @@ jobs:
           VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
           RELEASE_TAG="${EXT}-${VERSION}"
 
-          # Delete existing release if it exists
-          gh release delete "$RELEASE_TAG" --yes 2>/dev/null || true
-          git push origin --delete "$RELEASE_TAG" 2>/dev/null || true
-
           # Create release notes
           cat > release_notes.md << EOF
           # ${EXT} ${VERSION}
@@ -381,8 +377,9 @@ jobs:
           Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           EOF
 
-          # Create release with artifacts
+          # Create release with artifacts (--clobber overwrites existing release)
           gh release create "$RELEASE_TAG" \
             --title "${EXT} ${VERSION}" \
             --notes-file release_notes.md \
+            --clobber \
             release/*.tar.gz
