@@ -8,8 +8,9 @@ on:
         required: true
         type: string
       extension_version:
-        description: 'Extension version/tag (e.g., 6.0.2, v3.8.0)'
-        required: true
+        description: 'Extension version/tag (e.g., 6.0.2, v3.8.0) - leave empty to use latest'
+        required: false
+        default: ''
         type: string
       php_versions:
         description: 'PHP versions (comma-separated, e.g., 8.2,8.3,8.4 or "all")'
@@ -74,8 +75,23 @@ jobs:
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      extension_version: ${{ steps.version.outputs.extension_version }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Resolve extension version
+        id: version
+        run: |
+          VERSION="${{ inputs.extension_version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION=$(jq -r ".extensions.\"${{ inputs.extension }}\".latest_version // empty" extensions.json)
+            if [ -z "$VERSION" ]; then
+              echo "Error: No version provided and no latest_version found for extension '${{ inputs.extension }}'"
+              exit 1
+            fi
+            echo "Using latest_version from extensions.json: $VERSION"
+          fi
+          echo "extension_version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Generate build matrix
         id: matrix
@@ -123,7 +139,7 @@ jobs:
           echo "Generated $(echo "$MATRIX" | jq '.include | length') matrix entries"
 
   build:
-    name: Build ${{ inputs.extension }} ${{ inputs.extension_version }} on PHP ${{ matrix.php_version }} ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
+    name: Build ${{ inputs.extension }} ${{ needs.prepare.outputs.extension_version }} on PHP ${{ matrix.php_version }} ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 90
@@ -157,7 +173,7 @@ jobs:
           chmod +x scripts/build.sh
 
           # Determine channel based on version format
-          VERSION="${{ inputs.extension_version }}"
+          VERSION="${{ needs.prepare.outputs.extension_version }}"
           if [[ "$VERSION" == dev-* ]]; then
             CHANNEL="dev"
           else
@@ -166,7 +182,7 @@ jobs:
 
           ./scripts/build.sh \
             "${{ inputs.extension }}" \
-            "${{ inputs.extension_version }}" \
+            "${{ needs.prepare.outputs.extension_version }}" \
             "${{ matrix.php_version }}" \
             "${{ matrix.platform }}" \
             "${{ matrix.platform_version }}" \
@@ -185,7 +201,7 @@ jobs:
         if: steps.build.outputs.artifact_exists == 'true'
         run: |
           EXT="${{ inputs.extension }}"
-          EXT_VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
+          EXT_VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ needs.prepare.outputs.extension_version }}")
           ARTIFACT_NAME="${EXT}-${EXT_VERSION}-php${{ matrix.php_version }}-${{ matrix.platform }}-${{ matrix.platform_version }}-${{ matrix.arch }}"
           cd output/${{ inputs.extension }}/${{ matrix.php_version }}/${{ matrix.platform }}/${{ matrix.platform_version }}/${{ matrix.arch }}
           tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json libs/ 2>/dev/null || tar -czvf "${ARTIFACT_NAME}.tar.gz" *.so metadata.json
@@ -209,7 +225,7 @@ jobs:
           retention-days: 90
 
   collect-artifacts:
-    needs: build
+    needs: [prepare, build]
     if: always()
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 30
@@ -225,7 +241,7 @@ jobs:
         id: prepare
         run: |
           EXT="${{ inputs.extension }}"
-          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
+          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ needs.prepare.outputs.extension_version }}")
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
 
           mkdir -p release
@@ -348,7 +364,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXT="${{ inputs.extension }}"
-          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
+          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ needs.prepare.outputs.extension_version }}")
           RELEASE_TAG="${EXT}-${VERSION}"
 
           # Create release notes
