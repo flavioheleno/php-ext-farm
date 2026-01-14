@@ -253,8 +253,8 @@ jobs:
           # Collect all JSON reports
           mkdir -p dataset
 
-          # Find all report JSON files
-          REPORTS=$(find artifacts/ -name "*.json" -path "*/reports/*" 2>/dev/null || true)
+          # Find all report JSON files (they are in artifacts/report-* directories)
+          REPORTS=$(find artifacts/ -name "*.json" -path "*/report-*/*" 2>/dev/null || true)
 
           if [ -z "$REPORTS" ]; then
             echo "No reports found"
@@ -377,9 +377,11 @@ jobs:
           Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
           EOF
 
-          # Create release with artifacts (--clobber overwrites existing release)
+          # Delete existing release if it exists (to allow re-running the workflow)
+          gh release delete "$RELEASE_TAG" --yes --cleanup-tag 2>/dev/null || true
+
+          # Create release with artifacts
           gh release create "$RELEASE_TAG" \
             --title "${EXT} ${VERSION}" \
             --notes-file release_notes.md \
-            --clobber \
             release/*.tar.gz
