@@ -493,7 +493,9 @@
       },
       "pecl_name": "fnbind",
       "track_url": "https://github.com/Danack/fnbind",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "4.0.0a6"
     },
     "geospatial": {
       "dependencies": {
@@ -508,7 +510,9 @@
       },
       "pecl_name": "geospatial",
       "track_url": "https://github.com/php-geospatial/geospatial",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "0.3.3"
     },
     "glfw": {
       "dependencies": {
@@ -548,7 +552,9 @@
       "notes": "Can auto-build GLFW if not found in system",
       "pecl_name": "glfw",
       "track_url": "https://github.com/mario-deluna/php-glfw",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v2.3.0"
     },
     "gnupg": {
       "dependencies": {
@@ -571,7 +577,9 @@
       },
       "pecl_name": "gnupg",
       "track_url": "https://github.com/php-gnupg/php-gnupg",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "gnupg-1.5.4"
     },
     "gpio": {
       "dependencies": {
@@ -586,7 +594,8 @@
       },
       "pecl_name": "gpio",
       "track_url": "https://github.com/embedded-php/ext-gpio",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z"
     },
     "grpc": {
       "dependencies": {
@@ -610,7 +619,9 @@
       },
       "pecl_name": "grpc",
       "track_url": "https://github.com/grpc/grpc",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v1.76.0"
     },
     "hdrhistogram": {
       "dependencies": {
@@ -643,7 +654,9 @@
       ],
       "pecl_name": "hdrhistogram",
       "track_url": "https://github.com/beberlei/hdrhistogram-php",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v0.5.0"
     },
     "i2c": {
       "dependencies": {
@@ -662,7 +675,8 @@
       },
       "pecl_name": "i2c",
       "track_url": "https://github.com/embedded-php/ext-i2c",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z"
     },
     "identifier": {
       "dependencies": {
@@ -677,7 +691,9 @@
       },
       "pecl_name": "identifier",
       "track_url": "https://github.com/castor-labs/php-ext-identifier",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v0.2.1"
     },
     "igbinary": {
       "dependencies": {
@@ -692,7 +708,9 @@
       },
       "pecl_name": "igbinary",
       "track_url": "https://github.com/igbinary/igbinary",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "3.2.15"
     },
     "imagick": {
       "dependencies": {
@@ -715,7 +733,9 @@
       },
       "pecl_name": "imagick",
       "track_url": "https://github.com/Imagick/imagick",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "3.8.1"
     },
     "inotify": {
       "dependencies": {
@@ -730,7 +750,9 @@
       },
       "pecl_name": "inotify",
       "track_url": "https://github.com/arnaud-lb/php-inotify",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "3.0.1"
     },
     "ip2location": {
       "dependencies": {
@@ -761,7 +783,9 @@
       ],
       "pecl_name": "ip2location",
       "track_url": "https://github.com/chrislim2888/IP2Location-PECL-Extension",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "8.3.0"
     },
     "ip2proxy": {
       "dependencies": {
@@ -792,7 +816,8 @@
       ],
       "pecl_name": "ip2proxy",
       "track_url": "https://github.com/ip2location/ip2proxy-pecl",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z"
     },
     "json_post": {
       "dependencies": {
@@ -808,7 +833,9 @@
       "notes": "Depends on json extension (built-in)",
       "pecl_name": "json_post",
       "track_url": "https://github.com/m6w6/ext-json_post",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v1.1.0"
     },
     "jsonpath": {
       "dependencies": {
@@ -823,7 +850,9 @@
       },
       "pecl_name": "jsonpath",
       "track_url": "https://github.com/supermetrics-public/pecl-jsonpath",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v3.1.0"
     },
     "judy": {
       "dependencies": {
@@ -846,7 +875,9 @@
       },
       "pecl_name": "judy",
       "track_url": "https://github.com/orieg/php-judy",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v2.2.0"
     },
     "lz4": {
       "dependencies": {
@@ -869,7 +900,9 @@
       },
       "pecl_name": "lz4",
       "track_url": "https://github.com/kjdev/php-ext-lz4",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "0.6.0"
     },
     "lzf": {
       "dependencies": {
@@ -884,7 +917,9 @@
       },
       "pecl_name": "lzf",
       "track_url": "https://github.com/php/pecl-file_formats-lzf",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "RELEASE_1_5_2"
     },
     "mailparse": {
       "dependencies": {
@@ -899,7 +934,9 @@
       },
       "pecl_name": "mailparse",
       "track_url": "https://github.com/php/pecl-mail-mailparse",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:42:23Z",
+      "latest_version": "v3.1.9"
     },
     "maxminddb": {
       "build_path": "ext",
