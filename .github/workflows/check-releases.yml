@@ -2,8 +2,8 @@ name: Check Releases
 
 on:
   schedule:
-    # Run daily at midnight UTC
-    - cron: '0 0 * * *'
+    # Run hourly on Mondays, checking up to 20 extensions per run until all are checked
+    - cron: '0 0-23 * * 1'
   workflow_dispatch:
     inputs:
       runner:
@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
   actions: write
 
 jobs:
@@ -38,13 +38,32 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           UPDATES="[]"
+          EXTENSIONS_CHECKED=0
+          MAX_EXTENSIONS=20
+          CURRENT_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          # Get start of current week (Monday 00:00:00 UTC)
+          WEEK_START=$(date -u -d "last monday" +%Y-%m-%dT00:00:00Z 2>/dev/null || date -u -v-monday +%Y-%m-%dT00:00:00Z)
 
           for ext in $(jq -r '.extensions | keys[]' extensions.json); do
+            # Skip if already checked this week
+            LAST_CHECKED=$(jq -r ".extensions.${ext}.last_checked // empty" extensions.json)
+            if [[ -n "$LAST_CHECKED" && "$LAST_CHECKED" > "$WEEK_START" ]]; then
+              continue
+            fi
+
+            # Stop if we've checked enough extensions this run
+            if [[ $EXTENSIONS_CHECKED -ge $MAX_EXTENSIONS ]]; then
+              break
+            fi
+
             TRACK_URL=$(jq -r ".extensions.${ext}.track_url" extensions.json)
 
             # Skip non-GitHub URLs
             if [[ "$TRACK_URL" != *"github.com"* ]]; then
               echo "Skipping ${ext}: non-GitHub URL"
+              # Update last_checked timestamp
+              jq ".extensions.${ext}.last_checked = \"${CURRENT_TIME}\"" extensions.json > extensions.json.tmp && mv extensions.json.tmp extensions.json
               continue
             fi
 
@@ -62,26 +81,51 @@ jobs:
               fi
             fi
 
+            # Update last_checked timestamp
+            jq ".extensions.${ext}.last_checked = \"${CURRENT_TIME}\"" extensions.json > extensions.json.tmp && mv extensions.json.tmp extensions.json
+
             if [[ -z "$LATEST" ]]; then
               echo "Warning: Could not get version for ${ext}"
+              EXTENSIONS_CHECKED=$((EXTENSIONS_CHECKED + 1))
               continue
             fi
 
-            # Get cached version
-            CACHED_FILE=".versions/${ext}.txt"
-            CACHED=""
-            if [[ -f "$CACHED_FILE" ]]; then
-              CACHED=$(cat "$CACHED_FILE")
-            fi
+            # Get cached version from extensions.json
+            CACHED=$(jq -r ".extensions.${ext}.latest_version // empty" extensions.json)
 
-            if [[ -n "$LATEST" && "$LATEST" != "$CACHED" ]]; then
+            if [[ "$LATEST" != "$CACHED" ]]; then
+              # Update latest_version in extensions.json
+              jq ".extensions.${ext}.latest_version = \"${LATEST}\"" extensions.json > extensions.json.tmp && mv extensions.json.tmp extensions.json
               UPDATES=$(echo "$UPDATES" | jq --arg ext "$ext" --arg ver "$LATEST" '. + [{"extension": $ext, "version": $ver}]')
               echo "Update found: ${ext} ${CACHED:-<none>} -> ${LATEST}"
             fi
+
+            EXTENSIONS_CHECKED=$((EXTENSIONS_CHECKED + 1))
           done
 
           echo "updates=$(echo "$UPDATES" | jq -c)" >> $GITHUB_OUTPUT
-          echo "Found $(echo "$UPDATES" | jq length) updates"
+          echo "Found $(echo "$UPDATES" | jq length) updates (checked ${EXTENSIONS_CHECKED} extensions)"
+
+      - name: Commit extensions.json changes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet extensions.json; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          # Get current SHA of extensions.json
+          SHA=$(gh api "repos/${{ github.repository }}/contents/extensions.json" --jq '.sha')
+
+          # Encode updated content
+          CONTENT=$(base64 -w 0 extensions.json)
+
+          # Update via Contents API (atomic operation)
+          gh api -X PUT "repos/${{ github.repository }}/contents/extensions.json" \
+            -f message="Update extension version checks" \
+            -f content="$CONTENT" \
+            -f sha="$SHA"
 
       - name: Trigger builds for updated extensions
         if: steps.check.outputs.updates != '[]'
