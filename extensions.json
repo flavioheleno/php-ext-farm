@@ -28,7 +28,9 @@
       },
       "pecl_name": "amqp",
       "track_url": "https://github.com/php-amqp/php-amqp",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v2.2.0"
     },
     "apcu": {
       "dependencies": {
@@ -43,7 +45,9 @@
       },
       "pecl_name": "apcu",
       "track_url": "https://github.com/krakjoe/apcu",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v5.1.28"
     },
     "apcu_bc": {
       "dependencies": {
@@ -58,7 +62,9 @@
       },
       "pecl_name": "apcu_bc",
       "track_url": "https://github.com/krakjoe/apcu-bc",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v1.0.4"
     },
     "apfd": {
       "dependencies": {
@@ -73,7 +79,9 @@
       },
       "pecl_name": "apfd",
       "track_url": "https://github.com/m6w6/ext-apfd",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v1.0.3"
     },
     "aspect": {
       "dependencies": {
@@ -88,7 +96,9 @@
       },
       "pecl_name": "aspect",
       "track_url": "https://github.com/SolidWorx/aspect",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "0.1.1"
     },
     "ast": {
       "dependencies": {
@@ -103,7 +113,9 @@
       },
       "pecl_name": "ast",
       "track_url": "https://github.com/nikic/php-ast",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v1.1.3"
     },
     "bitset": {
       "dependencies": {
@@ -118,7 +130,9 @@
       },
       "pecl_name": "bitset",
       "track_url": "https://github.com/php/pecl-numbers-bitset",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "3.2.0"
     },
     "blake3": {
       "dependencies": {
@@ -133,7 +147,9 @@
       },
       "pecl_name": "blake3",
       "track_url": "https://github.com/cypherbits/php-blake3",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v202511241"
     },
     "brotli": {
       "dependencies": {
@@ -156,7 +172,9 @@
       },
       "pecl_name": "brotli",
       "track_url": "https://github.com/kjdev/php-ext-brotli",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "0.18.3"
     },
     "bzip3": {
       "dependencies": {
@@ -172,7 +190,9 @@
       "notes": "Uses bundled bzip3 library by default",
       "pecl_name": "bzip3",
       "track_url": "https://github.com/kjdev/php-ext-bzip3",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "0.1.2"
     },
     "cairo": {
       "dependencies": {
@@ -209,7 +229,9 @@
       },
       "pecl_name": "cairo",
       "track_url": "https://github.com/MarcelBolten/php-cairo",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v1.1.0"
     },
     "corefill": {
       "dependencies": {
@@ -224,7 +246,8 @@
       },
       "pecl_name": "corefill",
       "track_url": "https://github.com/mailmug/corefill",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z"
     },
     "crc_fast": {
       "configure_options": [
@@ -261,7 +284,9 @@
       ],
       "pecl_name": "crc_fast",
       "track_url": "https://github.com/awesomized/crc-fast-php-ext",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "1.1.0"
     },
     "csv": {
       "dependencies": {
@@ -276,7 +301,8 @@
       },
       "pecl_name": "csv",
       "track_url": "https://gitlab.com/Girgias/csv-php-extension",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z"
     },
     "dbus": {
       "dependencies": {
@@ -305,7 +331,9 @@
       },
       "pecl_name": "dbus",
       "track_url": "https://github.com/derickr/pecl-dbus",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "0.4.1"
     },
     "decimal": {
       "dependencies": {
@@ -328,7 +356,9 @@
       },
       "pecl_name": "decimal",
       "track_url": "https://github.com/php-decimal/ext-decimal",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v2.0.1-alpha"
     },
     "dio": {
       "dependencies": {
@@ -343,7 +373,9 @@
       },
       "pecl_name": "dio",
       "track_url": "https://github.com/php/pecl-system-dio",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v0.3.0+pie"
     },
     "ds": {
       "dependencies": {
@@ -358,7 +390,9 @@
       },
       "pecl_name": "ds",
       "track_url": "https://github.com/php-ds/ext-ds",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v1.6.0"
     },
     "ev": {
       "dependencies": {
@@ -381,7 +415,8 @@
       },
       "pecl_name": "ev",
       "track_url": "https://github.com/osmanov/pecl-ev",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z"
     },
     "event": {
       "dependencies": {
@@ -408,7 +443,8 @@
       },
       "pecl_name": "event",
       "track_url": "https://bitbucket.org/osmanov/pecl-event",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:40:43Z"
     },
     "excimer": {
       "dependencies": {
@@ -423,7 +459,9 @@
       },
       "pecl_name": "excimer",
       "track_url": "https://github.com/wikimedia/php-excimer",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "1.2.5"
     },
     "fastcsv": {
       "dependencies": {
@@ -438,7 +476,9 @@
       },
       "pecl_name": "fastcsv",
       "track_url": "https://github.com/csvtoolkit/FastCSV-ext",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:40:43Z",
+      "latest_version": "v0.0.2"
     },
     "fnbind": {
       "dependencies": {
