@@ -960,7 +960,9 @@
       },
       "pecl_name": "maxminddb",
       "track_url": "https://github.com/maxmind/MaxMind-DB-Reader-php",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v1.13.1"
     },
     "mcrypt": {
       "dependencies": {
@@ -983,7 +985,9 @@
       },
       "pecl_name": "mcrypt",
       "track_url": "https://github.com/php/pecl-encryption-mcrypt",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "1.0.9"
     },
     "memcache": {
       "dependencies": {
@@ -1006,7 +1010,9 @@
       },
       "pecl_name": "memcache",
       "track_url": "https://github.com/websupport-sk/pecl-memcache",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "8.2"
     },
     "memcached": {
       "dependencies": {
@@ -1037,7 +1043,9 @@
       },
       "pecl_name": "memcached",
       "track_url": "https://github.com/php-memcached-dev/php-memcached",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v3.4.0"
     },
     "memprof": {
       "dependencies": {
@@ -1056,7 +1064,9 @@
       },
       "pecl_name": "memprof",
       "track_url": "https://github.com/arnaud-lb/php-memory-profiler",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "3.1.0"
     },
     "mongodb": {
       "dependencies": {
@@ -1079,7 +1089,9 @@
       },
       "pecl_name": "mongodb",
       "track_url": "https://github.com/mongodb/mongo-php-driver",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "2.1.4"
     },
     "msgpack": {
       "dependencies": {
@@ -1094,7 +1106,9 @@
       },
       "pecl_name": "msgpack",
       "track_url": "https://github.com/msgpack/msgpack-php",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "msgpack-3.0.0"
     },
     "mysqlnd_ed25519": {
       "dependencies": {
@@ -1120,7 +1134,9 @@
       "notes": "MariaDB ed25519 authentication plugin for mysqlnd",
       "pecl_name": "mysqlnd_ed25519",
       "track_url": "https://github.com/mariadb-corporation/mysqlnd_ed25519",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "1.0.2"
     },
     "mysqlnd_parsec": {
       "dependencies": {
@@ -1150,7 +1166,9 @@
       "notes": "MariaDB PARSEC authentication plugin for mysqlnd",
       "pecl_name": "mysqlnd_parsec",
       "track_url": "https://github.com/mariadb-corporation/mysqlnd_parsec",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "1.0.2"
     },
     "oauth": {
       "dependencies": {
@@ -1177,7 +1195,9 @@
       },
       "pecl_name": "oauth",
       "track_url": "https://github.com/php/pecl-web_services-oauth",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "2.0.10"
     },
     "oci8": {
       "dependencies": {
@@ -1201,7 +1221,9 @@
       "notes": "Requires Oracle Instant Client or ORACLE_HOME (not auto-installed)",
       "pecl_name": "oci8",
       "track_url": "https://github.com/php/pecl-database-oci8",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v3.4.1"
     },
     "opentelemetry": {
       "dependencies": {
@@ -1216,7 +1238,9 @@
       },
       "pecl_name": "opentelemetry",
       "track_url": "https://github.com/open-telemetry/opentelemetry-php-instrumentation",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "1.2.1"
     },
     "oqs": {
       "dependencies": {
@@ -1238,7 +1262,9 @@
       "notes": "Requires liboqs >= 0.14.0 (post-quantum cryptography library) - user must install",
       "pecl_name": "oqs",
       "track_url": "https://github.com/secudoc/php-liboqs",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v0.3.2"
     },
     "parallel": {
       "dependencies": {
@@ -1253,7 +1279,9 @@
       },
       "pecl_name": "parallel",
       "track_url": "https://github.com/krakjoe/parallel",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v1.2.10"
     },
     "pcov": {
       "dependencies": {
@@ -1268,7 +1296,9 @@
       },
       "pecl_name": "pcov",
       "track_url": "https://github.com/krakjoe/pcov",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v1.0.12"
     },
     "pdo_oci": {
       "dependencies": {
@@ -1292,7 +1322,9 @@
       "notes": "PDO driver for Oracle - requires Oracle Instant Client or ORACLE_HOME (not auto-installed)",
       "pecl_name": "pdo_oci",
       "track_url": "https://github.com/php/pecl-database-pdo_oci",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v1.2.0"
     },
     "pecl_http": {
       "dependencies": {
@@ -1327,7 +1359,9 @@
       },
       "pecl_name": "pecl_http",
       "track_url": "https://github.com/m6w6/ext-http",
-      "type": "pecl"
+      "type": "pecl",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v4.3.1"
     },
     "pg_query": {
       "build_path": "ext",
@@ -1348,7 +1382,9 @@
       "notes": "Auto-downloads and builds libpg_query during build",
       "pecl_name": "pg_query",
       "track_url": "https://github.com/flow-php/pg-query-ext",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "0.30.0"
     },
     "pheme": {
       "dependencies": {
@@ -1373,7 +1409,9 @@
       },
       "pecl_name": "pheme",
       "track_url": "https://github.com/capotej/pheme",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z",
+      "latest_version": "v0.2.2"
     },
     "phreakscope": {
       "dependencies": {
@@ -1388,7 +1426,8 @@
       },
       "pecl_name": "phreakscope",
       "track_url": "https://github.com/pakutoma/ext-phreakscope",
-      "type": "git"
+      "type": "git",
+      "last_checked": "2026-01-14T04:44:04Z"
     },
     "pq": {
       "dependencies": {
