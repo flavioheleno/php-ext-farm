@@ -309,28 +309,24 @@ jobs:
           REPORTS_DIR="dataset/reports/${EXTENSION}"
           mkdir -p "$REPORTS_DIR"
 
-          # Generate builds nested structure for reports/{extension}/{version}.json
-          # This will be merged with existing data in the push step
-          jq -n --arg timestamp "$TIMESTAMP" --arg history_path "$HISTORY_PATH" '
-            {
+          # Generate simple structure for reports/{extension}/{version}.json
+          # Uses year/month/day as keys pointing to history file
+          jq -n \
+            --arg timestamp "$TIMESTAMP" \
+            --arg history_path "$HISTORY_PATH" \
+            --arg year "$YEAR" \
+            --arg month "$MONTH" \
+            --arg day "$DAY" \
+            '{
               "last_updated": $timestamp,
-              "builds": (
-                [inputs] | group_by(.php_version) | map({
-                  (.[0].php_version): (
-                    group_by(.platform) | map({
-                      (.[0].platform): (
-                        group_by(.platform_version) | map({
-                          (.[0].platform_version): (
-                            map({(.arch): $history_path}) | add
-                          )
-                        }) | add
-                      )
-                    }) | add
-                  )
-                }) | add
-              )
-            }
-          ' $REPORTS > "${REPORTS_DIR}/${VERSION}.json.new"
+              "builds": {
+                ($year): {
+                  ($month): {
+                    ($day): $history_path
+                  }
+                }
+              }
+            }' > "${REPORTS_DIR}/${VERSION}.json.new"
 
           # Create latest.json entry for this extension
           mkdir -p dataset
@@ -406,13 +402,14 @@ jobs:
           REPORTS_DIR=$(dirname "dataset-worktree/${REPORTS_FILE}")
           mkdir -p "$REPORTS_DIR"
           if [ -f "dataset-worktree/${REPORTS_FILE}" ]; then
-            # Deep merge builds structure, update last_updated
+            # Deep merge builds structure (year/month/day), update last_updated
             jq -s '
+              def deep_merge: reduce .[] as $x ({}; . * $x);
               .[0] as $existing |
               .[1] as $new |
               {
                 "last_updated": $new.last_updated,
-                "builds": ($existing.builds // {}) * $new.builds
+                "builds": ([$existing.builds // {}, $new.builds] | deep_merge)
               }
             ' "dataset-worktree/${REPORTS_FILE}" "dataset/reports/${EXTENSION}/${VERSION}.json.new" > "dataset-worktree/${REPORTS_FILE}.tmp"
             mv "dataset-worktree/${REPORTS_FILE}.tmp" "dataset-worktree/${REPORTS_FILE}"
