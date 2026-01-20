@@ -1531,14 +1531,31 @@
       "latest_version": "6.0.4"
     },
     "redis": {
+      "configure_options": [
+        "--enable-redis-lzf",
+        "--enable-redis-zstd",
+        "--enable-redis-lz4"
+      ],
       "dependencies": {
         "alpine": {
-          "build": [],
-          "runtime": []
+          "build": [
+            "lz4-dev",
+            "zstd-dev"
+          ],
+          "runtime": [
+            "lz4-libs",
+            "zstd-libs"
+          ]
         },
         "debian": {
-          "build": [],
-          "runtime": []
+          "build": [
+            "liblz4-dev",
+            "libzstd-dev"
+          ],
+          "runtime": [
+            "liblz4-1",
+            "libzstd1"
+          ]
         }
       },
       "pecl_name": "redis",
