@@ -1541,7 +1541,9 @@
       "configure_options": [
         "--enable-redis-lzf",
         "--enable-redis-zstd",
-        "--enable-redis-lz4"
+        "--with-libzstd",
+        "--enable-redis-lz4",
+        "--with-liblz4"
       ],
       "dependencies": {
         "alpine": {
