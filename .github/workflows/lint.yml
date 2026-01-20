@@ -1,0 +1,162 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'docker/**'
+      - '*.json'
+      - '.github/workflows/lint.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'docker/**'
+      - '*.json'
+      - '.github/workflows/lint.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # v2.0.0
+        with:
+          scandir: './scripts'
+          severity: warning
+        env:
+          SHELLCHECK_OPTS: -e SC1091 -e SC2002
+
+  hadolint:
+    name: Hadolint (Dockerfile linting)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Run Hadolint on Dockerfiles
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: docker/Dockerfile.alpine
+          failure-threshold: warning
+
+      - name: Run Hadolint on Debian Dockerfile
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: docker/Dockerfile.debian
+          failure-threshold: warning
+
+      - name: Run Hadolint on base OS Alpine
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: docker/base/os/Dockerfile.alpine
+          failure-threshold: warning
+
+      - name: Run Hadolint on base OS Debian
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: docker/base/os/Dockerfile.debian
+          failure-threshold: warning
+
+      - name: Run Hadolint on base PHP Alpine
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: docker/base/php/Dockerfile.alpine
+          failure-threshold: warning
+
+      - name: Run Hadolint on base PHP Debian
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: docker/base/php/Dockerfile.debian
+          failure-threshold: warning
+
+  json-validate:
+    name: JSON Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Validate JSON syntax
+        run: |
+          echo "Validating JSON files..."
+          for file in extensions.json php-versions.json os-versions.json; do
+            if jq empty "$file" 2>/dev/null; then
+              echo "✓ $file is valid JSON"
+            else
+              echo "✗ $file is invalid JSON"
+              exit 1
+            fi
+          done
+
+      - name: Validate JSON schema
+        run: |
+          # Validate extensions.json structure
+          echo "Validating extensions.json structure..."
+
+          # Check required top-level keys
+          jq -e '.base_image_registry and .architectures and .extensions' extensions.json > /dev/null || {
+            echo "✗ extensions.json missing required top-level keys"
+            exit 1
+          }
+
+          # Check each extension has required fields
+          INVALID=$(jq -r '
+            .extensions | to_entries[] |
+            select(
+              .value.pecl_name == null or
+              .value.track_url == null or
+              .value.type == null or
+              .value.dependencies == null
+            ) | .key
+          ' extensions.json)
+
+          if [ -n "$INVALID" ]; then
+            echo "✗ Extensions missing required fields:"
+            echo "$INVALID"
+            exit 1
+          fi
+
+          echo "✓ extensions.json structure is valid"
+
+          # Validate php-versions.json
+          echo "Validating php-versions.json structure..."
+          jq -e 'to_entries | all(.value | has("branch"))' php-versions.json > /dev/null || {
+            echo "✗ php-versions.json entries missing 'branch' field"
+            exit 1
+          }
+          echo "✓ php-versions.json structure is valid"
+
+          # Validate os-versions.json
+          echo "Validating os-versions.json structure..."
+          jq -e '.alpine.versions and .debian.versions' os-versions.json > /dev/null || {
+            echo "✗ os-versions.json missing required platform versions"
+            exit 1
+          }
+          echo "✓ os-versions.json structure is valid"
+
+      - name: Run config validation script
+        run: ./scripts/validate-config.sh
+
+  readme-sync:
+    name: README Sync Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Check extension count in README
+        run: |
+          ACTUAL_COUNT=$(jq '.extensions | keys | length' extensions.json)
+          README_COUNT=$(grep -oP '## 📦 Supported Extensions \(\K[0-9]+' README.md || echo "0")
+
+          if [ "$ACTUAL_COUNT" != "$README_COUNT" ]; then
+            echo "⚠ README extension count ($README_COUNT) doesn't match actual count ($ACTUAL_COUNT)"
+            echo "::warning::README extension count is out of sync"
+          else
+            echo "✓ README extension count is correct ($ACTUAL_COUNT)"
+          fi

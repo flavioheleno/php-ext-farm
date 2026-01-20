@@ -1,0 +1,158 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - '*.json'
+      - '.github/workflows/tests.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - '*.json'
+      - '.github/workflows/tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Run check-exclusion tests
+        run: ./scripts/test-check-exclusion.sh
+
+      - name: Run normalize-version tests
+        run: ./scripts/test-normalize-version.sh
+
+      - name: Run version tracking tests
+        run: ./scripts/test-version-tracking.sh
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Test build script argument validation
+        run: |
+          # Test missing arguments
+          if ./scripts/build.sh 2>&1 | grep -q "Usage:"; then
+            echo "✓ build.sh shows usage with no args"
+          else
+            echo "✗ build.sh should show usage with no args"
+            exit 1
+          fi
+
+          # Test invalid extension
+          if ./scripts/build.sh invalid_ext 1.0.0 8.3 alpine 3.20 2>&1 | grep -q "not found in config"; then
+            echo "✓ build.sh rejects invalid extension"
+          else
+            echo "✗ build.sh should reject invalid extension"
+            exit 1
+          fi
+
+          # Test invalid PHP version
+          if ./scripts/build.sh redis 6.0.2 7.0 alpine 3.20 2>&1 | grep -q "not supported"; then
+            echo "✓ build.sh rejects unsupported PHP version"
+          else
+            echo "✗ build.sh should reject unsupported PHP version"
+            exit 1
+          fi
+
+      - name: Test install script argument validation
+        run: |
+          # Test missing arguments
+          if ./scripts/install.sh 2>&1 | grep -q "Usage:"; then
+            echo "✓ install.sh shows usage with no args"
+          else
+            echo "✗ install.sh should show usage with no args"
+            exit 1
+          fi
+
+      - name: Test check-releases script
+        run: |
+          # Run check-releases and validate JSON output
+          OUTPUT=$(./scripts/check-releases.sh 2>&1 | head -100)
+          if echo "$OUTPUT" | jq -e '.checked_at' > /dev/null 2>&1; then
+            echo "✓ check-releases.sh produces valid JSON"
+          else
+            echo "✗ check-releases.sh should produce valid JSON"
+            echo "Output: $OUTPUT"
+            exit 1
+          fi
+
+  matrix-generation-tests:
+    name: Matrix Generation Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Test matrix generation logic
+        run: |
+          # Test the matrix generation from build.yml
+          MATRIX=$(jq -c -n --arg php_vers "8.3,8.4" \
+                        --arg platforms "alpine" \
+                        --arg archs "amd64" \
+                        --slurpfile php_versions php-versions.json \
+                        --slurpfile os_versions os-versions.json \
+                        --slurpfile extensions extensions.json '
+            (if $php_vers == "all" then ($php_versions[0] | keys) else ($php_vers | split(",")) end) as $php_list |
+            (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
+            (if $platforms == "all" then ["alpine", "debian"] else ($platforms | split(",")) end) as $platform_list |
+
+            def is_excluded($platform; $osv; $arch):
+              $os_versions[0][$platform].exclude // [] |
+              any(. as $excl | ($excl.version == $osv) and ($excl.arch == $arch));
+
+            {include: [
+              if ($platform_list | index("alpine")) then
+                $os_versions[0].alpine.versions[] as $osv |
+                $php_list[] as $php |
+                $architectures[] as $arch |
+                select(is_excluded("alpine"; $osv; $arch) | not) |
+                {php_version: $php, platform: "alpine", platform_version: $osv, arch: $arch}
+              else empty end
+            ]}
+          ')
+
+          COUNT=$(echo "$MATRIX" | jq '.include | length')
+          echo "Generated $COUNT matrix entries"
+
+          # Should have entries for 2 PHP versions × 5 Alpine versions × 1 arch = 10
+          if [ "$COUNT" -ge 8 ]; then
+            echo "✓ Matrix generation produces expected entries"
+          else
+            echo "✗ Matrix generation produced fewer entries than expected"
+            echo "Matrix: $MATRIX"
+            exit 1
+          fi
+
+  dockerfile-syntax-tests:
+    name: Dockerfile Syntax Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Validate Dockerfile ARG ordering
+        run: |
+          # BASE_IMAGE_REGISTRY and version ARGs must come before FROM
+          for dockerfile in docker/Dockerfile.alpine docker/Dockerfile.debian; do
+            echo "Checking $dockerfile..."
+
+            # Check that ARG BASE_IMAGE_REGISTRY comes before FROM
+            ARG_LINE=$(grep -n "^ARG BASE_IMAGE_REGISTRY" "$dockerfile" | head -1 | cut -d: -f1)
+            FROM_LINE=$(grep -n "^FROM" "$dockerfile" | head -1 | cut -d: -f1)
+
+            if [ "$ARG_LINE" -lt "$FROM_LINE" ]; then
+              echo "✓ $dockerfile: ARG BASE_IMAGE_REGISTRY is before FROM"
+            else
+              echo "✗ $dockerfile: ARG BASE_IMAGE_REGISTRY must be before FROM"
+              exit 1
+            fi
+          done

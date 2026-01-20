@@ -14,3 +14,49 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # Monitor Docker base images in Dockerfiles
+  - package-ecosystem: "docker"
+    directory: "/docker/base/os"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+    commit-message:
+      prefix: "docker"
+    labels:
+      - "dependencies"
+      - "docker"
+    groups:
+      docker-base-os:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/base/php"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+    commit-message:
+      prefix: "docker"
+    labels:
+      - "dependencies"
+      - "docker"
+    groups:
+      docker-base-php:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+    commit-message:
+      prefix: "docker"
+    labels:
+      - "dependencies"
+      - "docker"
+    groups:
+      docker-extension:
+        patterns:
+          - "*"

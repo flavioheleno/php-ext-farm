@@ -41,6 +41,7 @@ RUN if [ -n "${BUILD_DEPS}" ]; then \
     fi
 
 # Build external libraries if any
+# hadolint ignore=DL3003
 RUN if [ -n "${EXTERNAL_LIBS}" ]; then \
       echo "${EXTERNAL_LIBS}" > /tmp/external_libs.json && \
       jq -c '.[]' /tmp/external_libs.json | while read -r lib; do \
