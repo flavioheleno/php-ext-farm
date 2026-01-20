@@ -229,6 +229,9 @@ jobs:
     if: always()
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 30
+    concurrency:
+      group: dataset-branch-update
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -266,8 +269,15 @@ jobs:
       - name: Aggregate build reports
         id: aggregate
         run: |
-          # Collect all JSON reports
-          mkdir -p dataset
+          EXTENSION="${{ inputs.extension }}"
+          VERSION="${{ steps.prepare.outputs.clean_version }}"
+          RUN_ID="${{ github.run_id }}"
+
+          # Date components
+          YEAR=$(date -u +"%Y")
+          MONTH=$(date -u +"%m")
+          DAY=$(date -u +"%d")
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           # Find all report JSON files (they are in artifacts/report-* directories)
           REPORTS=$(find artifacts/ -name "*.json" -path "*/report-*/*" 2>/dev/null || true)
@@ -281,82 +291,150 @@ jobs:
           echo "Found reports:"
           echo "$REPORTS"
 
-          # Merge all reports into a single JSON array
-          jq -s '.' $REPORTS > dataset/latest.json
+          # Create history directory structure
+          HISTORY_DIR="dataset/history/${YEAR}/${MONTH}/${DAY}"
+          HISTORY_FILE="${EXTENSION}-${VERSION}-${RUN_ID}.json"
+          HISTORY_PATH="history/${YEAR}/${MONTH}/${DAY}/${HISTORY_FILE}"
+          mkdir -p "$HISTORY_DIR"
 
-          # Create timestamped version organized by year
-          YEAR=$(date -u +"%Y")
-          TIMESTAMP=$(date -u +"%m-%d")
-          mkdir -p "dataset/${YEAR}"
-          cp dataset/latest.json "dataset/${YEAR}/${TIMESTAMP}.json"
+          # Merge all reports into history file
+          jq -s '.' $REPORTS > "${HISTORY_DIR}/${HISTORY_FILE}"
+
+          # Calculate pass/fail/total from status field
+          PASS=$(jq '[.[] | select(.status == "success")] | length' "${HISTORY_DIR}/${HISTORY_FILE}")
+          FAIL=$(jq '[.[] | select(.status == "failure")] | length' "${HISTORY_DIR}/${HISTORY_FILE}")
+          TOTAL=$(jq 'length' "${HISTORY_DIR}/${HISTORY_FILE}")
+
+          # Create reports directory structure
+          REPORTS_DIR="dataset/reports/${EXTENSION}"
+          mkdir -p "$REPORTS_DIR"
+
+          # Generate builds nested structure for reports/{extension}/{version}.json
+          # This will be merged with existing data in the push step
+          jq -n --arg timestamp "$TIMESTAMP" --arg history_path "$HISTORY_PATH" '
+            {
+              "last_updated": $timestamp,
+              "builds": (
+                [inputs] | add | group_by(.php_version) | map({
+                  (.[0].php_version): (
+                    group_by(.platform) | map({
+                      (.[0].platform): (
+                        group_by(.platform_version) | map({
+                          (.[0].platform_version): (
+                            map({(.arch): $history_path}) | add
+                          )
+                        }) | add
+                      )
+                    }) | add
+                  )
+                }) | add
+              )
+            }
+          ' $REPORTS > "${REPORTS_DIR}/${VERSION}.json.new"
+
+          # Create latest.json entry for this extension
+          mkdir -p dataset
+          jq -n \
+            --arg ext "$EXTENSION" \
+            --arg path "$HISTORY_PATH" \
+            --arg version "$VERSION" \
+            --arg updated_at "$TIMESTAMP" \
+            --argjson pass "$PASS" \
+            --argjson fail "$FAIL" \
+            --argjson total "$TOTAL" \
+            '{
+              ($ext): {
+                "path": $path,
+                "version": $version,
+                "updated_at": $updated_at,
+                "pass": $pass,
+                "fail": $fail,
+                "total": $total
+              }
+            }' > dataset/latest.json.new
 
           echo "has_reports=true" >> $GITHUB_OUTPUT
-          echo "year=${YEAR}" >> $GITHUB_OUTPUT
-          echo "timestamp=${TIMESTAMP}" >> $GITHUB_OUTPUT
+          echo "history_path=${HISTORY_PATH}" >> $GITHUB_OUTPUT
+          echo "reports_file=reports/${EXTENSION}/${VERSION}.json" >> $GITHUB_OUTPUT
 
-          echo "Aggregated $(jq length dataset/latest.json) reports"
-          jq '.' dataset/latest.json
+          echo "Aggregated ${TOTAL} reports (pass: ${PASS}, fail: ${FAIL})"
+          echo "History: ${HISTORY_PATH}"
 
       - name: Push to dataset branch
         if: steps.aggregate.outputs.has_reports == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          YEAR="${{ steps.aggregate.outputs.year }}"
-          TIMESTAMP="${{ steps.aggregate.outputs.timestamp }}"
           EXTENSION="${{ inputs.extension }}"
           VERSION="${{ steps.prepare.outputs.clean_version }}"
+          HISTORY_PATH="${{ steps.aggregate.outputs.history_path }}"
+          REPORTS_FILE="${{ steps.aggregate.outputs.reports_file }}"
 
-          # Read report content and encode as base64
-          LATEST_CONTENT=$(base64 -w 0 dataset/latest.json)
-          YEARLY_CONTENT=$(base64 -w 0 "dataset/${YEAR}/${TIMESTAMP}.json")
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Function to create or update file via GitHub API
-          update_file() {
-            local path="$1"
-            local content="$2"
-            local message="$3"
+          # Fetch or create dataset branch
+          if git fetch origin dataset:dataset 2>/dev/null; then
+            echo "Fetched existing dataset branch"
+          else
+            echo "Creating new dataset branch"
+            git checkout --orphan dataset
+            git reset --hard
+            git commit --allow-empty -m "Initialize dataset branch"
+            git push origin dataset
+            git checkout -
+            git fetch origin dataset:dataset
+          fi
 
-            # Get current file SHA if it exists
-            SHA=$(gh api "repos/${{ github.repository }}/contents/${path}?ref=dataset" --jq '.sha' 2>/dev/null || echo "")
+          # Create worktree for dataset branch
+          git worktree add dataset-worktree dataset
 
-            if [ -n "$SHA" ]; then
-              # Update existing file
-              gh api -X PUT "repos/${{ github.repository }}/contents/${path}" \
-                -f message="${message}" \
-                -f content="${content}" \
-                -f sha="${SHA}" \
-                -f branch="dataset"
-            else
-              # Create new file
-              gh api -X PUT "repos/${{ github.repository }}/contents/${path}" \
-                -f message="${message}" \
-                -f content="${content}" \
-                -f branch="dataset" 2>/dev/null || \
-              # If branch doesn't exist, create it first
+          # Copy history file (always new, no merge needed)
+          HISTORY_DIR=$(dirname "dataset-worktree/${HISTORY_PATH}")
+          mkdir -p "$HISTORY_DIR"
+          cp "dataset/${HISTORY_PATH}" "dataset-worktree/${HISTORY_PATH}"
+
+          # Merge latest.json with existing data
+          if [ -f "dataset-worktree/latest.json" ]; then
+            jq -s '.[0] * .[1]' "dataset-worktree/latest.json" "dataset/latest.json.new" > "dataset-worktree/latest.json.tmp"
+            mv "dataset-worktree/latest.json.tmp" "dataset-worktree/latest.json"
+          else
+            cp "dataset/latest.json.new" "dataset-worktree/latest.json"
+          fi
+
+          # Merge reports/{extension}/{version}.json with existing data
+          REPORTS_DIR=$(dirname "dataset-worktree/${REPORTS_FILE}")
+          mkdir -p "$REPORTS_DIR"
+          if [ -f "dataset-worktree/${REPORTS_FILE}" ]; then
+            # Deep merge builds structure, update last_updated
+            jq -s '
+              .[0] as $existing |
+              .[1] as $new |
               {
-                # Get default branch SHA
-                DEFAULT_SHA=$(gh api "repos/${{ github.repository }}/git/refs/heads/main" --jq '.object.sha')
-                # Create dataset branch
-                gh api -X POST "repos/${{ github.repository }}/git/refs" \
-                  -f ref="refs/heads/dataset" \
-                  -f sha="${DEFAULT_SHA}" || true
-                # Try creating file again
-                gh api -X PUT "repos/${{ github.repository }}/contents/${path}" \
-                  -f message="${message}" \
-                  -f content="${content}" \
-                  -f branch="dataset"
+                "last_updated": $new.last_updated,
+                "builds": ($existing.builds // {}) * $new.builds
               }
-            fi
+            ' "dataset-worktree/${REPORTS_FILE}" "dataset/reports/${EXTENSION}/${VERSION}.json.new" > "dataset-worktree/${REPORTS_FILE}.tmp"
+            mv "dataset-worktree/${REPORTS_FILE}.tmp" "dataset-worktree/${REPORTS_FILE}"
+          else
+            cp "dataset/reports/${EXTENSION}/${VERSION}.json.new" "dataset-worktree/${REPORTS_FILE}"
+          fi
+
+          # Commit and push
+          cd dataset-worktree
+          git add -A
+          git commit -m "Update build reports - ${EXTENSION} v${VERSION}" || {
+            echo "No changes to commit"
+            cd ..
+            git worktree remove dataset-worktree
+            exit 0
           }
+          git push origin dataset
 
-          # Update latest.json
-          update_file "latest.json" "$LATEST_CONTENT" "Update build reports - ${YEAR}-${TIMESTAMP} - ${EXTENSION} v${VERSION}"
-
-          # Update yearly report
-          update_file "${YEAR}/${TIMESTAMP}.json" "$YEARLY_CONTENT" "Add ${YEAR}/${TIMESTAMP} report - ${EXTENSION} v${VERSION}"
-
-          echo "Successfully pushed reports to dataset branch via GitHub API"
+          cd ..
+          git worktree remove dataset-worktree
+          echo "Successfully pushed reports to dataset branch"
 
       - name: Create GitHub Release
         if: steps.prepare.outputs.has_artifacts == 'true' && inputs.create_release
