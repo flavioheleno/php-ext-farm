@@ -379,11 +379,10 @@ jobs:
             echo "Fetched existing dataset branch"
           else
             echo "Creating new dataset branch"
-            git checkout --orphan dataset
-            git reset --hard
-            git commit --allow-empty -m "Initialize dataset branch"
-            git push origin dataset
-            git checkout -
+            # Create an empty orphan commit using plumbing commands (no checkout needed)
+            EMPTY_TREE=$(git hash-object -t tree /dev/null)
+            COMMIT=$(git commit-tree "$EMPTY_TREE" -m "Initialize dataset branch")
+            git push origin "${COMMIT}:refs/heads/dataset"
             git fetch origin dataset:dataset
           fi
 
