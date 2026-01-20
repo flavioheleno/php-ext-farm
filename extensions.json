@@ -1015,29 +1015,36 @@
       "latest_version": "8.2"
     },
     "memcached": {
+      "configure_options": [
+        "--with-zstd"
+      ],
       "dependencies": {
         "alpine": {
           "build": [
             "libmemcached-dev",
             "zlib-dev",
-            "cyrus-sasl-dev"
+            "cyrus-sasl-dev",
+            "zstd-dev"
           ],
           "runtime": [
             "libmemcached",
             "zlib",
-            "cyrus-sasl"
+            "cyrus-sasl",
+            "zstd-libs"
           ]
         },
         "debian": {
           "build": [
             "libmemcached-dev",
             "zlib1g-dev",
-            "libsasl2-dev"
+            "libsasl2-dev",
+            "libzstd-dev"
           ],
           "runtime": [
             "libmemcached11",
             "zlib1g",
-            "libsasl2-2"
+            "libsasl2-2",
+            "libzstd1"
           ]
         }
       },
