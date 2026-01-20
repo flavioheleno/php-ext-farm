@@ -65,7 +65,7 @@ RUN if [ -n "${PHP_VERSION_TAG}" ]; then \
       --with-sodium \
       --with-zlib && \
     make -j"$(nproc)" && \
-    find -type f -name '*.a' -delete && \
+    find . -type f -name '*.a' -delete && \
     make install && \
     mkdir -p /usr/local/etc/php/conf.d && \
     php --version && \
