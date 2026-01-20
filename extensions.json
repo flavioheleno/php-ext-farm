@@ -1849,7 +1849,6 @@
             "libpq-dev"
           ],
           "runtime": [
-            "libssl3",
             "libcurl4",
             "libbrotli1",
             "libzstd1",
