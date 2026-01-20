@@ -188,7 +188,7 @@ check_bitbucket_tags() {
 }
 
 echo "{"
-echo '  "checked_at": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'",'
+echo '  "checked_at": "'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'",'
 echo '  "extensions": {'
 
 EXTENSIONS=$(jq -r '.extensions | keys[]' "${CONFIG_FILE}")
