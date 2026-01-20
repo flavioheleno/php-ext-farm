@@ -1796,26 +1796,47 @@
       "latest_version": "release_2_0_3"
     },
     "swoole": {
+      "configure_options": [
+        "--enable-brotli",
+        "--enable-zstd",
+        "--enable-openssl",
+        "--enable-sockets",
+        "--enable-pgsql",
+        "--enable-mysqlnd",
+        "--enable-swoole-curl"
+      ],
       "dependencies": {
         "alpine": {
           "build": [
             "openssl-dev",
             "curl-dev",
-            "linux-headers"
+            "linux-headers",
+            "brotli-dev",
+            "zstd-dev",
+            "postgresql-dev"
           ],
           "runtime": [
             "openssl",
-            "curl"
+            "curl",
+            "brotli-libs",
+            "zstd-libs",
+            "postgresql-libs"
           ]
         },
         "debian": {
           "build": [
             "libssl-dev",
-            "libcurl4-openssl-dev"
+            "libcurl4-openssl-dev",
+            "libbrotli-dev",
+            "libzstd-dev",
+            "libpq-dev"
           ],
           "runtime": [
             "libssl3",
-            "libcurl4"
+            "libcurl4",
+            "libbrotli1",
+            "libzstd1",
+            "libpq5"
           ]
         }
       },
