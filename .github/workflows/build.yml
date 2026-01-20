@@ -315,7 +315,7 @@ jobs:
             {
               "last_updated": $timestamp,
               "builds": (
-                [inputs] | add | group_by(.php_version) | map({
+                [inputs] | group_by(.php_version) | map({
                   (.[0].php_version): (
                     group_by(.platform) | map({
                       (.[0].platform): (
