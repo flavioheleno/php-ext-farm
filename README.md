@@ -280,8 +280,8 @@ RUN php -m | grep redis
 Build extensions against the upcoming PHP version from the master branch of php/php-src:
 
 ```bash
-# Install extension for PHP next
-./scripts/install.sh redis 6.3.0 next
+# Install extension for PHP next (auto-detects if running PHP next)
+./scripts/install.sh redis 6.3.0
 
 # Build locally
 ./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 amd64
@@ -312,8 +312,7 @@ Get the latest unreleased features from the extension's default branch:
 # Build specific dev version
 gh workflow run build.yml \
   -f extension=redis \
-  -f extension_version=dev-abc1234 \
-  -f create_release=false
+  -f extension_version=dev-abc1234
 ```
 
 **Automatic dev builds:**
@@ -322,13 +321,13 @@ gh workflow run build.yml \
 - Artifacts uploaded but no GitHub releases created
 - Tracked separately in dataset: `channel: "dev"`
 
-**Query dev builds:**
+**Query dev builds (from history files):**
 ```bash
-# Get all dev channel builds
-jq '.[] | select(.channel == "dev")' dataset/latest.json
+# Get all dev channel builds from a history file
+jq '.[] | select(.channel == "dev")' history-file.json
 
 # Compare dev vs release for same extension
-jq '.[] | select(.extension == "redis") | {channel, status, extension_version}' dataset/latest.json
+jq '.[] | select(.extension == "redis") | {channel, status, extension_version}' history-file.json
 ```
 
 ### Combining PHP next + Dev Channel
@@ -353,12 +352,13 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 ### Build a single extension
 
 ```bash
-./scripts/build.sh <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel]
+./scripts/build.sh <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel] [--local]
 
 # Examples:
 ./scripts/build.sh redis 6.0.2 8.3 alpine 3.20
 ./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 arm64
 ./scripts/build.sh imagick 3.7.0 8.4 debian bookworm amd64
+./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 --local  # Use local base images
 ```
 
 ### Check for new releases
@@ -397,11 +397,19 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 │   └── Dockerfile.debian           # Extension build image (Debian)
 ├── scripts/
 │   ├── build.sh                   # Local build script
+│   ├── build-base-image.sh        # Build base images locally
 │   ├── install.sh                 # Install pre-built extensions
+│   ├── local-test.sh              # Test builds locally
 │   ├── check-releases.sh          # Check upstream releases
-│   └── normalize-version.sh       # Version string normalization
+│   ├── check-exclusion.sh         # Check if build should be excluded
+│   ├── normalize-version.sh       # Version string normalization
+│   ├── validate-config.sh         # Validate JSON configuration
+│   ├── test-check-exclusion.sh    # Unit tests for check-exclusion
+│   ├── test-normalize-version.sh  # Unit tests for normalize-version
+│   └── test-version-tracking.sh   # Unit tests for version tracking
 ├── extensions.json                # Extension configuration
 ├── php-versions.json              # PHP version/tag/branch mapping
+├── os-versions.json               # OS version configuration
 └── README.md
 ```
 
@@ -412,17 +420,34 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 The main configuration file defines:
 
 - `base_image_registry`: Container registry for custom PHP base images
-- `php_versions`: List of PHP versions to build for
 - `architectures`: List of architectures to build for (amd64, arm64, arm32v6, arm32v7)
-- `platforms`: Platform configurations (Alpine/Debian versions)
-  - `versions`: List of OS versions to build for
-  - `exclude`: Optional array of platform-level exclusion rules (see below)
 - `extensions`: Extension definitions including:
   - `type`: Extension type (pecl, git, etc.)
   - `pecl_name`: PECL package name
-  - `track_url`: GitHub repository to track releases
+  - `track_url`: GitHub/GitLab/Bitbucket repository to track releases
   - `dependencies`: Build and runtime dependencies per platform
   - `exclude`: Optional array of extension-level exclusion rules (see below)
+  - `external_libs`: Optional array of external libraries to build (see below)
+  - `configure_options`: Optional array of configure flags
+
+### os-versions.json
+
+Defines supported OS versions and platform-level exclusions:
+
+```json
+{
+  "alpine": {
+    "versions": ["3.19", "3.20", "3.21", "3.22", "3.23"],
+    "exclude": []
+  },
+  "debian": {
+    "versions": ["bullseye", "bookworm", "trixie"],
+    "exclude": [
+      {"version": "trixie", "arch": "arm32v6"}
+    ]
+  }
+}
+```
 
 ### php-versions.json
 
@@ -444,33 +469,31 @@ This file is automatically updated by `check-php-releases.yml` when new PHP vers
 
 The build system supports excluding specific OS/architecture combinations that are incompatible. This uses a wildcard-based exclusion system with two levels:
 
-#### Platform-Level Exclusions
+#### Platform-Level Exclusions (os-versions.json)
 
-Defined within each platform object, these apply to all extensions built on that platform:
+Defined in `os-versions.json`, these apply to all extensions built on that platform:
 
 ```json
 {
-  "platforms": {
-    "alpine": {
-      "versions": ["3.19", "3.20", "3.21"],
-      "exclude": [
-        {"version": "3.19", "arch": "arm32*"},
-        {"version": "3.20", "arch": "arm32v6"}
-      ]
-    },
-    "debian": {
-      "versions": ["bookworm", "bullseye"],
-      "exclude": [
-        {"version": "bullseye", "arch": "arm32v6"}
-      ]
-    }
+  "alpine": {
+    "versions": ["3.19", "3.20", "3.21"],
+    "exclude": [
+      {"version": "3.19", "arch": "arm32*"},
+      {"version": "3.20", "arch": "arm32v6"}
+    ]
+  },
+  "debian": {
+    "versions": ["bookworm", "bullseye"],
+    "exclude": [
+      {"version": "bullseye", "arch": "arm32v6"}
+    ]
   }
 }
 ```
 
 **Note:** Platform-level excludes don't include an `os` field (it's implicit from the parent context).
 
-#### Extension-Level Exclusions
+#### Extension-Level Exclusions (extensions.json)
 
 Defined within each extension, these override or supplement platform exclusions:
 
@@ -540,7 +563,7 @@ This checks for:
 }
 ```
 
-2. Update the `build-all.yml` matrix to include the new extension.
+2. The extension will automatically be included in build-all.yml (reads from extensions.json dynamically).
 
 The extension will automatically be built for all PHP versions, platforms, and architectures defined in `extensions.json`.
 
@@ -626,14 +649,17 @@ This approach works for any compiled library dependency. **Examples:**
 
 ## 🔄 Automation
 
-### Daily Checks
-- `check-releases.yml` runs daily to detect new extension releases
-- `check-php-releases.yml` runs daily to detect new PHP releases
+### Scheduled Checks
+- `check-releases.yml` runs hourly on Mondays to detect new extension releases (batched, ~20 per run)
+- `check-php-releases.yml` runs daily at 4 AM UTC to detect new PHP releases
+- `check-os-releases.yml` runs weekly on Sundays to detect new Alpine/Debian releases
 - Automatically triggers builds when new versions are found
 
 ### Weekly Builds
-- `build-all.yml` runs weekly to rebuild all extensions
-- `build-base-images.yml` runs weekly to rebuild PHP base images
+- `build-all.yml` runs weekly on Sundays at 2 AM UTC to rebuild all extensions
+- `build-os-base-images.yml` runs weekly on Saturdays at 2 AM UTC
+- `build-php-base-images.yml` runs weekly on Saturdays at 3 AM UTC
+- `cleanup-ghcr.yml` runs weekly on Sundays at 6 AM UTC to clean up container registry
 - Ensures security updates from base images are included
 
 ### Base Image Pipeline
