@@ -275,7 +275,7 @@
             "cargo build --release --features=c-library",
             "mkdir -p /usr/local/include /usr/local/lib",
             "cp target/release/libcrc_fast.so /usr/local/lib/ || cp target/release/libcrc_fast.dylib /usr/local/lib/ || true",
-            "cp include/libcrc_fast.h /usr/local/include/"
+            "cp libcrc_fast.h /usr/local/include/"
           ],
           "name": "libcrc_fast",
           "repo_url": "https://github.com/awesomized/crc-fast-rust",
