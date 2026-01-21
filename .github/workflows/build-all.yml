@@ -72,11 +72,8 @@ jobs:
                    gh api "repos/${REPO_PATH}/tags?per_page=1" --jq '.[0].name' 2>/dev/null || \
                    echo "")
 
-          # Clean version (remove 'v' prefix if present)
-          CLEAN_VERSION=$(echo "$LATEST" | sed 's/^v//')
-
-          echo "version=${CLEAN_VERSION}" >> $GITHUB_OUTPUT
-          echo "Latest release version for ${EXT}: ${CLEAN_VERSION}"
+          echo "version=${LATEST}" >> $GITHUB_OUTPUT
+          echo "Latest release version for ${EXT}: ${LATEST}"
 
       - name: Trigger release channel build
         if: steps.version.outputs.version != ''
