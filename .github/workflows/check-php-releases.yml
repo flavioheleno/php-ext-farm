@@ -60,7 +60,9 @@ jobs:
             fi
 
             # Get latest version and SHA256 from active.php
-            VERSION_DATA=$(echo "$ACTIVE_RELEASES" | jq -r --arg v "$php_version" '."8"[$v] // empty')
+            # Extract major version (e.g., "8" from "8.3") to look up in the right section
+            MAJOR_VERSION="${php_version%%.*}"
+            VERSION_DATA=$(echo "$ACTIVE_RELEASES" | jq -r --arg major "$MAJOR_VERSION" --arg v "$php_version" '.[$major][$v] // empty')
 
             if [[ -z "$VERSION_DATA" ]]; then
               echo "Could not find PHP $php_version in active releases"
