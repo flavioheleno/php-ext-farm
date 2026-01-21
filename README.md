@@ -715,23 +715,61 @@ All build results are automatically collected and published to the `dataset` bra
 
 ```
 dataset (branch)
-├── latest.json              # Most recent build results
-└── 2026/                    # Historical data organized by year
-    ├── 01-07.json          # Daily snapshot (MM-DD format)
-    ├── 01-06.json
-    └── ...
+├── latest.json                    # Summary of most recent build per extension
+├── reports/
+│   └── {extension}/
+│       └── {version}.json         # Build history index for specific version
+└── history/
+    └── {year}/
+        └── {month}/
+            └── {day}/
+                └── {ext}-{ver}-{run_id}.json  # Detailed build reports
+```
+
+**latest.json** - Quick lookup of most recent build per extension:
+```json
+{
+  "redis": {
+    "path": "history/2026/01/21/redis-6.3.0-123456789.json",
+    "version": "6.3.0",
+    "updated_at": "2026-01-21T10:30:00Z",
+    "pass": 45,
+    "fail": 3,
+    "total": 48
+  }
+}
+```
+
+**reports/{extension}/{version}.json** - Index of all builds for a version:
+```json
+{
+  "last_updated": "2026-01-21T10:30:00Z",
+  "builds": {
+    "2026": {
+      "01": {
+        "21": "history/2026/01/21/redis-6.3.0-123456789.json"
+      }
+    }
+  }
+}
 ```
 
 #### Accessing the Dataset
 
-**Get latest build results:**
+**Get latest build summary:**
 ```bash
 curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/latest.json
 ```
 
-**Get specific date:**
+**Get build history for specific extension version:**
 ```bash
-curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/2026/01-07.json
+curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/reports/redis/6.3.0.json
+```
+
+**Get detailed build reports:**
+```bash
+# First, get the path from latest.json or reports/{ext}/{ver}.json
+curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/history/2026/01/21/redis-6.3.0-123456789.json
 ```
 
 **Clone dataset branch:**
@@ -829,28 +867,47 @@ Each report contains detailed build information:
 
 #### Querying Build Data
 
-**Find all successful PHP 8.4 builds:**
+**Get extension summary from latest.json:**
 ```bash
+# Get summary for a specific extension
 curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+  jq '.redis'
+
+# List all extensions with their success rates
+curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+  jq 'to_entries | map({ext: .key, pass: .value.pass, fail: .value.fail, rate: (.value.pass / .value.total * 100)})'
+```
+
+**Query detailed build reports (from history files):**
+```bash
+# First get the history file path, then query it
+HISTORY_PATH=$(curl -s .../dataset/latest.json | jq -r '.redis.path')
+curl -s "https://raw.githubusercontent.com/.../dataset/${HISTORY_PATH}" | \
+  jq '.[] | select(.status == "success")'
+```
+
+**Find all successful PHP 8.4 builds (from history):**
+```bash
+curl -s .../dataset/history/2026/01/21/redis-6.3.0-123456789.json | \
   jq '.[] | select(.php_version == "8.4" and .status == "success")'
 ```
 
-**Filter by channel:**
+**Filter by channel (from history):**
 ```bash
 # All dev channel builds
-jq '.[] | select(.channel == "dev")' latest.json
+jq '.[] | select(.channel == "dev")' history-file.json
 
 # All release channel builds
-jq '.[] | select(.channel == "release")' latest.json
+jq '.[] | select(.channel == "release")' history-file.json
 
 # All PHP next builds
-jq '.[] | select(.php_version == "next")' latest.json
+jq '.[] | select(.php_version == "next")' history-file.json
 
 # Dev channel on PHP next (bleeding edge × bleeding edge)
-jq '.[] | select(.channel == "dev" and .php_version == "next")' latest.json
+jq '.[] | select(.channel == "dev" and .php_version == "next")' history-file.json
 ```
 
-**Compare PHP versions:**
+**Compare PHP versions (from history):**
 ```bash
 # Success rate by PHP version
 jq 'group_by(.php_version) | map({
@@ -858,44 +915,34 @@ jq 'group_by(.php_version) | map({
   total: length,
   success: [.[] | select(.status == "success")] | length,
   success_rate: ([.[] | select(.status == "success")] | length) / length * 100
-})' latest.json
-
-# Extensions failing on PHP next but working on stable
-jq '[.[] | select(.extension as $ext |
-  (.php_version == "next" and .status == "failure") and
-  (map(select(.extension == $ext and .php_version != "next" and .status == "success")) | length > 0)
-)] | unique_by(.extension) | .[].extension' latest.json
+})' history-file.json
 ```
 
-**Count builds by platform:**
+**Count builds by platform (from history):**
 ```bash
-curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
-  jq 'group_by(.platform) | map({platform: .[0].platform, count: length})'
+jq 'group_by(.platform) | map({platform: .[0].platform, count: length})' history-file.json
 ```
 
-**List all failed builds:**
+**List all failed builds (from history):**
 ```bash
-curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
-  jq '.[] | select(.status == "failure")'
+jq '.[] | select(.status == "failure")' history-file.json
 ```
 
-**Group failures by reason:**
+**Group failures by reason (from history):**
 ```bash
-curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
-  jq 'group_by(.reason) | map({reason: .[0].reason, count: length})'
+jq 'group_by(.reason) | map({reason: .[0].reason, count: length})' history-file.json
 ```
 
-**Find compile errors:**
+**Find compile errors (from history):**
 ```bash
-curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
-  jq '.[] | select(.reason == "compile_error") | {extension, php_version, platform, arch, error}'
+jq '.[] | select(.reason == "compile_error") | {extension, php_version, platform, arch, error}' history-file.json
 ```
 
 **Track success rate over time:**
 ```bash
 git clone -b dataset --depth 1 https://github.com/flavioheleno/php-ext-farm.git dataset
-cd dataset/2026
-for file in *.json; do
+cd dataset/history/2026/01
+for file in */*.json; do
   total=$(jq 'length' "$file")
   success=$(jq '[.[] | select(.status == "success")] | length' "$file")
   echo "$file: $success/$total successful"
@@ -921,28 +968,28 @@ done
 # Build all extensions on PHP next
 gh workflow run build.yml -f php_versions=next
 
-# Check which extensions work on PHP next
+# Check which extensions work on PHP next (query history file)
 jq '[.[] | select(.php_version == "next" and .status == "success")] |
-    unique_by(.extension) | .[].extension' latest.json
+    unique_by(.extension) | .[].extension' history-file.json
 
 # Find extensions that need PHP next compatibility fixes
 jq '[.[] | select(.php_version == "next" and .status == "failure")] |
-    unique_by(.extension) | map({extension, reason})' latest.json
+    unique_by(.extension) | map({extension, reason})' history-file.json
 ```
 
 ### Monitoring Dev Channel Builds
 
 ```bash
-# Get latest dev builds
+# Get latest dev builds (from history file)
 jq '.[] | select(.channel == "dev") |
-    {extension, extension_version, php_version, status}' latest.json
+    {extension, extension_version, php_version, status}' history-file.json
 
 # Compare dev vs release stability
 jq 'group_by(.channel) | map({
   channel: .[0].channel,
   total: length,
   success_rate: ([.[] | select(.status == "success")] | length) / length * 100
-})' latest.json
+})' history-file.json
 ```
 
 ### Multi-Matrix Testing
@@ -955,13 +1002,13 @@ jq 'group_by(.channel) | map({
 # - Multiple platform versions
 # - 4 architectures (amd64, arm64, arm32v6, arm32v7)
 
-# Example: Find best configuration for production
+# Example: Find best configuration for production (from history file)
 jq '[.[] | select(.status == "success" and .channel == "release")] |
     group_by(.php_version) | map({
       php: .[0].php_version,
       success_count: length,
       platforms: [.[] | .platform] | unique
-    })' latest.json
+    })' history-file.json
 ```
 
 ## License
