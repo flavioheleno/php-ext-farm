@@ -373,19 +373,28 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 .
 ├── .github/
 │   ├── workflows/
-│   │   ├── build.yml              # Build single extension
-│   │   ├── build-all.yml          # Weekly full rebuild of all extensions
-│   │   ├── build-base-images.yml  # Build custom PHP base images
-│   │   ├── check-releases.yml     # Daily check for new extension releases
-│   │   ├── check-php-releases.yml # Daily check for new PHP releases
-│   │   └── release.yml            # Create GitHub releases with artifacts
-│   └── dependabot.yml             # Automated dependency updates
+│   │   ├── build.yml               # Build single extension
+│   │   ├── build-all.yml           # Weekly full rebuild of all extensions
+│   │   ├── build-os-base-images.yml   # Build OS base images (Alpine/Debian)
+│   │   ├── build-php-base-images.yml  # Build PHP base images from source
+│   │   ├── check-releases.yml      # Check for new extension releases
+│   │   ├── check-php-releases.yml  # Daily check for new PHP releases
+│   │   ├── check-os-releases.yml   # Weekly check for new OS releases
+│   │   ├── cleanup-ghcr.yml        # Clean up container registry
+│   │   ├── lint.yml                # Lint scripts and Dockerfiles
+│   │   ├── tests.yml               # Run unit and integration tests
+│   │   └── release.yml             # Create GitHub releases with artifacts
+│   └── dependabot.yml              # Automated dependency updates
 ├── docker/
 │   ├── base/
-│   │   ├── Dockerfile.alpine      # Base image: PHP on Alpine (built from source)
-│   │   └── Dockerfile.debian      # Base image: PHP on Debian (built from source)
-│   ├── Dockerfile.alpine          # Extension build image (Alpine)
-│   └── Dockerfile.debian          # Extension build image (Debian)
+│   │   ├── os/
+│   │   │   ├── Dockerfile.alpine   # OS base image: Alpine
+│   │   │   └── Dockerfile.debian   # OS base image: Debian
+│   │   └── php/
+│   │       ├── Dockerfile.alpine   # PHP base image: Alpine (built from source)
+│   │       └── Dockerfile.debian   # PHP base image: Debian (built from source)
+│   ├── Dockerfile.alpine           # Extension build image (Alpine)
+│   └── Dockerfile.debian           # Extension build image (Debian)
 ├── scripts/
 │   ├── build.sh                   # Local build script
 │   ├── install.sh                 # Install pre-built extensions
@@ -421,11 +430,11 @@ Maps PHP versions to their git tags and branches:
 
 ```json
 {
-  "8.2": {"tag": "php-8.2.27", "branch": "PHP-8.2"},
-  "8.3": {"tag": "php-8.3.15", "branch": "PHP-8.3"},
-  "8.4": {"tag": "php-8.4.2", "branch": "PHP-8.4"},
-  "8.5": {"tag": "php-8.5.2", "branch": "PHP-8.5"},
-  "next": {"tag": "", "branch": "master"}
+  "8.2": {"tag": "php-8.2.30", "branch": "PHP-8.2", "sha256": "..."},
+  "8.3": {"tag": "php-8.3.30", "branch": "PHP-8.3", "sha256": "..."},
+  "8.4": {"tag": "php-8.4.17", "branch": "PHP-8.4", "sha256": "..."},
+  "8.5": {"tag": "php-8.5.2", "branch": "PHP-8.5", "sha256": "..."},
+  "next": {"tag": null, "branch": "master"}
 }
 ```
 
@@ -628,12 +637,13 @@ This approach works for any compiled library dependency. **Examples:**
 - Ensures security updates from base images are included
 
 ### Base Image Pipeline
-The build system uses custom PHP base images instead of Docker Hub images:
+The build system uses custom base images built from source:
 
-1. **PHP Release Detection**: `check-php-releases.yml` monitors php/php-src for new releases
-2. **Base Image Build**: `build-base-images.yml` compiles PHP from source for all platforms/architectures
-3. **Image Storage**: Base images are pushed to `ghcr.io/flavioheleno/php-ext-farm/php`
-4. **Extension Builds**: `build.yml` uses these base images to compile extensions
+1. **OS Base Images**: `build-os-base-images.yml` creates minimal Alpine/Debian images with build tools
+2. **PHP Release Detection**: `check-php-releases.yml` monitors php/php-src for new releases
+3. **PHP Base Images**: `build-php-base-images.yml` compiles PHP from source for all platforms/architectures
+4. **Image Storage**: Base images are pushed to `ghcr.io/flavioheleno/php-ext-farm/{alpine,debian,php}`
+5. **Extension Builds**: `build.yml` uses these base images to compile extensions
 
 This approach provides:
 - Full control over PHP compilation options
@@ -658,7 +668,7 @@ gh workflow run release.yml -f extension=redis -f extension_version=6.0.2
 gh workflow run build-all.yml -f force_rebuild=true
 
 # Rebuild base images for specific PHP version
-gh workflow run build-base-images.yml -f php_version=8.4 -f force_rebuild=true
+gh workflow run build-php-base-images.yml -f php_version=8.4 -f force_rebuild=true
 ```
 
 ## 📋 Artifact Naming Convention
@@ -940,7 +950,7 @@ jq 'group_by(.channel) | map({
 ```bash
 # All possible combinations
 # - 2 channels (release, dev)
-# - 6 PHP versions (8.2, 8.3, 8.4, 8.5, next)
+# - 5 PHP versions (8.2, 8.3, 8.4, 8.5, next)
 # - 2 platforms (alpine, debian)
 # - Multiple platform versions
 # - 4 architectures (amd64, arm64, arm32v6, arm32v7)
