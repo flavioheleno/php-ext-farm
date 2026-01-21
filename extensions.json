@@ -2101,24 +2101,40 @@
       "latest_version": "3.5.0"
     },
     "xdiff": {
+      "configure_options": [
+        "--with-xdiff=/usr/local"
+      ],
       "dependencies": {
         "alpine": {
           "build": [
-            "libxdiff-dev"
+            "autoconf",
+            "automake",
+            "libtool"
           ],
-          "runtime": [
-            "libxdiff"
-          ]
+          "runtime": []
         },
         "debian": {
           "build": [
-            "libxdiff-dev"
+            "autoconf",
+            "automake",
+            "libtool"
           ],
-          "runtime": [
-            "libxdiff0"
-          ]
+          "runtime": []
         }
       },
+      "external_libs": [
+        {
+          "build_commands": [
+            "autoreconf -i",
+            "./configure --prefix=/usr/local",
+            "make -j$(nproc)",
+            "make install"
+          ],
+          "name": "libxdiff",
+          "repo_url": "https://github.com/spotrh/libxdiff",
+          "type": "autotools"
+        }
+      ],
       "pecl_name": "xdiff",
       "track_url": "https://github.com/php/pecl-text-xdiff",
       "type": "pecl",
