@@ -1,5 +1,5 @@
 name: Release
-run-name: "Release ${{ inputs.extension }} ${{ inputs.extension_version }}"
+run-name: "Release ${{ inputs.extension }} ${{ inputs.extension_version || 'latest' }}"
 
 on:
   workflow_dispatch:
@@ -9,9 +9,10 @@ on:
         required: true
         type: string
       extension_version:
-        description: 'Extension version'
-        required: true
+        description: 'Extension version (leave empty for latest)'
+        required: false
         type: string
+        default: ''
       rebuild:
         description: 'Force rebuild even if release exists'
         required: false
@@ -28,7 +29,7 @@ on:
 
 # Prevent concurrent releases of the same extension version
 concurrency:
-  group: release-${{ inputs.extension }}-${{ inputs.extension_version }}
+  group: release-${{ inputs.extension }}-${{ inputs.extension_version || 'latest' }}
   cancel-in-progress: false
 
 permissions:
@@ -36,12 +37,13 @@ permissions:
 
 jobs:
   check-release:
-    name: Check if ${{ inputs.extension }} ${{ inputs.extension_version }} needs building
+    name: Check if ${{ inputs.extension }} needs building
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       should_build: ${{ steps.check.outputs.should_build }}
       release_tag: ${{ steps.check.outputs.release_tag }}
       clean_version: ${{ steps.check.outputs.clean_version }}
+      extension_version: ${{ steps.check.outputs.extension_version }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -51,7 +53,20 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXT="${{ inputs.extension }}"
-          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ inputs.extension_version }}")
+          
+          # Resolve version - use input or fall back to latest from extensions.json
+          INPUT_VERSION="${{ inputs.extension_version }}"
+          if [[ -z "$INPUT_VERSION" ]]; then
+            INPUT_VERSION=$(jq -r ".extensions.\"${EXT}\".latest_version // empty" extensions.json)
+            if [[ -z "$INPUT_VERSION" ]]; then
+              echo "Error: No version provided and no latest_version found for extension '${EXT}'"
+              exit 1
+            fi
+            echo "Using latest_version from extensions.json: $INPUT_VERSION"
+          fi
+          echo "extension_version=${INPUT_VERSION}" >> $GITHUB_OUTPUT
+          
+          VERSION=$(./scripts/normalize-version.sh "$EXT" "$INPUT_VERSION")
           RELEASE_TAG="${EXT}-${VERSION}"
           echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
@@ -70,17 +85,17 @@ jobs:
           fi
 
   build:
-    name: Build ${{ inputs.extension }} ${{ inputs.extension_version }}
+    name: Build ${{ inputs.extension }} ${{ needs.check-release.outputs.extension_version }}
     needs: check-release
     if: needs.check-release.outputs.should_build == 'true'
     uses: ./.github/workflows/build.yml
     with:
       extension: ${{ inputs.extension }}
-      extension_version: ${{ inputs.extension_version }}
+      extension_version: ${{ needs.check-release.outputs.extension_version }}
       runner: ${{ inputs.runner || 'ubuntu-latest' }}
 
   release:
-    name: Create GitHub release for ${{ inputs.extension }} ${{ inputs.extension_version }}
+    name: Create GitHub release for ${{ inputs.extension }} ${{ needs.check-release.outputs.extension_version }}
     needs: [check-release, build]
     if: needs.check-release.outputs.should_build == 'true'
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
@@ -152,7 +167,7 @@ jobs:
 
   update-version-cache:
     name: Update version cache for ${{ inputs.extension }}
-    needs: release
+    needs: [check-release, release]
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     permissions:
       contents: write
@@ -162,7 +177,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXTENSION="${{ inputs.extension }}"
-          VERSION="${{ inputs.extension_version }}"
+          VERSION="${{ needs.check-release.outputs.extension_version }}"
           FILE_PATH=".versions/${EXTENSION}.txt"
           CONTENT=$(echo -n "$VERSION" | base64)
 
