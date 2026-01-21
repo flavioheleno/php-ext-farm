@@ -229,9 +229,6 @@ jobs:
     if: always()
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 30
-    concurrency:
-      group: dataset-branch-update
-      cancel-in-progress: false
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
@@ -417,7 +414,7 @@ jobs:
             cp "dataset/reports/${EXTENSION}/${VERSION}.json.new" "dataset-worktree/${REPORTS_FILE}"
           fi
 
-          # Commit and push
+          # Commit and push with retry logic for concurrent updates
           cd dataset-worktree
           git add -A
           git commit -m "Update build reports - ${EXTENSION} v${VERSION}" || {
@@ -426,11 +423,37 @@ jobs:
             git worktree remove dataset-worktree
             exit 0
           }
-          git push origin dataset
+
+          # Retry push up to 5 times with rebase on conflict
+          for i in 1 2 3 4 5; do
+            if git push origin dataset; then
+              echo "Successfully pushed reports to dataset branch"
+              break
+            fi
+            echo "Push failed (attempt $i/5), fetching and rebasing..."
+            git fetch origin dataset
+            git rebase origin/dataset || {
+              echo "Rebase conflict, resetting and re-applying changes..."
+              git rebase --abort
+              git reset --hard origin/dataset
+              # Re-apply our changes
+              cp -r "../dataset/${HISTORY_PATH}" "./${HISTORY_PATH}" 2>/dev/null || true
+              if [ -f "../dataset/latest.json.new" ]; then
+                if [ -f "latest.json" ]; then
+                  jq -s '.[0] * .[1]' "latest.json" "../dataset/latest.json.new" > "latest.json.tmp"
+                  mv "latest.json.tmp" "latest.json"
+                else
+                  cp "../dataset/latest.json.new" "latest.json"
+                fi
+              fi
+              git add -A
+              git commit -m "Update build reports - ${EXTENSION} v${VERSION}" || true
+            }
+            sleep $((i * 2))
+          done
 
           cd ..
           git worktree remove dataset-worktree
-          echo "Successfully pushed reports to dataset branch"
 
       - name: Create GitHub Release
         if: steps.prepare.outputs.has_artifacts == 'true' && inputs.create_release
