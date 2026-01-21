@@ -27,11 +27,6 @@ on:
         required: false
         default: 'all'
         type: string
-      create_release:
-        description: 'Create a GitHub release with artifacts'
-        required: false
-        type: boolean
-        default: true
       runner:
         description: 'Runner to use'
         required: false
@@ -52,10 +47,6 @@ on:
         required: false
         type: string
         default: 'all'
-      create_release:
-        required: false
-        type: boolean
-        default: true
       runner:
         required: false
         type: string
@@ -454,47 +445,3 @@ jobs:
 
           cd ..
           git worktree remove dataset-worktree
-
-      - name: Create GitHub Release
-        if: steps.prepare.outputs.has_artifacts == 'true' && inputs.create_release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          EXT="${{ inputs.extension }}"
-          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ needs.prepare.outputs.extension_version }}")
-          RELEASE_TAG="${EXT}-${VERSION}"
-
-          # Create release notes
-          cat > release_notes.md << EOF
-          # ${EXT} ${VERSION}
-
-          Pre-compiled PHP extension binaries.
-
-          ## Supported Configurations
-
-          - **PHP Versions**: $(jq -r 'keys | join(", ")' php-versions.json)
-          - **Architectures**: $(jq -r '.architectures | join(", ")' extensions.json)
-          - **Alpine Linux**: $(jq -r '.alpine.versions | join(", ")' os-versions.json)
-          - **Debian**: $(jq -r '.debian.versions | join(", ")' os-versions.json)
-
-          ## Installation
-
-          \`\`\`bash
-          tar -xzf ${EXT}-${VERSION}-php<version>-<platform>-<platform_version>-<arch>.tar.gz
-          cp ${EXT}.so \$(php -r "echo ini_get('extension_dir');")
-          echo "extension=${EXT}.so" >> \$(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
-          \`\`\`
-
-          Check \`metadata.json\` inside each archive for runtime dependencies.
-
-          Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-          EOF
-
-          # Delete existing release if it exists (to allow re-running the workflow)
-          gh release delete "$RELEASE_TAG" --yes --cleanup-tag 2>/dev/null || true
-
-          # Create release with artifacts
-          gh release create "$RELEASE_TAG" \
-            --title "${EXT} ${VERSION}" \
-            --notes-file release_notes.md \
-            release/*.tar.gz
