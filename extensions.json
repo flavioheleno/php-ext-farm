@@ -1233,6 +1233,7 @@
       "latest_version": "v3.4.1"
     },
     "opentelemetry": {
+      "build_path": "ext",
       "dependencies": {
         "alpine": {
           "build": [],
