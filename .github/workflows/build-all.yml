@@ -58,48 +58,13 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Get latest release version
-        id: version
+      - name: Trigger release build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          EXT="${{ matrix.extension }}"
-          TRACK_URL=$(jq -r ".extensions.${EXT}.track_url" extensions.json)
-          REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||')
-
-          # Get latest release or tag
-          LATEST=""
-          if RELEASE_TAG=$(gh api "repos/${REPO_PATH}/releases/latest" --jq '.tag_name' 2>/dev/null); then
-            # Validate it's not an error message
-            if [[ -n "$RELEASE_TAG" && "$RELEASE_TAG" != "null" && ! "$RELEASE_TAG" =~ ^\{ ]]; then
-              LATEST="$RELEASE_TAG"
-            fi
-          fi
-
-          if [[ -z "$LATEST" ]]; then
-            if TAG_NAME=$(gh api "repos/${REPO_PATH}/tags?per_page=1" --jq '.[0].name' 2>/dev/null); then
-              # Validate it's not an error message
-              if [[ -n "$TAG_NAME" && "$TAG_NAME" != "null" && ! "$TAG_NAME" =~ ^\{ ]]; then
-                LATEST="$TAG_NAME"
-              fi
-            fi
-          fi
-
-          echo "version=${LATEST}" >> $GITHUB_OUTPUT
-          if [[ -n "$LATEST" ]]; then
-            echo "Latest release version for ${EXT}: ${LATEST}"
-          else
-            echo "No valid version found for ${EXT}"
-          fi
-
-      - name: Trigger release channel build
-        if: steps.version.outputs.version != ''
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
+          # release.yml will use latest_version from extensions.json if version not provided
           gh workflow run release.yml \
             -f extension="${{ matrix.extension }}" \
-            -f extension_version="${{ steps.version.outputs.version }}" \
             -f rebuild="${{ inputs.force_rebuild || 'false' }}"
 
   build-dev:
@@ -147,5 +112,4 @@ jobs:
         run: |
           gh workflow run build.yml \
             -f extension="${{ matrix.extension }}" \
-            -f extension_version="${{ steps.version.outputs.version }}" \
-            -f create_release=false
+            -f extension_version="${{ steps.version.outputs.version }}"

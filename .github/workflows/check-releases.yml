@@ -141,7 +141,7 @@ jobs:
             -f content="$CONTENT" \
             -f sha="$SHA"
 
-      - name: Trigger builds for updated extensions
+      - name: Trigger releases for updated extensions
         if: steps.check.outputs.updates != '[]'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -150,7 +150,7 @@ jobs:
             EXT=$(echo "$update" | jq -r '.extension')
             VER=$(echo "$update" | jq -r '.version')
 
-            gh workflow run build.yml \
+            gh workflow run release.yml \
               -f extension="$EXT" \
               -f extension_version="$VER"
           done
