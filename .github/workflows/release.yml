@@ -74,7 +74,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           EXT="${{ inputs.extension }}"
-          
+
           # Resolve version - use input or fall back to latest from extensions.json
           INPUT_VERSION="${{ inputs.extension_version }}"
           if [[ -z "$INPUT_VERSION" ]]; then
@@ -86,7 +86,7 @@ jobs:
             echo "Using latest_version from extensions.json: $INPUT_VERSION"
           fi
           echo "extension_version=${INPUT_VERSION}" >> $GITHUB_OUTPUT
-          
+
           VERSION=$(./scripts/normalize-version.sh "$EXT" "$INPUT_VERSION")
           RELEASE_TAG="${EXT}-${VERSION}"
           echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
