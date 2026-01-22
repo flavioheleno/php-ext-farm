@@ -97,7 +97,7 @@ jobs:
     name: Create PR for new OS versions
     needs: [check-alpine-releases, check-debian-releases]
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    if: needs.check-alpine-releases.outputs.updates != '[]' || needs.check-debian-releases.outputs.updates != '[]'
+    if: always() && (needs.check-alpine-releases.outputs.updates != '[]' || needs.check-debian-releases.outputs.updates != '[]') && !cancelled()
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
