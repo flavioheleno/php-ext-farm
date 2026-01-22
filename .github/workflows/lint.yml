@@ -35,45 +35,25 @@ jobs:
           SHELLCHECK_OPTS: -e SC1091 -e SC2002
 
   hadolint:
-    name: Hadolint (Dockerfile linting)
+    name: Hadolint (${{ matrix.dockerfile }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile:
+          - docker/Dockerfile.alpine
+          - docker/Dockerfile.debian
+          - docker/base/os/Dockerfile.alpine
+          - docker/base/os/Dockerfile.debian
+          - docker/base/php/Dockerfile.alpine
+          - docker/base/php/Dockerfile.debian
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Run Hadolint on Dockerfiles
+      - name: Run Hadolint
         uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
         with:
-          dockerfile: docker/Dockerfile.alpine
-          failure-threshold: warning
-
-      - name: Run Hadolint on Debian Dockerfile
-        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
-        with:
-          dockerfile: docker/Dockerfile.debian
-          failure-threshold: warning
-
-      - name: Run Hadolint on base OS Alpine
-        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
-        with:
-          dockerfile: docker/base/os/Dockerfile.alpine
-          failure-threshold: warning
-
-      - name: Run Hadolint on base OS Debian
-        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
-        with:
-          dockerfile: docker/base/os/Dockerfile.debian
-          failure-threshold: warning
-
-      - name: Run Hadolint on base PHP Alpine
-        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
-        with:
-          dockerfile: docker/base/php/Dockerfile.alpine
-          failure-threshold: warning
-
-      - name: Run Hadolint on base PHP Debian
-        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
-        with:
-          dockerfile: docker/base/php/Dockerfile.debian
+          dockerfile: ${{ matrix.dockerfile }}
           failure-threshold: warning
 
   json-validate:
