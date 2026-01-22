@@ -30,6 +30,7 @@ ARG BUILD_DEPS=""
 ARG RUNTIME_DEPS=""
 ARG EXTERNAL_LIBS=""
 ARG CONFIGURE_OPTIONS=""
+ARG ZEND_EXTENSION=""
 
 # Install extension-specific build and runtime dependencies
 # hadolint ignore=DL3018
@@ -71,7 +72,7 @@ RUN git clone --depth 1 --recurse-submodules ${EXTENSION_VERSION:+--branch ${EXT
     ./configure ${CONFIGURE_OPTIONS} && \
     make -j"$(nproc)" && \
     make install && \
-    echo "extension=${EXTENSION_NAME}.so" > /usr/local/etc/php/conf.d/50-${EXTENSION_NAME}.ini && \
+    echo "${ZEND_EXTENSION:+zend_}extension=${EXTENSION_NAME}.so" > /usr/local/etc/php/conf.d/50-${EXTENSION_NAME}.ini && \
     php -m | grep -i "${EXTENSION_NAME}" && \
     EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
     mkdir -p /output/extension /output/libs && \

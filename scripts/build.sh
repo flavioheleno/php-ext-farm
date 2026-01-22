@@ -177,6 +177,7 @@ BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.build // [
 RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime // [] | join(\" \")" "${CONFIG_FILE}")
 EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "${CONFIG_FILE}")
 CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options // [] | join(\" \")" "${CONFIG_FILE}")
+ZEND_EXTENSION=$(jq -r ".extensions.${EXTENSION}.zend_extension // false" "${CONFIG_FILE}")
 
 # Determine dockerfile (all PHP versions use the same Dockerfile now)
 DOCKERFILE="${ROOT_DIR}/docker/Dockerfile.${PLATFORM}"
@@ -256,6 +257,10 @@ fi
 
 if [[ -n "${CONFIGURE_OPTIONS}" ]]; then
     BUILD_ARGS+=(--build-arg "CONFIGURE_OPTIONS=${CONFIGURE_OPTIONS}")
+fi
+
+if [[ "${ZEND_EXTENSION}" == "true" ]]; then
+    BUILD_ARGS+=(--build-arg "ZEND_EXTENSION=1")
 fi
 
 # Track build status and reason

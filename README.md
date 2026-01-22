@@ -429,6 +429,7 @@ The main configuration file defines:
   - `exclude`: Optional array of extension-level exclusion rules (see below)
   - `external_libs`: Optional array of external libraries to build (see below)
   - `configure_options`: Optional array of configure flags
+  - `zend_extension`: Optional boolean, set to `true` for Zend extensions (e.g., xdebug) that require `zend_extension=` instead of `extension=` in php.ini
 
 ### os-versions.json
 
@@ -616,6 +617,7 @@ Some extensions require external libraries (written in Rust, Go, C++, etc.) to b
   - `version`: Optional git tag/branch to checkout
   - `build_commands`: Array of shell commands to build and install the library
 - `configure_options`: Array of additional options to pass to `./configure`
+- `zend_extension`: Set to `true` for extensions that must be loaded as Zend extensions (like xdebug, opcache). This uses `zend_extension=` instead of `extension=` in the generated ini file.
 
 This approach works for any compiled library dependency. **Examples:**
 

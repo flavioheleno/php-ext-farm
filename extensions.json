@@ -2099,7 +2099,8 @@
       "track_url": "https://github.com/xdebug/xdebug",
       "type": "pecl",
       "last_checked": "2026-01-14T04:57:35Z",
-      "latest_version": "3.5.0"
+      "latest_version": "3.5.0",
+      "zend_extension": true
     },
     "xdiff": {
       "configure_options": [
