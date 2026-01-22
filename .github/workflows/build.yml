@@ -146,18 +146,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
-      - name: Read extension config
-        id: config
-        run: |
-          EXT="${{ inputs.extension }}"
-          PECL_NAME=$(jq -r ".extensions.${EXT}.pecl_name" extensions.json)
-          BUILD_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.build // [] | join(\" \")" extensions.json)
-          RUNTIME_DEPS=$(jq -r ".extensions.${EXT}.dependencies.${{ matrix.platform }}.runtime // [] | join(\" \")" extensions.json)
-
-          echo "pecl_name=${PECL_NAME}" >> $GITHUB_OUTPUT
-          echo "build_deps=${BUILD_DEPS}" >> $GITHUB_OUTPUT
-          echo "runtime_deps=${RUNTIME_DEPS}" >> $GITHUB_OUTPUT
-
       - name: Build extension
         id: build
         run: |
