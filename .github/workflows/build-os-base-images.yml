@@ -222,6 +222,7 @@ jobs:
   create-manifest:
     name: Create manifest for ${{ matrix.platform }} ${{ matrix.platform_version }}
     needs: [prepare, build]
+    if: always() && !cancelled() && needs.build.result != 'cancelled'
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 15
     strategy:
