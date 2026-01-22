@@ -97,7 +97,7 @@ jobs:
   release:
     name: Create GitHub release for ${{ inputs.extension }} ${{ needs.check-release.outputs.extension_version }}
     needs: [check-release, build]
-    if: needs.check-release.outputs.should_build == 'true'
+    if: always() && needs.check-release.outputs.should_build == 'true' && !cancelled() && needs.build.result != 'cancelled'
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     permissions:
       contents: write
@@ -168,6 +168,7 @@ jobs:
   update-version-cache:
     name: Update version cache for ${{ inputs.extension }}
     needs: [check-release, release]
+    if: always() && needs.release.result == 'success'
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     permissions:
       contents: write
