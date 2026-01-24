@@ -138,6 +138,8 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 - **release** - Stable tagged releases
 - **dev** - Development builds from HEAD of extension's default branch
 
+> **Note:** For extensions that don't have any releases yet (tracked but no tags), the build system automatically uses the development version from the default branch (main/master).
+
 ## 📥 Installation
 
 ### Automatic Installation (Recommended)
@@ -359,7 +361,12 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 ./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 arm64
 ./scripts/build.sh imagick 3.7.0 8.4 debian bookworm amd64
 ./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 --local  # Use local base images
+
+# Build development version (for extensions without releases)
+./scripts/build.sh corefill dev 8.3 alpine 3.20
 ```
+
+> **Note:** When using GitHub workflows, if an extension has no `latest_version` in `extensions.json` but has a `last_checked` timestamp, the build system will automatically use version `"dev"` to build from the default branch.
 
 ### Check for new releases
 
@@ -568,6 +575,21 @@ This checks for:
 
 The extension will automatically be built for all PHP versions, platforms, and architectures defined in `extensions.json`.
 
+> **Note for extensions without releases:** If your extension repository doesn't have any tags/releases yet, simply omit the `latest_version` field but include a `last_checked` timestamp. The build system will automatically build from the default branch (main/master) using version `"dev"`.
+
+Example for extension without releases:
+```json
+{
+  "myext": {
+    "type": "git",
+    "pecl_name": "myext",
+    "track_url": "https://github.com/owner/myext",
+    "last_checked": "2026-01-24T04:00:00Z",
+    "dependencies": { ... }
+  }
+}
+```
+
 ### Adding Extensions with External Library Dependencies
 
 Some extensions require external libraries (written in Rust, Go, C++, etc.) to be built first. The build system supports this through the `external_libs` configuration:
@@ -688,6 +710,12 @@ gh workflow run build.yml -f extension=redis -f php_versions=8.3,8.4
 
 # Build for specific architecture only
 gh workflow run build.yml -f extension=redis -f php_versions=8.3 -f architectures=arm64
+
+# Build extension without releases (automatic "dev" version)
+gh workflow run build.yml -f extension=corefill -f php_versions=8.3
+
+# Build specific version explicitly
+gh workflow run build.yml -f extension=redis -f extension_version=6.0.2 -f php_versions=8.3
 
 # Create release
 gh workflow run release.yml -f extension=redis -f extension_version=6.0.2
