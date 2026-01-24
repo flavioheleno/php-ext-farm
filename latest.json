@@ -30,5 +30,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "csv": {
+    "path": "history/2026/01/24/csv-dev-21322930559.json",
+    "version": "dev",
+    "updated_at": "2026-01-24T23:36:00Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
