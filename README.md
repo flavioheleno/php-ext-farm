@@ -136,9 +136,9 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 
 ### Build Channels
 - **release** - Stable tagged releases
-- **dev** - Development builds from HEAD of extension's default branch
+- **dev** - Development builds (see the Dev Channel section below)
 
-> **Note:** For extensions that don't have any releases yet (tracked but no tags), the build system automatically uses the development version from the default branch (main/master).
+> **Note:** `extension_version` is treated as a git ref/tag. The special version `dev` builds from the default branch (main/master).
 
 ## 📥 Installation
 
@@ -305,32 +305,20 @@ Build extensions against the upcoming PHP version from the master branch of php/
 
 ### Dev Channel - Nightly/Weekly Builds
 
-Get the latest unreleased features from the extension's default branch:
+Build from the extension's default branch using the special version `dev`:
 
 ```bash
-# Dev builds use format: dev-{commit-sha}
-# Example: dev-abc1234
-
-# Build specific dev version
+# Build default-branch version
 gh workflow run build.yml \
   -f extension=redis \
-  -f extension_version=dev-abc1234
+  -f extension_version=dev
 ```
 
 **Automatic dev builds:**
-- Weekly schedule builds both release and dev channels
-- Dev versions: `dev-{7-char-sha}` (e.g., `dev-abc1234`)
-- Artifacts uploaded but no GitHub releases created
-- Tracked separately in dataset: `channel: "dev"`
+- `build-all.yml` can attempt dev builds using `dev-{7-char-sha}` identifiers
+- Artifacts are uploaded but no GitHub releases are created
 
-**Query dev builds (from history files):**
-```bash
-# Get all dev channel builds from a history file
-jq '.[] | select(.channel == "dev")' history-file.json
-
-# Compare dev vs release for same extension
-jq '.[] | select(.extension == "redis") | {channel, status, extension_version}' history-file.json
-```
+**Important:** `dev-<sha>` values are treated as git refs (tags/branches). The workflows do not currently checkout arbitrary SHAs, so `dev-<sha>` must exist upstream to work.
 
 ### Combining PHP next + Dev Channel
 
@@ -419,6 +407,25 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 ├── os-versions.json               # OS version configuration
 └── README.md
 ```
+
+## 📚 Documentation
+
+- Workflow docs:
+  - [Build Extension](docs/BUILD.md)
+  - [Release](docs/RELEASE.md)
+  - [Build All Extensions](docs/BUILD_ALL.md)
+  - [Lint](docs/LINT.md)
+  - [Tests](docs/TESTS.md)
+  - [Build OS Base Images](docs/BUILD_OS_BASE_IMAGES.md)
+  - [Build PHP Base Images](docs/BUILD_PHP_BASE_IMAGES.md)
+  - [Check Releases](docs/CHECK_RELEASES.md)
+  - [Check PHP Releases](docs/CHECK_PHP_RELEASES.md)
+  - [Check OS Releases](docs/CHECK_OS_RELEASES.md)
+  - [Cleanup GHCR](docs/CLEANUP_GHCR.md)
+- Development docs:
+  - [Local Testing](docs/LOCAL_TESTING.md)
+  - [Code Style](docs/CODE_STYLE.md)
+- Agent/developer guidance: [AGENTS.md](AGENTS.md)
 
 ## ⚙️ Configuration
 
