@@ -1,9 +1,6 @@
 # Build outputs
 output/
 
-# Version cache (managed by CI)
-.versions/
-
 # IDE
 .idea/
 .vscode/

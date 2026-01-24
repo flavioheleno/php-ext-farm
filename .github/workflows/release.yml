@@ -186,37 +186,4 @@ jobs:
             --notes-file release_notes.md \
             release/*.tar.gz
 
-  update-version-cache:
-    name: Update version cache for ${{ inputs.extension }}
-    needs: [check-release, release]
-    if: always() && needs.release.result == 'success'
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    permissions:
-      contents: write
-    steps:
-      - name: Update version cache via GitHub API
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          EXTENSION="${{ inputs.extension }}"
-          VERSION="${{ needs.check-release.outputs.extension_version }}"
-          FILE_PATH=".versions/${EXTENSION}.txt"
-          CONTENT=$(echo -n "$VERSION" | base64)
 
-          # Get current file SHA if it exists
-          SHA=$(gh api "repos/${{ github.repository }}/contents/${FILE_PATH}" --jq '.sha' 2>/dev/null || echo "")
-
-          if [ -n "$SHA" ]; then
-            # Update existing file
-            gh api -X PUT "repos/${{ github.repository }}/contents/${FILE_PATH}" \
-              -f message="Update ${EXTENSION} version cache to ${VERSION}" \
-              -f content="${CONTENT}" \
-              -f sha="${SHA}"
-          else
-            # Create new file (also creates .versions directory if needed)
-            gh api -X PUT "repos/${{ github.repository }}/contents/${FILE_PATH}" \
-              -f message="Add ${EXTENSION} version cache (${VERSION})" \
-              -f content="${CONTENT}"
-          fi
-
-          echo "Updated version cache for ${EXTENSION} to ${VERSION}"
