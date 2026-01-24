@@ -73,20 +73,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          EXT="${{ inputs.extension }}"
+          EXTENSION="${{ inputs.extension }}"
 
           # Resolve version - use input or fall back to latest from extensions.json
           INPUT_VERSION="${{ inputs.extension_version }}"
           if [[ -z "$INPUT_VERSION" ]]; then
-            INPUT_VERSION=$(jq -r ".extensions.\"${EXT}\".latest_version // empty" extensions.json)
+            INPUT_VERSION=$(jq -r ".extensions.\"${EXTENSION}\".latest_version // empty" extensions.json)
             if [[ -z "$INPUT_VERSION" ]]; then
               # Check if last_checked exists (extension tracked but no releases yet)
-              LAST_CHECKED=$(jq -r ".extensions.\"${EXT}\".last_checked // empty" extensions.json)
+              LAST_CHECKED=$(jq -r ".extensions.\"${EXTENSION}\".last_checked // empty" extensions.json)
               if [[ -n "$LAST_CHECKED" ]]; then
                 INPUT_VERSION="dev"
-                echo "No releases found for '${EXT}', using development version"
+                echo "No releases found for '${EXTENSION}', using development version"
               else
-                echo "Error: No version provided and no latest_version found for extension '${EXT}'"
+                echo "Error: No version provided and no latest_version found for extension '${EXTENSION}'"
                 exit 1
               fi
             fi
@@ -94,8 +94,8 @@ jobs:
           fi
           echo "extension_version=${INPUT_VERSION}" >> $GITHUB_OUTPUT
 
-          VERSION=$(./scripts/normalize-version.sh "$EXT" "$INPUT_VERSION")
-          RELEASE_TAG="${EXT}-${VERSION}"
+          VERSION=$(./scripts/normalize-version.sh "$EXTENSION" "$INPUT_VERSION")
+          RELEASE_TAG="${EXTENSION}-${VERSION}"
           echo "release_tag=${RELEASE_TAG}" >> $GITHUB_OUTPUT
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
 

@@ -242,12 +242,12 @@ jobs:
       - name: Prepare release artifacts
         id: prepare
         run: |
-          EXT="${{ inputs.extension }}"
-          VERSION=$(./scripts/normalize-version.sh "$EXT" "${{ needs.prepare.outputs.extension_version }}")
+          EXTENSION="${{ inputs.extension }}"
+          VERSION=$(./scripts/normalize-version.sh "$EXTENSION" "${{ needs.prepare.outputs.extension_version }}")
           echo "clean_version=${VERSION}" >> $GITHUB_OUTPUT
 
           mkdir -p release
-          find artifacts/ -name "*.tar.gz" -exec cp {} release/ \; 2>/dev/null || true
+          find artifacts/ -name "${EXTENSION}-*.tar.gz" -exec cp {} release/ \; 2>/dev/null || true
           if [ -d release ] && [ "$(ls -A release 2>/dev/null)" ]; then
             echo "Collected artifacts:"
             ls -la release/
@@ -262,7 +262,7 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: ${{ inputs.extension }}-${{ steps.prepare.outputs.clean_version }}-all-builds
-          path: release/
+          path: release/${{ inputs.extension }}-*.tar.gz
           retention-days: 90
 
       - name: Aggregate build reports
@@ -278,8 +278,8 @@ jobs:
           DAY=$(date -u +"%d")
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-          # Find all report JSON files (they are in artifacts/report-* directories)
-          REPORTS=$(find artifacts/ -name "*.json" -path "*/report-*/*" 2>/dev/null || true)
+          # Find all report JSON files for this extension only (they are in artifacts/report-<extension>-* directories)
+          REPORTS=$(find artifacts/ -name "*.json" -path "*/report-${EXTENSION}-*/*" 2>/dev/null || true)
 
           if [ -z "$REPORTS" ]; then
             echo "No reports found"
