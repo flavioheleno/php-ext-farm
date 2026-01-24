@@ -78,12 +78,13 @@ jobs:
       - name: Test check-releases script
         run: |
           # Run check-releases and validate JSON output
-          OUTPUT=$(./scripts/check-releases.sh 2>&1 | head -100)
+          OUTPUT=$(./scripts/check-releases.sh 2>&1)
           if echo "$OUTPUT" | jq -e '.checked_at' > /dev/null 2>&1; then
             echo "✓ check-releases.sh produces valid JSON"
           else
             echo "✗ check-releases.sh should produce valid JSON"
-            echo "Output: $OUTPUT"
+            echo "Output (first 50 lines):"
+            echo "$OUTPUT" | head -50
             exit 1
           fi
 
