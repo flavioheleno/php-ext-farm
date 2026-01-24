@@ -77,8 +77,15 @@ jobs:
           if [ -z "$VERSION" ]; then
             VERSION=$(jq -r ".extensions.\"${{ inputs.extension }}\".latest_version // empty" extensions.json)
             if [ -z "$VERSION" ]; then
-              echo "Error: No version provided and no latest_version found for extension '${{ inputs.extension }}'"
-              exit 1
+              # Check if last_checked exists (extension tracked but no releases yet)
+              LAST_CHECKED=$(jq -r ".extensions.\"${{ inputs.extension }}\".last_checked // empty" extensions.json)
+              if [ -n "$LAST_CHECKED" ]; then
+                VERSION="dev"
+                echo "No releases found for '${{ inputs.extension }}', using development version"
+              else
+                echo "Error: No version provided and no latest_version found for extension '${{ inputs.extension }}'"
+                exit 1
+              fi
             fi
             echo "Using latest_version from extensions.json: $VERSION"
           fi
