@@ -14,5 +14,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "apcu": {
+    "path": "history/2026/01/24/apcu-5.1.28-21322926162.json",
+    "version": "5.1.28",
+    "updated_at": "2026-01-24T23:33:42Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
