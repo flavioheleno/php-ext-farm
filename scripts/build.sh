@@ -380,12 +380,17 @@ ASSET_NAME="${EXTENSION}-${NORMALIZED_VERSION}-php${PHP_VERSION}-${PLATFORM}-${P
 
 # Get GitHub Actions metadata if available
 WORKFLOW_RUN_ID="${GITHUB_RUN_ID:-}"
+WORKFLOW_JOB_ID="${GITHUB_JOB_ID:-}"
 RUN_ATTEMPT="${GITHUB_RUN_ATTEMPT:-1}"
 GIT_SHA="${GITHUB_SHA:-$(git rev-parse HEAD 2>/dev/null || echo "unknown")}"
 LOG_URL=""
 if [[ -n "${WORKFLOW_RUN_ID}" ]]; then
     REPO="${GITHUB_REPOSITORY:-}"
-    LOG_URL="https://github.com/${REPO}/actions/runs/${WORKFLOW_RUN_ID}"
+    if [[ -n "${WORKFLOW_JOB_ID}" ]]; then
+        LOG_URL="https://github.com/${REPO}/actions/runs/${WORKFLOW_RUN_ID}/job/${WORKFLOW_JOB_ID}"
+    else
+        LOG_URL="https://github.com/${REPO}/actions/runs/${WORKFLOW_RUN_ID}"
+    fi
 fi
 
 # Build JSON report using jq for proper escaping

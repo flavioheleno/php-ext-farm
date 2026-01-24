@@ -140,6 +140,17 @@ jobs:
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
+      - name: Get job ID
+        id: job-id
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_NAME: "Build ${{ inputs.extension }} ${{ needs.prepare.outputs.extension_version }} on PHP ${{ matrix.php_version }} ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})"
+        run: |
+          # Fetch current job ID from GitHub API using the full job name
+          JOB_ID=$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" \
+            --jq ".jobs[] | select(.name == \"${JOB_NAME}\") | .id" 2>/dev/null | head -1 || echo "")
+          echo "job_id=${JOB_ID}" >> $GITHUB_OUTPUT
+
       - name: Set up QEMU
         if: matrix.arch != 'amd64'
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
@@ -149,6 +160,8 @@ jobs:
 
       - name: Build extension
         id: build
+        env:
+          GITHUB_JOB_ID: ${{ steps.job-id.outputs.job_id }}
         run: |
           chmod +x scripts/build.sh
 
