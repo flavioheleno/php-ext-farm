@@ -22,5 +22,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "inotify": {
+    "path": "history/2026/01/24/inotify-3.0.1-21322928300.json",
+    "version": "3.0.1",
+    "updated_at": "2026-01-24T23:33:45Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
