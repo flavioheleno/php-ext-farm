@@ -54,5 +54,13 @@
     "pass": 64,
     "fail": 81,
     "total": 145
+  },
+  "psr": {
+    "path": "history/2026/01/25/psr-1.2.0-21323453266.json",
+    "version": "1.2.0",
+    "updated_at": "2026-01-25T10:01:58Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
