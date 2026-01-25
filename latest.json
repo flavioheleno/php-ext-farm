@@ -38,5 +38,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "redis": {
+    "path": "history/2026/01/25/redis-6.3.0-21323453266.json",
+    "version": "6.3.0",
+    "updated_at": "2026-01-25T10:00:42Z",
+    "pass": 116,
+    "fail": 29,
+    "total": 145
   }
 }
