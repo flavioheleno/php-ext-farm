@@ -46,5 +46,13 @@
     "pass": 116,
     "fail": 29,
     "total": 145
+  },
+  "spx": {
+    "path": "history/2026/01/25/spx-0.4.22-21323453266.json",
+    "version": "0.4.22",
+    "updated_at": "2026-01-25T10:01:57Z",
+    "pass": 64,
+    "fail": 81,
+    "total": 145
   }
 }
