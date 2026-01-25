@@ -70,5 +70,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "yaf": {
+    "path": "history/2026/01/25/yaf-3.3.6-21323453266.json",
+    "version": "3.3.6",
+    "updated_at": "2026-01-25T10:02:11Z",
+    "pass": 27,
+    "fail": 41,
+    "total": 68
   }
 }
