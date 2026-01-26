@@ -174,7 +174,6 @@ jobs:
     name: Build PHP ${{ matrix.php_version }} on ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    timeout-minutes: 180
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -257,7 +256,6 @@ jobs:
     needs: [prepare, build]
     if: always() && !cancelled() && needs.build.result != 'cancelled'
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.manifest_matrix) }}

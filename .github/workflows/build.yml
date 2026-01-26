@@ -140,7 +140,6 @@ jobs:
     name: Build ${{ inputs.extension }} ${{ needs.prepare.outputs.extension_version }} on PHP ${{ matrix.php_version }} ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -228,7 +227,6 @@ jobs:
     needs: [prepare, build]
     if: always()
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    timeout-minutes: 30
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
