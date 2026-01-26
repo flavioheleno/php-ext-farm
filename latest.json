@@ -86,5 +86,13 @@
     "pass": 103,
     "fail": 42,
     "total": 145
+  },
+  "pg_query": {
+    "path": "history/2026/01/26/pg_query-0.31.0-21344732069.json",
+    "version": "0.31.0",
+    "updated_at": "2026-01-26T03:53:46Z",
+    "pass": 0,
+    "fail": 145,
+    "total": 145
   }
 }
