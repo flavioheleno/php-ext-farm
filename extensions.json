@@ -920,7 +920,7 @@
       "pecl_name": "lzf",
       "track_url": "https://github.com/php/pecl-file_formats-lzf",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:42:23Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "RELEASE_1_5_2"
     },
     "mailparse": {
@@ -937,7 +937,7 @@
       "pecl_name": "mailparse",
       "track_url": "https://github.com/php/pecl-mail-mailparse",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:42:23Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v3.1.9"
     },
     "maxminddb": {
@@ -963,7 +963,7 @@
       "pecl_name": "maxminddb",
       "track_url": "https://github.com/maxmind/MaxMind-DB-Reader-php",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v1.13.1"
     },
     "mcrypt": {
@@ -988,7 +988,7 @@
       "pecl_name": "mcrypt",
       "track_url": "https://github.com/php/pecl-encryption-mcrypt",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "1.0.9"
     },
     "memcache": {
@@ -1013,7 +1013,7 @@
       "pecl_name": "memcache",
       "track_url": "https://github.com/websupport-sk/pecl-memcache",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "8.2"
     },
     "memcached": {
@@ -1053,7 +1053,7 @@
       "pecl_name": "memcached",
       "track_url": "https://github.com/php-memcached-dev/php-memcached",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v3.4.0"
     },
     "memprof": {
@@ -1074,7 +1074,7 @@
       "pecl_name": "memprof",
       "track_url": "https://github.com/arnaud-lb/php-memory-profiler",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "3.1.0"
     },
     "mongodb": {
@@ -1099,7 +1099,7 @@
       "pecl_name": "mongodb",
       "track_url": "https://github.com/mongodb/mongo-php-driver",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "2.1.4"
     },
     "msgpack": {
@@ -1116,7 +1116,7 @@
       "pecl_name": "msgpack",
       "track_url": "https://github.com/msgpack/msgpack-php",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "msgpack-3.0.0"
     },
     "mysqlnd_ed25519": {
@@ -1144,7 +1144,7 @@
       "pecl_name": "mysqlnd_ed25519",
       "track_url": "https://github.com/mariadb-corporation/mysqlnd_ed25519",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "1.0.2"
     },
     "mysqlnd_parsec": {
@@ -1176,7 +1176,7 @@
       "pecl_name": "mysqlnd_parsec",
       "track_url": "https://github.com/mariadb-corporation/mysqlnd_parsec",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "1.0.2"
     },
     "oauth": {
@@ -1205,7 +1205,7 @@
       "pecl_name": "oauth",
       "track_url": "https://github.com/php/pecl-web_services-oauth",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "2.0.10"
     },
     "oci8": {
@@ -1231,7 +1231,7 @@
       "pecl_name": "oci8",
       "track_url": "https://github.com/php/pecl-database-oci8",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v3.4.1"
     },
     "opentelemetry": {
@@ -1249,7 +1249,7 @@
       "pecl_name": "opentelemetry",
       "track_url": "https://github.com/open-telemetry/opentelemetry-php-instrumentation",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "1.2.1"
     },
     "oqs": {
@@ -1273,7 +1273,7 @@
       "pecl_name": "oqs",
       "track_url": "https://github.com/secudoc/php-liboqs",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v0.3.2"
     },
     "parallel": {
@@ -1290,7 +1290,7 @@
       "pecl_name": "parallel",
       "track_url": "https://github.com/krakjoe/parallel",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v1.2.10"
     },
     "pcov": {
@@ -1307,7 +1307,7 @@
       "pecl_name": "pcov",
       "track_url": "https://github.com/krakjoe/pcov",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v1.0.12"
     },
     "pdo_oci": {
@@ -1333,7 +1333,7 @@
       "pecl_name": "pdo_oci",
       "track_url": "https://github.com/php/pecl-database-pdo_oci",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v1.2.0"
     },
     "pecl_http": {
@@ -1370,7 +1370,7 @@
       "pecl_name": "pecl_http",
       "track_url": "https://github.com/m6w6/ext-http",
       "type": "pecl",
-      "last_checked": "2026-01-14T04:44:04Z",
+      "last_checked": "2026-01-26T02:55:19Z",
       "latest_version": "v4.3.1"
     },
     "pg_query": {
@@ -1393,8 +1393,8 @@
       "pecl_name": "pg_query",
       "track_url": "https://github.com/flow-php/pg-query-ext",
       "type": "git",
-      "last_checked": "2026-01-14T04:44:04Z",
-      "latest_version": "0.30.0"
+      "last_checked": "2026-01-26T02:55:19Z",
+      "latest_version": "0.31.0"
     },
     "pheme": {
       "dependencies": {
