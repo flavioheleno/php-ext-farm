@@ -102,5 +102,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "xpass": {
+    "path": "history/2026/01/27/xpass-1.2.0-21381229775.json",
+    "version": "1.2.0",
+    "updated_at": "2026-01-27T05:52:09Z",
+    "pass": 45,
+    "fail": 100,
+    "total": 145
   }
 }
