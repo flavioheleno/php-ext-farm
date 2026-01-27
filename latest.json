@@ -118,5 +118,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "xz": {
+    "path": "history/2026/01/27/xz-1.1.4-21381229775.json",
+    "version": "1.1.4",
+    "updated_at": "2026-01-27T05:52:32Z",
+    "pass": 101,
+    "fail": 0,
+    "total": 101
   }
 }
