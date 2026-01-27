@@ -110,5 +110,13 @@
     "pass": 45,
     "fail": 100,
     "total": 145
+  },
+  "phreakscope": {
+    "path": "history/2026/01/27/phreakscope-dev-21381229775.json",
+    "version": "dev",
+    "updated_at": "2026-01-27T05:52:12Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
