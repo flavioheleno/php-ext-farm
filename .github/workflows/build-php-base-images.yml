@@ -31,10 +31,10 @@ on:
         required: false
         type: choice
         options:
-          - ubuntu-latest
-          - ubuntu-slim
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
           - self-hosted
-        default: 'ubuntu-latest'
+        default: 'ubuntu-24.04'
   workflow_call:
     inputs:
       php_version:
@@ -61,7 +61,7 @@ on:
         description: 'Runner to use'
         required: false
         type: string
-        default: 'ubuntu-latest'
+        default: 'ubuntu-24.04'
   push:
     paths:
       - 'docker/base/php/**'
@@ -84,7 +84,7 @@ env:
 jobs:
   prepare:
     name: Prepare PHP build matrix
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       manifest_matrix: ${{ steps.matrix.outputs.manifest_matrix }}
@@ -173,7 +173,7 @@ jobs:
   build:
     name: Build PHP ${{ matrix.php_version }} on ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -255,7 +255,7 @@ jobs:
     name: Create manifest for PHP ${{ matrix.php_version }} on ${{ matrix.platform }} ${{ matrix.platform_version }}
     needs: [prepare, build]
     if: always() && !cancelled() && needs.build.result != 'cancelled'
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.manifest_matrix) }}

@@ -14,9 +14,9 @@ on:
         description: 'Runner to use'
         type: choice
         options:
-          - ubuntu-latest
+          - ubuntu-24.04
           - self-hosted
-        default: 'ubuntu-latest'
+        default: 'ubuntu-24.04'
       build_dev:
         description: 'Also build dev channel (HEAD of default branch)'
         type: boolean
@@ -34,7 +34,7 @@ permissions:
 jobs:
   prepare:
     name: Prepare extension list
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
     outputs:
       extensions: ${{ steps.list.outputs.extensions }}
       dev_builds: ${{ steps.dev.outputs.dev_builds }}
@@ -91,7 +91,7 @@ jobs:
     with:
       extension: ${{ matrix.extension }}
       rebuild: ${{ inputs.force_rebuild || false }}
-      runner: ${{ inputs.runner || 'ubuntu-latest' }}
+      runner: ${{ inputs.runner || 'ubuntu-24.04' }}
     secrets: inherit
 
   build-dev:
@@ -106,5 +106,5 @@ jobs:
     with:
       extension: ${{ matrix.extension }}
       extension_version: ${{ matrix.version }}
-      runner: ${{ inputs.runner || 'ubuntu-latest' }}
+      runner: ${{ inputs.runner || 'ubuntu-24.04' }}
     secrets: inherit

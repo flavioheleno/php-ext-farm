@@ -11,10 +11,9 @@ on:
         required: false
         type: choice
         options:
-          - ubuntu-latest
-          - ubuntu-slim
+          - ubuntu-24.04
           - self-hosted
-        default: 'ubuntu-latest'
+        default: 'ubuntu-24.04'
 
 # Only one OS release check should run at a time
 concurrency:
@@ -28,7 +27,7 @@ permissions:
 jobs:
   check-alpine-releases:
     name: Check for new Alpine releases
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
@@ -62,7 +61,7 @@ jobs:
 
   check-debian-releases:
     name: Check for new Debian releases
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
@@ -96,7 +95,7 @@ jobs:
   create-pr:
     name: Create PR for new OS versions
     needs: [check-alpine-releases, check-debian-releases]
-    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
     if: always() && (needs.check-alpine-releases.outputs.updates != '[]' || needs.check-debian-releases.outputs.updates != '[]') && !cancelled()
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
