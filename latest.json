@@ -1,8 +1,8 @@
 {
   "amqp": {
-    "path": "history/2026/01/24/amqp-2.2.0-21322726237.json",
+    "path": "history/2026/01/31/amqp-2.2.0-21550929114.json",
     "version": "2.2.0",
-    "updated_at": "2026-01-24T22:52:23Z",
+    "updated_at": "2026-01-31T21:14:04Z",
     "pass": 145,
     "fail": 0,
     "total": 145
