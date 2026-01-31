@@ -181,7 +181,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up QEMU
-        if: matrix.arch != 'amd64'
+        if: matrix.arch == 'arm32v6' || matrix.arch == 'arm32v7'
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
 
       - name: Set up Docker Buildx
@@ -209,7 +209,7 @@ jobs:
         id: check
         if: ${{ inputs.force_rebuild != true }}
         run: |
-          IMAGE="${{ env.REGISTRY }}/${{ env.PHP_IMAGE_NAME }}:${{ steps.tag.outputs.tag }}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.PHP_IMAGE_NAME }}:${{ steps.tag.outputs.tag }}-${{ matrix.arch }}"
           if docker manifest inspect "$IMAGE" > /dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Image $IMAGE already exists"
@@ -283,18 +283,29 @@ jobs:
 
           # Use architectures from matrix (respects exclude configuration)
           IFS=',' read -ra ARCHS <<< "${{ matrix.architectures }}"
-          IMAGES=""
+
+          IMAGES=()
+          MISSING=()
           for arch in "${ARCHS[@]}"; do
             ARCH_IMAGE="${IMAGE}-${arch}"
             if docker manifest inspect "$ARCH_IMAGE" > /dev/null 2>&1; then
-              IMAGES="$IMAGES $ARCH_IMAGE"
+              IMAGES+=("$ARCH_IMAGE")
+            else
+              MISSING+=("$ARCH_IMAGE")
             fi
           done
 
-          if [ -n "$IMAGES" ]; then
-            echo "Creating PHP manifest for: $IMAGES"
-            docker manifest create "$IMAGE" $IMAGES --amend || true
-            docker manifest push "$IMAGE" || true
-          else
-            echo "No arch-specific images found for $IMAGE"
+          if [ ${#MISSING[@]} -ne 0 ]; then
+            echo "Missing arch-specific images; refusing to publish partial manifest:"
+            printf ' - %s\n' "${MISSING[@]}"
+            exit 1
           fi
+
+          if [ ${#IMAGES[@]} -eq 0 ]; then
+            echo "No arch-specific images found for $IMAGE"
+            exit 1
+          fi
+
+          echo "Creating PHP manifest for: ${IMAGES[*]}"
+          docker manifest create "$IMAGE" "${IMAGES[@]}" --amend
+          docker manifest push "$IMAGE"
