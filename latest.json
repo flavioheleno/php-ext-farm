@@ -136,12 +136,12 @@
     "total": 123
   },
   "rpminfo": {
-    "path": "history/2026/01/27/rpminfo-dev-21381229775.json",
+    "path": "history/2026/02/01/rpminfo-dev-21555516542.json",
     "version": "dev",
-    "updated_at": "2026-01-27T05:52:32Z",
+    "updated_at": "2026-02-01T04:40:56Z",
     "pass": 0,
-    "fail": 50,
-    "total": 50
+    "fail": 145,
+    "total": 145
   },
   "yaconf": {
     "path": "history/2026/02/01/yaconf-1.1.2-21555516542.json",
