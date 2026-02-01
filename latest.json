@@ -150,5 +150,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "json_post": {
+    "path": "history/2026/02/01/json_post-1.1.0-21555516542.json",
+    "version": "1.1.0",
+    "updated_at": "2026-02-01T05:20:39Z",
+    "pass": 122,
+    "fail": 23,
+    "total": 145
   }
 }
