@@ -1,9 +1,12 @@
 {
-  "last_updated": "2026-01-27T05:52:12Z",
+  "last_updated": "2026-02-08T05:17:07Z",
   "builds": {
     "2026": {
       "01": {
         "27": "history/2026/01/27/phreakscope-dev-21381229775.json"
+      },
+      "02": {
+        "08": "history/2026/02/08/phreakscope-dev-21791269490.json"
       }
     }
   }
