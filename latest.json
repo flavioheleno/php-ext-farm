@@ -198,5 +198,13 @@
     "pass": 0,
     "fail": 43,
     "total": 43
+  },
+  "uart": {
+    "path": "history/2026/02/08/uart-dev-21791269490.json",
+    "version": "dev",
+    "updated_at": "2026-02-08T05:43:04Z",
+    "pass": 55,
+    "fail": 0,
+    "total": 55
   }
 }
