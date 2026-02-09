@@ -214,5 +214,13 @@
     "pass": 103,
     "fail": 42,
     "total": 145
+  },
+  "xdebug": {
+    "path": "history/2026/02/09/xdebug-3.5.1-21813661218.json",
+    "version": "3.5.1",
+    "updated_at": "2026-02-09T05:47:38Z",
+    "pass": 116,
+    "fail": 29,
+    "total": 145
   }
 }
