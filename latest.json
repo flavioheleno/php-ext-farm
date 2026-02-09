@@ -120,12 +120,12 @@
     "total": 145
   },
   "xz": {
-    "path": "history/2026/01/27/xz-1.1.4-21381229775.json",
-    "version": "1.1.4",
-    "updated_at": "2026-01-27T05:52:32Z",
-    "pass": 101,
+    "path": "history/2026/02/09/xz-1.2.0-21813661853.json",
+    "version": "1.2.0",
+    "updated_at": "2026-02-09T05:48:51Z",
+    "pass": 145,
     "fail": 0,
-    "total": 101
+    "total": 145
   },
   "ev": {
     "path": "history/2026/01/27/ev-dev-21381229775.json",
