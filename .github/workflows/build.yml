@@ -87,6 +87,7 @@ jobs:
           MATRIX=$(jq -c -n --arg php_vers "${{ inputs.php_versions || 'all' }}" \
                         --arg platforms "${{ inputs.platforms || 'all' }}" \
                         --arg archs "${{ inputs.architectures || 'all' }}" \
+                        --arg ext "${{ inputs.extension }}" \
                         --slurpfile php_versions php-versions.json \
                         --slurpfile os_versions os-versions.json \
                         --slurpfile extensions extensions.json '
@@ -95,10 +96,27 @@ jobs:
             (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
             (if $platforms == "all" then ["alpine", "debian"] else ($platforms | split(",")) end) as $platform_list |
 
-            # Helper function to check if combination is excluded
-            def is_excluded($platform; $osv; $arch):
+            # Wildcard match: convert glob pattern (with *) to a regex and test
+            def wildcard_match($pattern; $value):
+              ($pattern | gsub("\\."; "\\\\.") | gsub("\\*"; ".*")) as $re |
+              $value | test("^" + $re + "$");
+
+            # Check platform-level exclusions (from os-versions.json)
+            def is_os_excluded($platform; $osv; $arch):
               $os_versions[0][$platform].exclude // [] |
-              any(. as $excl | ($excl.version == $osv) and ($excl.arch == $arch));
+              any(. as $excl |
+                wildcard_match($excl.version; $osv) and wildcard_match($excl.arch; $arch));
+
+            # Check extension-level exclusions (from extensions.json)
+            def is_ext_excluded($platform; $osv; $arch):
+              $extensions[0].extensions[$ext].exclude // [] |
+              any(. as $excl |
+                wildcard_match($excl.os; $platform) and
+                wildcard_match($excl.version; $osv) and
+                wildcard_match($excl.arch; $arch));
+
+            def is_excluded($platform; $osv; $arch):
+              is_os_excluded($platform; $osv; $arch) or is_ext_excluded($platform; $osv; $arch);
 
             # Generate matrix with exclude filtering
             {include: [
