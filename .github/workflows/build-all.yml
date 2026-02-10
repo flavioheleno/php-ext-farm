@@ -79,6 +79,7 @@ jobs:
     needs: prepare
     strategy:
       fail-fast: false
+      max-parallel: 10
       matrix:
         extension: ${{ fromJson(needs.prepare.outputs.extensions) }}
     uses: ./.github/workflows/release.yml
@@ -93,6 +94,7 @@ jobs:
     if: inputs.build_dev != false && needs.prepare.outputs.dev_builds != '[]'
     strategy:
       fail-fast: false
+      max-parallel: 10
       matrix:
         include: ${{ fromJson(needs.prepare.outputs.dev_builds) }}
     uses: ./.github/workflows/build.yml

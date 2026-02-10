@@ -131,6 +131,7 @@ jobs:
     runs-on: ${{ (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
     strategy:
       fail-fast: false
+      max-parallel: 60
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
