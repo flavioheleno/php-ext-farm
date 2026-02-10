@@ -16,12 +16,12 @@
     "total": 145
   },
   "apcu": {
-    "path": "history/2026/01/24/apcu-5.1.28-21322926162.json",
+    "path": "history/2026/02/10/apcu-5.1.28-21865120771.json",
     "version": "5.1.28",
-    "updated_at": "2026-01-24T23:33:42Z",
-    "pass": 145,
+    "updated_at": "2026-02-10T13:33:45Z",
+    "pass": 60,
     "fail": 0,
-    "total": 145
+    "total": 60
   },
   "inotify": {
     "path": "history/2026/01/24/inotify-3.0.1-21322928300.json",
