@@ -1,11 +1,11 @@
 {
   "amqp": {
-    "path": "history/2026/01/31/amqp-2.2.0-21550929114.json",
+    "path": "history/2026/02/10/amqp-2.2.0-21865120771.json",
     "version": "2.2.0",
-    "updated_at": "2026-01-31T21:14:04Z",
-    "pass": 145,
+    "updated_at": "2026-02-10T13:35:09Z",
+    "pass": 60,
     "fail": 0,
-    "total": 145
+    "total": 60
   },
   "pcov": {
     "path": "history/2026/01/24/pcov-1.0.12-21322925009.json",
