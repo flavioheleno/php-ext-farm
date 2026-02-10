@@ -76,17 +76,28 @@ jobs:
           fi
 
       - name: Test check-releases script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHECK_RELEASES_DELAY: 0
         run: |
           # Run check-releases and validate JSON output
-          OUTPUT=$(./scripts/check-releases.sh 2>&1)
-          if echo "$OUTPUT" | jq -e '.checked_at' > /dev/null 2>&1; then
+          STDOUT_FILE=$(mktemp)
+          STDERR_FILE=$(mktemp)
+          ./scripts/check-releases.sh > "$STDOUT_FILE" 2> "$STDERR_FILE" || true
+
+          if jq -e '.checked_at' "$STDOUT_FILE" > /dev/null 2>&1; then
             echo "✓ check-releases.sh produces valid JSON"
           else
             echo "✗ check-releases.sh should produce valid JSON"
-            echo "Output (first 50 lines):"
-            echo "$OUTPUT" | head -50
+            echo "stdout (first 50 lines):"
+            head -50 "$STDOUT_FILE"
+            echo "stderr (first 50 lines):"
+            head -50 "$STDERR_FILE"
+            rm -f "$STDOUT_FILE" "$STDERR_FILE"
             exit 1
           fi
+
+          rm -f "$STDOUT_FILE" "$STDERR_FILE"
 
   matrix-generation-tests:
     name: Matrix Generation Tests
