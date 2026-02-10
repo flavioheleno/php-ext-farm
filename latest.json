@@ -238,5 +238,13 @@
     "pass": 60,
     "fail": 0,
     "total": 60
+  },
+  "apcu_bc": {
+    "path": "history/2026/02/10/apcu_bc-1.0.4-21865120771.json",
+    "version": "1.0.4",
+    "updated_at": "2026-02-10T13:32:42Z",
+    "pass": 0,
+    "fail": 60,
+    "total": 60
   }
 }
