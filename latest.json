@@ -222,5 +222,13 @@
     "pass": 116,
     "fail": 29,
     "total": 145
+  },
+  "bitset": {
+    "path": "history/2026/02/10/bitset-3.2.0-21865120771.json",
+    "version": "3.2.0",
+    "updated_at": "2026-02-10T13:28:47Z",
+    "pass": 60,
+    "fail": 0,
+    "total": 60
   }
 }
