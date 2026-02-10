@@ -270,5 +270,13 @@
     "pass": 37,
     "fail": 0,
     "total": 37
+  },
+  "blake3": {
+    "path": "history/2026/02/10/blake3-202511241-21865120771.json",
+    "version": "202511241",
+    "updated_at": "2026-02-10T13:39:23Z",
+    "pass": 6,
+    "fail": 12,
+    "total": 18
   }
 }
