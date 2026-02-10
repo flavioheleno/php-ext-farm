@@ -4,16 +4,8 @@ on:
   schedule:
     # Run daily at 4 AM UTC
     - cron: '0 4 * * *'
+
   workflow_dispatch:
-    inputs:
-      runner:
-        description: 'Runner to use'
-        required: false
-        type: choice
-        options:
-          - ubuntu-24.04
-          - self-hosted
-        default: 'ubuntu-24.04'
 
 # Only one PHP release check should run at a time
 concurrency:
@@ -27,7 +19,7 @@ permissions:
 jobs:
   check-php-releases:
     name: Check for new PHP releases
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 

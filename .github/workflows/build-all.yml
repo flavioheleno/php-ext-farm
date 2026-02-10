@@ -4,19 +4,13 @@ on:
   schedule:
     # Run weekly on Sundays at 2 AM UTC
     - cron: '0 2 * * 0'
+
   workflow_dispatch:
     inputs:
       force_rebuild:
         description: 'Force rebuild all extensions'
         type: boolean
         default: false
-      runner:
-        description: 'Runner to use'
-        type: choice
-        options:
-          - ubuntu-24.04
-          - self-hosted
-        default: 'ubuntu-24.04'
       build_dev:
         description: 'Also build dev channel (HEAD of default branch)'
         type: boolean
@@ -34,7 +28,7 @@ permissions:
 jobs:
   prepare:
     name: Prepare extension list
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     outputs:
       extensions: ${{ steps.list.outputs.extensions }}
       dev_builds: ${{ steps.dev.outputs.dev_builds }}
@@ -91,7 +85,6 @@ jobs:
     with:
       extension: ${{ matrix.extension }}
       rebuild: ${{ inputs.force_rebuild || false }}
-      runner: ${{ inputs.runner || 'ubuntu-24.04' }}
     secrets: inherit
 
   build-dev:
@@ -106,5 +99,4 @@ jobs:
     with:
       extension: ${{ matrix.extension }}
       extension_version: ${{ matrix.version }}
-      runner: ${{ inputs.runner || 'ubuntu-24.04' }}
     secrets: inherit

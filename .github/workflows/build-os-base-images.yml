@@ -4,6 +4,7 @@ on:
   schedule:
     # Run weekly on Saturdays at 2 AM UTC (before PHP builds)
     - cron: '0 2 * * 6'
+
   workflow_dispatch:
     inputs:
       platform:
@@ -21,15 +22,7 @@ on:
         required: false
         type: boolean
         default: false
-      runner:
-        description: 'Runner to use'
-        required: false
-        type: choice
-        options:
-          - ubuntu-24.04
-          - ubuntu-24.04-arm
-          - self-hosted
-        default: 'ubuntu-24.04'
+
   workflow_call:
     inputs:
       platform:
@@ -47,11 +40,7 @@ on:
         required: false
         type: boolean
         default: false
-      runner:
-        description: 'Runner to use'
-        required: false
-        type: string
-        default: 'ubuntu-24.04'
+
   push:
     paths:
       - 'docker/base/os/**'
@@ -73,7 +62,7 @@ env:
 jobs:
   prepare:
     name: Prepare OS build matrix
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       manifest_matrix: ${{ steps.matrix.outputs.manifest_matrix }}
@@ -146,7 +135,7 @@ jobs:
   build:
     name: Build ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
-    runs-on: ${{ inputs.runner || (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
+    runs-on: ${{ (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -217,7 +206,7 @@ jobs:
     name: Create manifest for ${{ matrix.platform }} ${{ matrix.platform_version }}
     needs: [prepare, build]
     if: always() && !cancelled() && needs.build.result != 'cancelled'
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ${{ 'ubuntu-slim' }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.manifest_matrix) }}

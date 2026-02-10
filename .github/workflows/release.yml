@@ -18,14 +18,7 @@ on:
         required: false
         type: boolean
         default: false
-      runner:
-        description: 'Runner to use'
-        required: false
-        type: choice
-        options:
-          - ubuntu-24.04
-          - self-hosted
-        default: 'ubuntu-24.04'
+
   workflow_call:
     inputs:
       extension:
@@ -42,11 +35,6 @@ on:
         required: false
         type: boolean
         default: false
-      runner:
-        description: 'Runner to use'
-        required: false
-        type: string
-        default: 'ubuntu-24.04'
 
 # Prevent concurrent releases of the same extension version
 concurrency:
@@ -59,7 +47,7 @@ permissions:
 jobs:
   check-release:
     name: Check if ${{ inputs.extension }} needs building
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     outputs:
       should_build: ${{ steps.check.outputs.should_build }}
       release_tag: ${{ steps.check.outputs.release_tag }}
@@ -120,13 +108,12 @@ jobs:
     with:
       extension: ${{ inputs.extension }}
       extension_version: ${{ needs.check-release.outputs.extension_version }}
-      runner: ${{ inputs.runner || 'ubuntu-24.04' }}
 
   release:
     name: Create GitHub release for ${{ inputs.extension }} ${{ needs.check-release.outputs.extension_version }}
     needs: [check-release, build]
     if: always() && needs.check-release.outputs.should_build == 'true' && !cancelled() && needs.build.result != 'cancelled'
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     permissions:
       contents: write
     steps:

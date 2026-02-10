@@ -5,15 +5,6 @@ on:
     # Run weekly on Sundays at 5 AM UTC
     - cron: '0 5 * * 0'
   workflow_dispatch:
-    inputs:
-      runner:
-        description: 'Runner to use'
-        required: false
-        type: choice
-        options:
-          - ubuntu-24.04
-          - self-hosted
-        default: 'ubuntu-24.04'
 
 # Only one OS release check should run at a time
 concurrency:
@@ -27,7 +18,7 @@ permissions:
 jobs:
   check-alpine-releases:
     name: Check for new Alpine releases
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
@@ -61,7 +52,7 @@ jobs:
 
   check-debian-releases:
     name: Check for new Debian releases
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
@@ -95,7 +86,7 @@ jobs:
   create-pr:
     name: Create PR for new OS versions
     needs: [check-alpine-releases, check-debian-releases]
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     if: always() && (needs.check-alpine-releases.outputs.updates != '[]' || needs.check-debian-releases.outputs.updates != '[]') && !cancelled()
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

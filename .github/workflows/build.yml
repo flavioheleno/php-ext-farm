@@ -27,14 +27,7 @@ on:
         required: false
         default: 'all'
         type: string
-      runner:
-        description: 'Runner to use'
-        required: false
-        type: choice
-        options:
-          - ubuntu-24.04
-          - self-hosted
-        default: 'ubuntu-24.04'
+
   workflow_call:
     inputs:
       extension:
@@ -47,10 +40,6 @@ on:
         required: false
         type: string
         default: 'all'
-      runner:
-        required: false
-        type: string
-        default: 'ubuntu-24.04'
 
 # Prevent concurrent builds of the same extension version
 concurrency:
@@ -63,7 +52,7 @@ permissions:
 jobs:
   prepare:
     name: Prepare build matrix
-    runs-on: ${{ inputs.runner == 'self-hosted' && 'self-hosted' || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       extension_version: ${{ steps.version.outputs.extension_version }}
@@ -139,7 +128,7 @@ jobs:
   build:
     name: Build ${{ inputs.extension }} ${{ needs.prepare.outputs.extension_version }} on PHP ${{ matrix.php_version }} ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
-    runs-on: ${{ inputs.runner == 'self-hosted' && 'self-hosted' || (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
+    runs-on: ${{ (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -226,7 +215,7 @@ jobs:
   collect-artifacts:
     needs: [prepare, build]
     if: always()
-    runs-on: ${{ inputs.runner == 'self-hosted' && 'self-hosted' || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 

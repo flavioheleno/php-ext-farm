@@ -4,15 +4,8 @@ on:
   schedule:
     # Run hourly on Mondays, checking up to 20 extensions per run until all are checked
     - cron: '0 0-23 * * 1'
+
   workflow_dispatch:
-    inputs:
-      runner:
-        description: 'Runner to use'
-        type: choice
-        options:
-          - ubuntu-24.04
-          - self-hosted
-        default: 'ubuntu-24.04'
 
 # Only one release check should run at a time
 concurrency:
@@ -26,7 +19,7 @@ permissions:
 jobs:
   check-extension-releases:
     name: Check for new extension releases
-    runs-on: ${{ inputs.runner || 'ubuntu-24.04' }}
+    runs-on: ubuntu-slim
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
