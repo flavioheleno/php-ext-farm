@@ -326,5 +326,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "mysqlnd_ed25519": {
+    "path": "history/2026/02/11/mysqlnd_ed25519-1.0.2-21877971999.json",
+    "version": "1.0.2",
+    "updated_at": "2026-02-11T01:08:59Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
