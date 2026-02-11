@@ -406,5 +406,13 @@
     "pass": 122,
     "fail": 23,
     "total": 145
+  },
+  "rdkafka": {
+    "path": "history/2026/02/11/rdkafka-6.0.4-21878021103.json",
+    "version": "6.0.4",
+    "updated_at": "2026-02-11T01:24:37Z",
+    "pass": 94,
+    "fail": 51,
+    "total": 145
   }
 }
