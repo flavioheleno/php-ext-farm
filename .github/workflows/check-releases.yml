@@ -13,13 +13,15 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
-  actions: write
+  contents: read
 
 jobs:
   check-extension-releases:
     name: Check for new extension releases
     runs-on: ubuntu-slim
+    permissions:
+      contents: write
+      actions: write
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:

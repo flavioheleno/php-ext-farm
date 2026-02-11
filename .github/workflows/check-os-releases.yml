@@ -12,8 +12,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   check-alpine-releases:
@@ -87,6 +86,9 @@ jobs:
     name: Create PR for new OS versions
     needs: [check-alpine-releases, check-debian-releases]
     runs-on: ubuntu-slim
+    permissions:
+      contents: write
+      pull-requests: write
     if: always() && (needs.check-alpine-releases.outputs.updates != '[]' || needs.check-debian-releases.outputs.updates != '[]') && !cancelled()
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

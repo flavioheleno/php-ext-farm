@@ -22,13 +22,15 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  actions: write
-  contents: write
+  contents: read
 
 jobs:
   prepare:
     name: Prepare extension list
     runs-on: ubuntu-slim
+    permissions:
+      contents: read
+      actions: write
     outputs:
       extensions: ${{ steps.list.outputs.extensions }}
       dev_builds: ${{ steps.dev.outputs.dev_builds }}
@@ -77,6 +79,8 @@ jobs:
   build-release:
     name: Release ${{ matrix.extension }}
     needs: prepare
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       max-parallel: 10
@@ -92,6 +96,8 @@ jobs:
     name: Dev build ${{ matrix.extension }}
     needs: prepare
     if: inputs.build_dev != false && needs.prepare.outputs.dev_builds != '[]'
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       max-parallel: 10

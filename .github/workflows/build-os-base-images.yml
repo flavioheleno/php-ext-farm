@@ -53,7 +53,6 @@ concurrency:
 
 permissions:
   contents: read
-  packages: write
 
 env:
   REGISTRY: ghcr.io
@@ -136,6 +135,9 @@ jobs:
     name: Build ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
     runs-on: ${{ (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
+    permissions:
+      contents: read
+      packages: write
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
@@ -207,6 +209,8 @@ jobs:
     needs: [prepare, build]
     if: always() && !cancelled() && needs.build.result != 'cancelled'
     runs-on: ${{ 'ubuntu-slim' }}
+    permissions:
+      packages: write
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.manifest_matrix) }}

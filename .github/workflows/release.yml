@@ -42,7 +42,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   check-release:
@@ -104,6 +104,8 @@ jobs:
     name: Build ${{ inputs.extension }} ${{ needs.check-release.outputs.extension_version }}
     needs: check-release
     if: needs.check-release.outputs.should_build == 'true'
+    permissions:
+      contents: write
     uses: ./.github/workflows/build.yml
     with:
       extension: ${{ inputs.extension }}
