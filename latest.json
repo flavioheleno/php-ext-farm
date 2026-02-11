@@ -298,10 +298,10 @@
   "fnbind": {
     "path": "history/2026/02/11/fnbind-4.0.0a6-21877863171.json",
     "version": "4.0.0a6",
-    "updated_at": "2026-02-11T00:43:57Z",
+    "updated_at": "2026-02-11T16:10:49Z",
     "pass": 0,
-    "fail": 141,
-    "total": 141
+    "fail": 145,
+    "total": 145
   },
   "glfw": {
     "path": "history/2026/02/11/glfw-2.3.0-21877872734.json",
