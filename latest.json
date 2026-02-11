@@ -192,12 +192,12 @@
     "total": 145
   },
   "uopz": {
-    "path": "history/2026/02/08/uopz-5.1.0-21791269490.json",
+    "path": "history/2026/02/11/uopz-5.1.0-21878087511.json",
     "version": "5.1.0",
-    "updated_at": "2026-02-08T05:43:01Z",
+    "updated_at": "2026-02-11T01:33:54Z",
     "pass": 0,
-    "fail": 43,
-    "total": 43
+    "fail": 145,
+    "total": 145
   },
   "uart": {
     "path": "history/2026/02/08/uart-dev-21791269490.json",
