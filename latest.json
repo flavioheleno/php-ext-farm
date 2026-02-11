@@ -470,5 +470,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "xattr": {
+    "path": "history/2026/02/11/xattr-1.4.0-21878123221.json",
+    "version": "1.4.0",
+    "updated_at": "2026-02-11T01:39:43Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
