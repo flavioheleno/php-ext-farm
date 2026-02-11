@@ -534,5 +534,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "judy": {
+    "path": "history/2026/02/11/judy-2.2.0-21877938900.json",
+    "version": "2.2.0",
+    "updated_at": "2026-02-11T01:49:38Z",
+    "pass": 0,
+    "fail": 145,
+    "total": 145
   }
 }
