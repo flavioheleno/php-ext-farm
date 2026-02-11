@@ -486,5 +486,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "xhprof": {
+    "path": "history/2026/02/11/xhprof-2.3.10-21878207258.json",
+    "version": "2.3.10",
+    "updated_at": "2026-02-11T01:41:33Z",
+    "pass": 0,
+    "fail": 145,
+    "total": 145
   }
 }
