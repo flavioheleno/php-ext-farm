@@ -382,5 +382,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "pq": {
+    "path": "history/2026/02/11/pq-2.2.3-21878006273.json",
+    "version": "2.2.3",
+    "updated_at": "2026-02-11T01:19:23Z",
+    "pass": 0,
+    "fail": 145,
+    "total": 145
   }
 }
