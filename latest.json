@@ -350,5 +350,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "oauth": {
+    "path": "history/2026/02/11/oauth-2.0.10-21877975546.json",
+    "version": "2.0.10",
+    "updated_at": "2026-02-11T01:13:14Z",
+    "pass": 130,
+    "fail": 15,
+    "total": 145
   }
 }
