@@ -90,7 +90,7 @@
   "pg_query": {
     "path": "history/2026/02/11/pg_query-0.31.0-21877996243.json",
     "version": "0.31.0",
-    "updated_at": "2026-02-11T01:17:45Z",
+    "updated_at": "2026-02-11T16:01:14Z",
     "pass": 0,
     "fail": 145,
     "total": 145
