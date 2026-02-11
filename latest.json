@@ -454,5 +454,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "traitify": {
+    "path": "history/2026/02/11/traitify-1.0.0-21878089071.json",
+    "version": "1.0.0",
+    "updated_at": "2026-02-11T01:35:35Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
