@@ -98,7 +98,7 @@
   "ip2location": {
     "path": "history/2026/02/11/ip2location-8.3.0-21877932550.json",
     "version": "8.3.0",
-    "updated_at": "2026-02-11T01:48:13Z",
+    "updated_at": "2026-02-11T16:07:46Z",
     "pass": 0,
     "fail": 145,
     "total": 145
