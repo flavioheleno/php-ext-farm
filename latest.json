@@ -422,5 +422,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "simdjson": {
+    "path": "history/2026/02/11/simdjson-3.0.0-21878030143.json",
+    "version": "3.0.0",
+    "updated_at": "2026-02-11T01:28:20Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
