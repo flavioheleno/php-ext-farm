@@ -131,8 +131,8 @@
       "pecl_name": "bitset",
       "track_url": "https://github.com/php/pecl-numbers-bitset",
       "type": "git",
-      "last_checked": "2026-02-09T00:39:31Z",
-      "latest_version": "3.2.0"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "3.2.0+pie"
     },
     "blake3": {
       "dependencies": {
@@ -230,8 +230,8 @@
       "pecl_name": "cairo",
       "track_url": "https://github.com/MarcelBolten/php-cairo",
       "type": "git",
-      "last_checked": "2026-02-09T00:39:31Z",
-      "latest_version": "v1.1.0"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "2.0.0alpha2"
     },
     "corefill": {
       "dependencies": {
@@ -302,8 +302,8 @@
       "pecl_name": "csv",
       "track_url": "https://gitlab.com/Girgias/csv-php-extension",
       "type": "git",
-      "last_checked": "2026-02-09T00:39:31Z",
-      "latest_version": "0.4.3"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "0.4.4"
     },
     "dbus": {
       "dependencies": {
@@ -496,8 +496,8 @@
       "pecl_name": "fnbind",
       "track_url": "https://github.com/Danack/fnbind",
       "type": "git",
-      "last_checked": "2026-02-09T01:39:28Z",
-      "latest_version": "4.0.0a6"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "0.9.0"
     },
     "geospatial": {
       "dependencies": {
@@ -920,8 +920,8 @@
       "pecl_name": "lzf",
       "track_url": "https://github.com/php/pecl-file_formats-lzf",
       "type": "pecl",
-      "last_checked": "2026-02-09T03:09:05Z",
-      "latest_version": "RELEASE_1_5_2"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "LZF-1.7.0"
     },
     "mailparse": {
       "dependencies": {
@@ -1099,8 +1099,8 @@
       "pecl_name": "mongodb",
       "track_url": "https://github.com/mongodb/mongo-php-driver",
       "type": "pecl",
-      "last_checked": "2026-02-09T03:09:05Z",
-      "latest_version": "2.1.8"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "2.2.0"
     },
     "msgpack": {
       "dependencies": {
@@ -2056,8 +2056,8 @@
       "pecl_name": "vld",
       "track_url": "https://github.com/derickr/vld",
       "type": "pecl",
-      "last_checked": "2026-02-09T05:35:21Z",
-      "latest_version": "tags/VLD_0_11_0"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "0.19.1"
     },
     "xattr": {
       "dependencies": {
@@ -2081,8 +2081,8 @@
       "pecl_name": "xattr",
       "track_url": "https://github.com/php/pecl-file_system-xattr",
       "type": "git",
-      "last_checked": "2026-02-09T05:35:21Z",
-      "latest_version": "xattr-1.4.0"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "1.4.1"
     },
     "xdebug": {
       "dependencies": {
@@ -2304,8 +2304,8 @@
       "pecl_name": "yaf",
       "track_url": "https://github.com/laruence/yaf",
       "type": "pecl",
-      "last_checked": "2026-02-09T06:32:11Z",
-      "latest_version": "yaf-3.3.6"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "3.3.7"
     },
     "yaml": {
       "dependencies": {
@@ -2354,8 +2354,8 @@
       "pecl_name": "yar",
       "track_url": "https://github.com/laruence/yar",
       "type": "pecl",
-      "last_checked": "2026-02-09T06:32:11Z",
-      "latest_version": "yar-2.3.3"
+      "last_checked": "2026-02-13T13:25:02Z",
+      "latest_version": "2.3.4"
     },
     "zip": {
       "dependencies": {
@@ -2379,8 +2379,8 @@
       "pecl_name": "zip",
       "track_url": "https://github.com/pierrejoye/php_zip",
       "type": "pecl",
-      "last_checked": "2026-02-09T06:32:11Z",
-      "latest_version": "PHP_ZIP-1.12.1"
+      "last_checked": "2026-02-13T13:02:00Z",
+      "latest_version": "1.22.7"
     },
     "zmq": {
       "dependencies": {

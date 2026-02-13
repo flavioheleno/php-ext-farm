@@ -124,17 +124,64 @@ check_github_tags() {
     local repo_path
     repo_path=$(echo "$repo_url" | sed 's|https://github.com/||')
 
-    # Get latest tag
-    local response
-    response=$(api_request "https://api.github.com/repos/${repo_path}/tags?per_page=1")
+    # Fetch all tags (the /tags endpoint does not guarantee date-based ordering,
+    # so we retrieve them all and resolve each commit date to find the newest)
+    local page=1
+    local all_tags="[]"
+    while true; do
+        local response
+        response=$(api_request "https://api.github.com/repos/${repo_path}/tags?per_page=100&page=${page}")
 
-    # Check if response is valid array
-    if ! echo "$response" | jq -e '.[0]' > /dev/null 2>&1; then
+        # Check if response is a valid non-empty array
+        if ! echo "$response" | jq -e '.[0]' > /dev/null 2>&1; then
+            break
+        fi
+
+        all_tags=$(echo "$all_tags" "$response" | jq -s '.[0] + .[1]')
+
+        local count
+        count=$(echo "$response" | jq 'length')
+        if [[ "$count" -lt 100 ]]; then
+            break
+        fi
+
+        page=$((page + 1))
+    done
+
+    # Check if we found any tags
+    local total
+    total=$(echo "$all_tags" | jq 'length')
+    if [[ "$total" -eq 0 ]]; then
         echo ""
         return
     fi
 
-    echo "$response" | jq -r '.[0].name // empty'
+    # If there's only one tag, return it directly
+    if [[ "$total" -eq 1 ]]; then
+        echo "$all_tags" | jq -r '.[0].name // empty'
+        return
+    fi
+
+    # For each tag, fetch the commit date and find the most recent
+    local latest_tag=""
+    local latest_date="0000-00-00T00:00:00Z"
+
+    for row in $(echo "$all_tags" | jq -r '.[] | @base64'); do
+        local name sha commit_date
+        name=$(echo "$row" | base64 -d | jq -r '.name')
+        sha=$(echo "$row" | base64 -d | jq -r '.commit.sha')
+
+        local commit_info
+        commit_info=$(api_request "https://api.github.com/repos/${repo_path}/git/commits/${sha}")
+        commit_date=$(echo "$commit_info" | jq -r '.committer.date // "0000-00-00T00:00:00Z"')
+
+        if [[ "$commit_date" > "$latest_date" ]]; then
+            latest_date="$commit_date"
+            latest_tag="$name"
+        fi
+    done
+
+    echo "$latest_tag"
 }
 
 check_gitlab_tags() {
