@@ -512,11 +512,11 @@
     "total": 145
   },
   "zip": {
-    "path": "history/2026/02/13/zip-PHP.ZIP-1.12.1-21987691659.json",
-    "version": "PHP.ZIP-1.12.1",
-    "updated_at": "2026-02-13T13:04:54Z",
-    "pass": 0,
-    "fail": 145,
+    "path": "history/2026/02/13/zip-1.22.7-21988566449.json",
+    "version": "1.22.7",
+    "updated_at": "2026-02-13T14:09:14Z",
+    "pass": 104,
+    "fail": 41,
     "total": 145
   },
   "zmq": {
