@@ -614,5 +614,13 @@
     "pass": 87,
     "fail": 58,
     "total": 145
+  },
+  "jsonpath": {
+    "path": "history/2026/02/13/jsonpath-3.1.0-21995307732.json",
+    "version": "3.1.0",
+    "updated_at": "2026-02-13T17:33:37Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
