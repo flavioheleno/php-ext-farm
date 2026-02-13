@@ -654,5 +654,13 @@
     "pass": 118,
     "fail": 27,
     "total": 145
+  },
+  "lz4": {
+    "path": "history/2026/02/13/lz4-0.6.0-21996520309.json",
+    "version": "0.6.0",
+    "updated_at": "2026-02-13T17:56:44Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
