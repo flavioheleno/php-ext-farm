@@ -638,5 +638,13 @@
     "pass": 122,
     "fail": 23,
     "total": 145
+  },
+  "memcache": {
+    "path": "history/2026/02/13/memcache-8.2-21996510517.json",
+    "version": "8.2",
+    "updated_at": "2026-02-13T17:53:21Z",
+    "pass": 87,
+    "fail": 58,
+    "total": 145
   }
 }
