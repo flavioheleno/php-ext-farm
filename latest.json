@@ -208,11 +208,11 @@
     "total": 55
   },
   "mongodb": {
-    "path": "history/2026/02/09/mongodb-2.1.8-21811004076.json",
-    "version": "2.1.8",
-    "updated_at": "2026-02-09T04:12:06Z",
-    "pass": 103,
-    "fail": 42,
+    "path": "history/2026/02/13/mongodb-2.2.0-21988580173.json",
+    "version": "2.2.0",
+    "updated_at": "2026-02-13T14:33:18Z",
+    "pass": 125,
+    "fail": 20,
     "total": 145
   },
   "xdebug": {
