@@ -566,5 +566,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "decimal": {
+    "path": "history/2026/02/13/decimal-2.0.1-alpha-21991588602.json",
+    "version": "2.0.1-alpha",
+    "updated_at": "2026-02-13T15:18:02Z",
+    "pass": 95,
+    "fail": 50,
+    "total": 145
   }
 }
