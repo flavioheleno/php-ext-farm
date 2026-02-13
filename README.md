@@ -61,15 +61,15 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | mysqlnd_parsec | [mariadb-corporation/mysqlnd_parsec](https://github.com/mariadb-corporation/mysqlnd_parsec) |
 | oauth | [php/pecl-web_services-oauth](https://github.com/php/pecl-web_services-oauth) |
 | oci8 | [php/pecl-database-oci8](https://github.com/php/pecl-database-oci8) |
-| oqs | [secudoc/php-liboqs](https://github.com/secudoc/php-liboqs) |
 | opentelemetry | [open-telemetry/opentelemetry-php-instrumentation](https://github.com/open-telemetry/opentelemetry-php-instrumentation) |
+| oqs | [secudoc/php-liboqs](https://github.com/secudoc/php-liboqs) |
 | parallel | [krakjoe/parallel](https://github.com/krakjoe/parallel) |
 | pcov | [krakjoe/pcov](https://github.com/krakjoe/pcov) |
 | pdo_oci | [php/pecl-database-pdo_oci](https://github.com/php/pecl-database-pdo_oci) |
 | pecl_http | [m6w6/ext-http](https://github.com/m6w6/ext-http) |
 | pg_query | [flow-php/pg-query-ext](https://github.com/flow-php/pg-query-ext) |
-| phreakscope | [pakutoma/ext-phreakscope](https://github.com/pakutoma/ext-phreakscope) |
 | pheme | [capotej/pheme](https://github.com/capotej/pheme) |
+| phreakscope | [pakutoma/ext-phreakscope](https://github.com/pakutoma/ext-phreakscope) |
 | pq | [m6w6/ext-pq](https://github.com/m6w6/ext-pq) |
 | psr | [jbboehr/php-psr](https://github.com/jbboehr/php-psr) |
 | quickhash | [derickr/quickhash](https://github.com/derickr/quickhash) |
