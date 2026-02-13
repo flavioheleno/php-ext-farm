@@ -2376,7 +2376,14 @@
           ],
           "runtime": [
             "libzip4"
-          ]
+          ],
+          "version_overrides": {
+            "trixie": {
+              "runtime": [
+                "libzip5"
+              ]
+            }
+          }
         }
       },
       "pecl_name": "zip",

@@ -173,8 +173,9 @@ fi
 PECL_NAME=$(jq -r ".extensions.${EXTENSION}.pecl_name" "${CONFIG_FILE}")
 TRACK_URL=$(jq -r ".extensions.${EXTENSION}.track_url" "${CONFIG_FILE}")
 BUILD_PATH=$(jq -r ".extensions.${EXTENSION}.build_path // empty" "${CONFIG_FILE}")
-BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.build // [] | join(\" \")" "${CONFIG_FILE}")
-RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime // [] | join(\" \")" "${CONFIG_FILE}")
+# Check for per-version dependency overrides, falling back to defaults
+BUILD_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.version_overrides.\"${PLATFORM_VERSION}\".build // .extensions.${EXTENSION}.dependencies.${PLATFORM}.build // [] | join(\" \")" "${CONFIG_FILE}")
+RUNTIME_DEPS=$(jq -r ".extensions.${EXTENSION}.dependencies.${PLATFORM}.version_overrides.\"${PLATFORM_VERSION}\".runtime // .extensions.${EXTENSION}.dependencies.${PLATFORM}.runtime // [] | join(\" \")" "${CONFIG_FILE}")
 EXTERNAL_LIBS=$(jq -c ".extensions.${EXTENSION}.external_libs // []" "${CONFIG_FILE}")
 CONFIGURE_OPTIONS=$(jq -r ".extensions.${EXTENSION}.configure_options // [] | join(\" \")" "${CONFIG_FILE}")
 ZEND_EXTENSION=$(jq -r ".extensions.${EXTENSION}.zend_extension // false" "${CONFIG_FILE}")
