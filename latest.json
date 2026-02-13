@@ -558,5 +558,13 @@
     "pass": 115,
     "fail": 30,
     "total": 145
+  },
+  "dbus": {
+    "path": "history/2026/02/13/dbus-0.4.1-21991080299.json",
+    "version": "0.4.1",
+    "updated_at": "2026-02-13T14:58:39Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
