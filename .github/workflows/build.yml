@@ -454,6 +454,7 @@ jobs:
               git rebase --abort
               git reset --hard origin/dataset
               # Re-apply our changes
+              mkdir -p "$(dirname "./${HISTORY_PATH}")"
               cp -r "../dataset/${HISTORY_PATH}" "./${HISTORY_PATH}" 2>/dev/null || true
               if [ -f "../dataset/latest.json.new" ]; then
                 if [ -f "latest.json" ]; then
@@ -462,6 +463,22 @@ jobs:
                 else
                   cp "../dataset/latest.json.new" "latest.json"
                 fi
+              fi
+              # Re-apply reports/{extension}/{version}.json
+              mkdir -p "$(dirname "./${REPORTS_FILE}")"
+              if [ -f "./${REPORTS_FILE}" ]; then
+                jq -s '
+                  def deep_merge: reduce .[] as $x ({}; . * $x);
+                  .[0] as $existing |
+                  .[1] as $new |
+                  {
+                    "last_updated": $new.last_updated,
+                    "builds": ([$existing.builds // {}, $new.builds] | deep_merge)
+                  }
+                ' "./${REPORTS_FILE}" "../dataset/reports/${EXTENSION}/${VERSION}.json.new" > "./${REPORTS_FILE}.tmp"
+                mv "./${REPORTS_FILE}.tmp" "./${REPORTS_FILE}"
+              else
+                cp "../dataset/reports/${EXTENSION}/${VERSION}.json.new" "./${REPORTS_FILE}"
               fi
               git add -A
               git commit -m "Update build reports - ${EXTENSION} v${VERSION}" || true
