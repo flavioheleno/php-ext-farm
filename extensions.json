@@ -2333,6 +2333,9 @@
       "latest_version": "2.3.0"
     },
     "yar": {
+      "configure_options": [
+        "--with-curl=/usr"
+      ],
       "dependencies": {
         "alpine": {
           "build": [
