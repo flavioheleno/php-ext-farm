@@ -630,5 +630,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "yaml": {
+    "path": "history/2026/02/13/yaml-2.3.0-21995332943.json",
+    "version": "2.3.0",
+    "updated_at": "2026-02-13T17:36:40Z",
+    "pass": 122,
+    "fail": 23,
+    "total": 145
   }
 }
