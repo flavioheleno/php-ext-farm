@@ -32,12 +32,12 @@
     "total": 145
   },
   "csv": {
-    "path": "history/2026/02/13/csv-0.4.4-21988590415.json",
+    "path": "history/2026/02/13/csv-0.4.4-21997535149.json",
     "version": "0.4.4",
-    "updated_at": "2026-02-13T14:36:32Z",
-    "pass": 145,
+    "updated_at": "2026-02-13T18:20:42Z",
+    "pass": 60,
     "fail": 0,
-    "total": 145
+    "total": 60
   },
   "redis": {
     "path": "history/2026/01/25/redis-6.3.0-21323453266.json",
