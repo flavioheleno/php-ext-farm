@@ -662,5 +662,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "geospatial": {
+    "path": "history/2026/02/14/geospatial-0.3.3-21997974111.json",
+    "version": "0.3.3",
+    "updated_at": "2026-02-14T07:13:13Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
