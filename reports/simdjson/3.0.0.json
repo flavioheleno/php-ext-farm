@@ -1,9 +1,10 @@
 {
-  "last_updated": "2026-02-11T01:28:20Z",
+  "last_updated": "2026-02-14T08:46:35Z",
   "builds": {
     "2026": {
       "02": {
-        "11": "history/2026/02/11/simdjson-3.0.0-21878030143.json"
+        "11": "history/2026/02/11/simdjson-3.0.0-21878030143.json",
+        "14": "history/2026/02/14/simdjson-3.0.0-21998054684.json"
       }
     }
   }
