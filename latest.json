@@ -8,9 +8,9 @@
     "total": 145
   },
   "pcov": {
-    "path": "history/2026/01/24/pcov-1.0.12-21322925009.json",
+    "path": "history/2026/02/14/pcov-1.0.12-21998029468.json",
     "version": "1.0.12",
-    "updated_at": "2026-01-24T23:14:56Z",
+    "updated_at": "2026-02-14T08:25:48Z",
     "pass": 145,
     "fail": 0,
     "total": 145
