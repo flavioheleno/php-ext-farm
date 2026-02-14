@@ -782,5 +782,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "swoole": {
+    "path": "history/2026/02/14/swoole-6.1.6-21998068425.json",
+    "version": "6.1.6",
+    "updated_at": "2026-02-14T08:55:10Z",
+    "pass": 48,
+    "fail": 97,
+    "total": 145
   }
 }
