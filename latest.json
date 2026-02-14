@@ -702,5 +702,13 @@
     "pass": 130,
     "fail": 15,
     "total": 145
+  },
+  "mailparse": {
+    "path": "history/2026/02/14/mailparse-3.1.9-21998005888.json",
+    "version": "3.1.9",
+    "updated_at": "2026-02-14T07:59:48Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
