@@ -686,5 +686,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "i2c": {
+    "path": "history/2026/02/14/i2c-dev-21997983757.json",
+    "version": "dev",
+    "updated_at": "2026-02-14T07:41:41Z",
+    "pass": 0,
+    "fail": 145,
+    "total": 145
   }
 }
