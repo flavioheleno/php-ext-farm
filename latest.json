@@ -694,5 +694,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "imagick": {
+    "path": "history/2026/02/14/imagick-3.8.1-21997989135.json",
+    "version": "3.8.1",
+    "updated_at": "2026-02-14T07:51:01Z",
+    "pass": 130,
+    "fail": 15,
+    "total": 145
   }
 }
