@@ -766,5 +766,13 @@
     "pass": 118,
     "fail": 27,
     "total": 145
+  },
+  "snappy": {
+    "path": "history/2026/02/14/snappy-0.2.3-21998060318.json",
+    "version": "0.2.3",
+    "updated_at": "2026-02-14T08:47:48Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
