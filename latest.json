@@ -734,5 +734,13 @@
     "pass": 0,
     "fail": 145,
     "total": 145
+  },
+  "opentelemetry": {
+    "path": "history/2026/02/14/opentelemetry-1.2.1-21998025296.json",
+    "version": "1.2.1",
+    "updated_at": "2026-02-14T08:28:33Z",
+    "pass": 116,
+    "fail": 29,
+    "total": 145
   }
 }
