@@ -758,5 +758,13 @@
     "pass": 135,
     "fail": 10,
     "total": 145
+  },
+  "solr": {
+    "path": "history/2026/02/14/solr-2.9.1-21998061959.json",
+    "version": "2.9.1",
+    "updated_at": "2026-02-14T08:45:34Z",
+    "pass": 118,
+    "fail": 27,
+    "total": 145
   }
 }
