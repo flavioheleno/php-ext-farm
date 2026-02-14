@@ -718,5 +718,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "mcrypt": {
+    "path": "history/2026/02/14/mcrypt-1.0.9-21998009509.json",
+    "version": "1.0.9",
+    "updated_at": "2026-02-14T08:05:17Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
