@@ -710,5 +710,13 @@
     "pass": 145,
     "fail": 0,
     "total": 145
+  },
+  "maxminddb": {
+    "path": "history/2026/02/14/maxminddb-1.13.1-21998007543.json",
+    "version": "1.13.1",
+    "updated_at": "2026-02-14T08:04:34Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
