@@ -10,14 +10,14 @@
     "sha256": "67f084d36852daab6809561a7c8023d130ca07fc6af8fb040684dd1414934d48"
   },
   "8.4": {
-    "tag": "php-8.4.17",
+    "tag": "php-8.4.18",
     "branch": "PHP-8.4",
-    "sha256": "28b234e347286158cae921d61283eb1169d89bc9d2e5f5976567260ff38b0bfa"
+    "sha256": "957a9b19b4a8e965ee0cc788ca74333bfffaadc206b58611b6cd3cc8b2f40110"
   },
   "8.5": {
-    "tag": "php-8.5.2",
+    "tag": "php-8.5.3",
     "branch": "PHP-8.5",
-    "sha256": "cb75a9b00a2806f7390dd64858ef42a47b443b3475769c8af6af33a18b1381f1"
+    "sha256": "ce65725b8af07356b69a6046d21487040b11f2acfde786de38b2bfb712c36eb9"
   },
   "next": {
     "tag": null,
