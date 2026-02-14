@@ -96,9 +96,9 @@
     "total": 145
   },
   "ip2location": {
-    "path": "history/2026/02/11/ip2location-8.3.0-21877932550.json",
+    "path": "history/2026/02/14/ip2location-8.3.0-21997992895.json",
     "version": "8.3.0",
-    "updated_at": "2026-02-11T16:07:46Z",
+    "updated_at": "2026-02-14T07:47:18Z",
     "pass": 0,
     "fail": 145,
     "total": 145
