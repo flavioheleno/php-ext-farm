@@ -256,12 +256,12 @@
     "total": 145
   },
   "bzip3": {
-    "path": "history/2026/02/10/bzip3-0.1.2-21865120771.json",
+    "path": "history/2026/02/14/bzip3-0.1.2-21997951993.json",
     "version": "0.1.2",
-    "updated_at": "2026-02-10T13:37:40Z",
-    "pass": 60,
+    "updated_at": "2026-02-14T06:55:44Z",
+    "pass": 145,
     "fail": 0,
-    "total": 60
+    "total": 145
   },
   "ast": {
     "path": "history/2026/02/14/ast-1.1.3-21997945400.json",
