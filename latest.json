@@ -742,5 +742,13 @@
     "pass": 116,
     "fail": 29,
     "total": 145
+  },
+  "relay": {
+    "path": "history/2026/02/14/relay-0.20.0-21998049765.json",
+    "version": "0.20.0",
+    "updated_at": "2026-02-14T08:38:16Z",
+    "pass": 0,
+    "fail": 145,
+    "total": 145
   }
 }
