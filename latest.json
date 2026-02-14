@@ -790,5 +790,13 @@
     "pass": 48,
     "fail": 97,
     "total": 145
+  },
+  "timezonedb": {
+    "path": "history/2026/02/14/timezonedb-2025.2.2-21998071685.json",
+    "version": "2025.2.2",
+    "updated_at": "2026-02-14T08:59:32Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
