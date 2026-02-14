@@ -678,5 +678,13 @@
     "pass": 140,
     "fail": 5,
     "total": 145
+  },
+  "hdrhistogram": {
+    "path": "history/2026/02/14/hdrhistogram-0.5.0-21997982131.json",
+    "version": "0.5.0",
+    "updated_at": "2026-02-14T07:38:43Z",
+    "pass": 145,
+    "fail": 0,
+    "total": 145
   }
 }
