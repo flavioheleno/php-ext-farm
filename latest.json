@@ -248,12 +248,12 @@
     "total": 145
   },
   "apfd": {
-    "path": "history/2026/02/10/apfd-1.0.3-21865120771.json",
+    "path": "history/2026/02/14/apfd-1.0.3-21997942041.json",
     "version": "1.0.3",
-    "updated_at": "2026-02-10T13:36:13Z",
-    "pass": 60,
+    "updated_at": "2026-02-14T01:28:20Z",
+    "pass": 145,
     "fail": 0,
-    "total": 60
+    "total": 145
   },
   "bzip3": {
     "path": "history/2026/02/10/bzip3-0.1.2-21865120771.json",
