@@ -838,5 +838,13 @@
     "pass": 116,
     "fail": 29,
     "total": 145
+  },
+  "grpc": {
+    "path": "history/2026/02/15/grpc-1.78.0-22028684853.json",
+    "version": "1.78.0",
+    "updated_at": "2026-02-15T06:38:18Z",
+    "pass": 56,
+    "fail": 0,
+    "total": 56
   }
 }
