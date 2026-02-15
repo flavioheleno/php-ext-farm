@@ -96,12 +96,12 @@
     "total": 145
   },
   "ip2location": {
-    "path": "history/2026/02/14/ip2location-8.3.0-21997992895.json",
+    "path": "history/2026/02/15/ip2location-8.3.0-22028684853.json",
     "version": "8.3.0",
-    "updated_at": "2026-02-14T07:47:18Z",
+    "updated_at": "2026-02-15T06:14:55Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 60,
+    "total": 60
   },
   "xpass": {
     "path": "history/2026/02/14/xpass-1.2.0-21998093955.json",
