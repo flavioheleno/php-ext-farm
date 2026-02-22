@@ -336,12 +336,12 @@
     "total": 145
   },
   "memprof": {
-    "path": "history/2026/02/14/memprof-3.1.0-21998014799.json",
+    "path": "history/2026/02/22/memprof-3.1.0-22269301011.json",
     "version": "3.1.0",
-    "updated_at": "2026-02-14T08:11:28Z",
+    "updated_at": "2026-02-22T04:01:29Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 60,
+    "total": 60
   },
   "oci8": {
     "path": "history/2026/02/14/oci8-3.4.1-21998023814.json",
