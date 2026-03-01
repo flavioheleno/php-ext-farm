@@ -1,11 +1,14 @@
 {
-  "last_updated": "2026-02-22T03:59:12Z",
+  "last_updated": "2026-03-01T06:13:17Z",
   "builds": {
     "2026": {
       "02": {
         "11": "history/2026/02/11/ip2proxy-dev-21877933359.json",
         "14": "history/2026/02/14/ip2proxy-dev-21997994758.json",
         "22": "history/2026/02/22/ip2proxy-dev-22269301011.json"
+      },
+      "03": {
+        "01": "history/2026/03/01/ip2proxy-dev-22534663020.json"
       }
     }
   }
