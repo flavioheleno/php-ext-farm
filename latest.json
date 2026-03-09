@@ -784,12 +784,12 @@
     "total": 145
   },
   "swoole": {
-    "path": "history/2026/02/14/swoole-6.1.6-21998068425.json",
-    "version": "6.1.6",
-    "updated_at": "2026-02-14T08:55:10Z",
+    "path": "history/2026/03/09/swoole-6.1.7-22838686452.json",
+    "version": "6.1.7",
+    "updated_at": "2026-03-09T04:52:57Z",
     "pass": 48,
-    "fail": 97,
-    "total": 145
+    "fail": 96,
+    "total": 144
   },
   "timezonedb": {
     "path": "history/2026/02/14/timezonedb-2025.2.2-21998071685.json",
