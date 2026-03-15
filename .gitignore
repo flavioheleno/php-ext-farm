@@ -17,3 +17,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 reports/
+
+# Git worktrees
+.worktrees/
