@@ -54,7 +54,14 @@ jobs:
 
           for ext in $(jq -r '.extensions | keys[]' extensions.json); do
             TRACK_URL=$(jq -r ".extensions.${ext}.track_url" extensions.json)
-            REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||' | sed 's|https://bitbucket.org/||')
+
+            # Only GitHub repos are supported for dev builds via gh api
+            if [[ "$TRACK_URL" != *"github.com"* ]]; then
+              echo "Skipping dev build for ${ext}: non-GitHub repo (${TRACK_URL})"
+              continue
+            fi
+
+            REPO_PATH=$(echo "$TRACK_URL" | sed 's|https://github.com/||')
 
             # Get default branch name and HEAD commit
             DEFAULT_BRANCH=$(gh api "repos/${REPO_PATH}" --jq '.default_branch' 2>/dev/null || echo "main")
