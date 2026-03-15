@@ -161,13 +161,12 @@ esac
 # Check if this combination is excluded
 EXCLUSION_CHECK="${SCRIPT_DIR}/check-exclusion.sh"
 if [[ -f "${EXCLUSION_CHECK}" ]]; then
-    EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "${EXTENSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${CONFIG_FILE}" 2>&1) || {
-        exit_code=$?
-        if [[ $exit_code -eq 0 ]]; then
-            echo "Build excluded: ${EXCLUSION_REASON}"
-            generate_skip_report "${EXCLUSION_REASON}"
-        fi
-    }
+    EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "${EXTENSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${CONFIG_FILE}" 2>&1)
+    EXCLUSION_EXIT=$?
+    if [[ $EXCLUSION_EXIT -eq 0 ]]; then
+        echo "Build excluded: ${EXCLUSION_REASON}"
+        generate_skip_report "${EXCLUSION_REASON}"
+    fi
 fi
 
 PECL_NAME=$(jq -r ".extensions.${EXTENSION}.pecl_name" "${CONFIG_FILE}")
