@@ -251,8 +251,10 @@ EXT_DIR=$(php -r "echo ini_get('extension_dir');")
 log_info "PHP extension directory: ${EXT_DIR}"
 
 # Step 9: Install runtime dependencies from metadata.json
+ZEND_EXTENSION="false"
 if [ -n "${METADATA_FILE}" ] && [ -f "${METADATA_FILE}" ]; then
     RUNTIME_DEPS=$(jq -r '.runtime_deps // empty' "${METADATA_FILE}")
+    ZEND_EXTENSION=$(jq -r '.zend_extension // false' "${METADATA_FILE}" 2>/dev/null || echo "false")
 
     if [ -n "${RUNTIME_DEPS}" ] && [ "${RUNTIME_DEPS}" != "null" ]; then
         log_info "Installing runtime dependencies: ${RUNTIME_DEPS}"
@@ -361,13 +363,21 @@ if [ -n "${CONF_D_DIR}" ] && [ -d "${CONF_D_DIR}" ]; then
         log_info "Extension config already exists: ${INI_FILE}"
     else
         log_info "Creating extension config: ${INI_FILE}"
-        echo "extension=${PECL_NAME}.so" | ${SUDO} tee "${INI_FILE}" > /dev/null
+        if [ "${ZEND_EXTENSION}" = "true" ]; then
+            echo "zend_extension=${PECL_NAME}.so" | ${SUDO} tee "${INI_FILE}" > /dev/null
+        else
+            echo "extension=${PECL_NAME}.so" | ${SUDO} tee "${INI_FILE}" > /dev/null
+        fi
     fi
 else
     log_error "Cannot find PHP conf.d directory"
     log_info "Expected location from 'php --ini': ${CONF_D_DIR}"
     log_info "You can manually enable the extension by creating a file in your PHP conf.d directory:"
-    log_info "  echo 'extension=${PECL_NAME}.so' > /path/to/conf.d/${PECL_NAME}.ini"
+    if [ "${ZEND_EXTENSION}" = "true" ]; then
+        log_info "  echo 'zend_extension=${PECL_NAME}.so' > /path/to/conf.d/${PECL_NAME}.ini"
+    else
+        log_info "  echo 'extension=${PECL_NAME}.so' > /path/to/conf.d/${PECL_NAME}.ini"
+    fi
     exit 1
 fi
 

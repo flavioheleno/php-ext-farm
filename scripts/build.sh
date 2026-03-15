@@ -356,6 +356,7 @@ if [[ "${BUILD_STATUS}" == "success" ]]; then
   "arch": "${ARCH}",
   "build_date": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "runtime_deps": "${RUNTIME_DEPS}",
+  "zend_extension": ${ZEND_EXTENSION},
   "external_libs": ${EXTERNAL_LIBS},
   "external_lib_files": ${EXTERNAL_LIB_FILES:-null}
 }
