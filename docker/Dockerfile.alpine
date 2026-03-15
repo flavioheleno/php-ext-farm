@@ -56,7 +56,7 @@ RUN if [ -n "${EXTERNAL_LIBS}" ]; then \
         cd "${LIB_NAME}" && \
         echo "${lib}" | jq -r '.build_commands[]' | while read -r cmd; do \
           echo "Running: ${cmd}"; \
-          eval "${cmd}"; \
+          sh -c "${cmd}"; \
         done && \
         cd /tmp && \
         rm -rf "${LIB_NAME}"; \
