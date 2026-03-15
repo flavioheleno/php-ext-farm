@@ -234,19 +234,17 @@ check_bitbucket_tags() {
     echo "$response" | jq -r '.values[0].name // empty'
 }
 
-echo "{"
-echo '  "checked_at": "'"$(date -u +"%Y-%m-%dT%H:%M:%SZ")"'",'
-echo '  "extensions": {'
+# Build result with jq (replaces the echo-based approach)
+RESULT=$(jq -n --arg checked_at "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+    '{"checked_at": $checked_at, "extensions": {}}')
 
 EXTENSIONS=$(jq -r '.extensions | keys[]' "${CONFIG_FILE}")
-FIRST=true
 
 for ext in ${EXTENSIONS}; do
     TRACK_URL=$(jq -r ".extensions.${ext}.track_url" "${CONFIG_FILE}")
-
-    # Try different methods based on hosting platform
     VERSION=""
 
+    # Try different methods based on hosting platform
     if [[ "$TRACK_URL" == *"github.com"* ]]; then
         # Try releases first, then tags for GitHub
         VERSION=$(check_github_release "${TRACK_URL}")
@@ -259,18 +257,14 @@ for ext in ${EXTENSIONS}; do
         VERSION=$(check_bitbucket_tags "${TRACK_URL}")
     fi
 
-    if [[ "${FIRST}" == "true" ]]; then
-        FIRST=false
-    else
-        echo ","
-    fi
-
-    echo -n "    \"${ext}\": {\"latest_version\": \"${VERSION:-unknown}\", \"track_url\": \"${TRACK_URL}\"}"
+    RESULT=$(echo "${RESULT}" | jq \
+        --arg ext "${ext}" \
+        --arg version "${VERSION:-unknown}" \
+        --arg track_url "${TRACK_URL}" \
+        '.extensions[$ext] = {"latest_version": $version, "track_url": $track_url}')
 done
 
-echo ""
-echo "  }"
-echo "}"
+echo "${RESULT}"
 
 # Print summary to stderr
 echo "Checked $REQUEST_COUNT extensions" >&2
