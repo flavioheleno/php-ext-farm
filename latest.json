@@ -240,9 +240,9 @@
     "total": 145
   },
   "apcu_bc": {
-    "path": "history/2026/03/08/apcu_bc-1.0.4-22812593437.json",
+    "path": "history/2026/03/15/apcu_bc-1.0.4-23102116534.json",
     "version": "1.0.4",
-    "updated_at": "2026-03-08T03:30:50Z",
+    "updated_at": "2026-03-15T03:34:00Z",
     "pass": 0,
     "fail": 145,
     "total": 145
