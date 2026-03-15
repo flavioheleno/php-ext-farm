@@ -112,13 +112,13 @@ if ! jq -e ".\"${PHP_VERSION}\"" "${PHP_VERSIONS_FILE}" > /dev/null 2>&1; then
     exit 1
 fi
 
-# Check for platform/architecture exclusions
-if [[ -f "${OS_VERSIONS_FILE}" ]]; then
-    IS_EXCLUDED=$(jq -r --arg platform "${PLATFORM}" --arg version "${PLATFORM_VERSION}" --arg arch "${ARCH}" \
-        '.[$platform].exclude // [] | any(.version == $version and .arch == $arch)' "${OS_VERSIONS_FILE}")
-
-    if [[ "${IS_EXCLUDED}" == "true" ]]; then
-        echo "Error: ${PLATFORM} ${PLATFORM_VERSION} on ${ARCH} is excluded by configuration"
+# Check for platform/architecture exclusions (supports wildcards via check-exclusion.sh)
+EXCLUSION_CHECK="${SCRIPT_DIR}/check-exclusion.sh"
+if [[ -f "${EXCLUSION_CHECK}" ]]; then
+    EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "__none__" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${OS_VERSIONS_FILE}" 2>&1)
+    EXCLUSION_EXIT=$?
+    if [[ $EXCLUSION_EXIT -eq 0 ]]; then
+        echo "Error: ${PLATFORM} ${PLATFORM_VERSION} on ${ARCH} is excluded by configuration: ${EXCLUSION_REASON}"
         echo "See os-versions.json for exclusion rules"
         exit 1
     fi
