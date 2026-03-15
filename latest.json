@@ -320,12 +320,12 @@
     "total": 74
   },
   "lzf": {
-    "path": "history/2026/02/23/lzf-RELEASE.1.5.2-22291536496.json",
+    "path": "history/2026/03/15/lzf-RELEASE.1.5.2-23102116534.json",
     "version": "RELEASE.1.5.2",
-    "updated_at": "2026-02-23T04:26:32Z",
+    "updated_at": "2026-03-15T03:59:33Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 60,
+    "total": 60
   },
   "mysqlnd_ed25519": {
     "path": "history/2026/02/14/mysqlnd_ed25519-1.0.2-21998019489.json",
