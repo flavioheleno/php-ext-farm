@@ -124,17 +124,40 @@ jobs:
             exit 0
           fi
 
-          # Get current SHA of extensions.json
-          SHA=$(gh api "repos/${{ github.repository }}/contents/extensions.json" --jq '.sha')
-
           # Encode updated content
           CONTENT=$(base64 -w 0 extensions.json)
 
-          # Update via Contents API (atomic operation)
-          gh api -X PUT "repos/${{ github.repository }}/contents/extensions.json" \
-            -f message="Update extension version checks" \
-            -f content="$CONTENT" \
-            -f sha="$SHA"
+          MAX_RETRIES=3
+          ATTEMPT=0
+          while [[ $ATTEMPT -lt $MAX_RETRIES ]]; do
+            ATTEMPT=$((ATTEMPT + 1))
+
+            # Get current file SHA (re-fetch each attempt to avoid stale SHA)
+            CURRENT_SHA=$(gh api repos/${{ github.repository }}/contents/extensions.json \
+              --jq '.sha' 2>/dev/null || echo "")
+
+            if [[ -z "$CURRENT_SHA" ]]; then
+              echo "Error: could not fetch current SHA for extensions.json"
+              exit 1
+            fi
+
+            # Attempt the update via Contents API
+            if gh api -X PUT "repos/${{ github.repository }}/contents/extensions.json" \
+              -f message="Update extension version checks" \
+              -f content="$CONTENT" \
+              -f sha="$CURRENT_SHA"; then
+              echo "Successfully updated extensions.json on attempt $ATTEMPT"
+              break
+            fi
+
+            if [[ $ATTEMPT -lt $MAX_RETRIES ]]; then
+              echo "Attempt $ATTEMPT failed (likely 409 conflict), retrying..."
+              sleep 2
+            else
+              echo "All $MAX_RETRIES attempts failed"
+              exit 1
+            fi
+          done
 
       - name: Trigger releases for updated extensions
         if: steps.check.outputs.updates != '[]'
