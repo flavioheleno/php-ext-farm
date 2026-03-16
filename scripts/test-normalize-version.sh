@@ -49,7 +49,7 @@ run_test "Mixed underscores" "ext" "v1_2_3" "1.2.3"
 # Complex cases
 run_test "PECL-style version (yac)" "yac" "yac-2.3.1" "2.3.1"
 run_test "PECL-style version (yaf)" "yaf" "yaf-3.3.6" "3.3.6"
-run_test "Tag-style version" "ext" "tags/VLD_0_11_0" "tags/VLD.0.11.0"
+run_test "Tag-style version (tags/ prefix stripped for valid filenames)" "ext" "tags/VLD_0_11_0" "VLD.0.11.0"
 run_test "PHP_ZIP style" "zip" "PHP_ZIP-1.12.1" "PHP.ZIP-1.12.1"
 
 # No transformation needed

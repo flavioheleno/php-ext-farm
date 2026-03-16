@@ -20,6 +20,11 @@ fi
 # shellcheck disable=SC2295 # Pattern matching is intentional here
 VERSION="${VERSION#"${EXTENSION}"-}"
 
+# Strip tag path prefix if present (e.g., "tags/VLD_0_11_0" -> "VLD_0_11_0")
+# Slashes are invalid in filenames, so we must strip this before the version
+# is used in artifact names like "${EXTENSION}-${NORMALIZED_VERSION}-...tar.gz"
+VERSION="${VERSION#tags/}"
+
 # Strip common prefixes
 VERSION="${VERSION#v}"
 VERSION="${VERSION#release-}"
