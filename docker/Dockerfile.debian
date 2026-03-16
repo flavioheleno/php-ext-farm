@@ -88,4 +88,8 @@ RUN if [ "${EXTENSION_VERSION}" = "dev" ]; then \
       find /usr/local/lib -name '*.so*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true && \
       find /usr/local/lib -name '*.dylib*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true; \
     fi && \
+    if [ -n "${BUILD_DEPS}" ]; then \
+      apt-get purge -y --auto-remove ${BUILD_DEPS} && \
+      rm -rf /var/lib/apt/lists/*; \
+    fi && \
     rm -rf /tmp/extension
