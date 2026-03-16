@@ -181,7 +181,7 @@ jobs:
 
           # Determine channel based on version format
           VERSION="${{ needs.prepare.outputs.extension_version }}"
-          if [[ "$VERSION" == dev-* ]]; then
+          if [[ "$VERSION" == dev-* ]] || [[ "$VERSION" == "dev" ]]; then
             CHANNEL="dev"
           else
             CHANNEL="release"
