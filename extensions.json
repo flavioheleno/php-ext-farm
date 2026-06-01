@@ -1421,7 +1421,7 @@
       "pecl_name": "pheme",
       "track_url": "https://github.com/capotej/pheme",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v0.2.2"
     },
     "phreakscope": {
@@ -1438,7 +1438,7 @@
       "pecl_name": "phreakscope",
       "track_url": "https://github.com/pakutoma/ext-phreakscope",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z"
+      "last_checked": "2026-06-01T07:58:48Z"
     },
     "pq": {
       "dependencies": {
@@ -1462,7 +1462,7 @@
       "pecl_name": "pq",
       "track_url": "https://github.com/m6w6/ext-pq",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v2.2.3"
     },
     "psr": {
@@ -1479,7 +1479,7 @@
       "pecl_name": "psr",
       "track_url": "https://github.com/jbboehr/php-psr",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v1.2.0"
     },
     "quickhash": {
@@ -1496,7 +1496,7 @@
       "pecl_name": "quickhash",
       "track_url": "https://github.com/derickr/quickhash",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "1.1.3"
     },
     "raphf": {
@@ -1513,7 +1513,7 @@
       "pecl_name": "raphf",
       "track_url": "https://github.com/m6w6/ext-raphf",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v2.0.2"
     },
     "rdkafka": {
@@ -1538,7 +1538,7 @@
       "pecl_name": "rdkafka",
       "track_url": "https://github.com/arnaud-lb/php-rdkafka",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "6.0.5"
     },
     "redis": {
@@ -1574,7 +1574,7 @@
       "pecl_name": "redis",
       "track_url": "https://github.com/phpredis/phpredis",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "6.3.0"
     },
     "relay": {
@@ -1591,7 +1591,7 @@
       "pecl_name": "relay",
       "track_url": "https://github.com/cachewerk/relay",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v0.22.0"
     },
     "rpminfo": {
@@ -1616,7 +1616,7 @@
       "pecl_name": "rpminfo",
       "track_url": "https://github.com/remicollet/php-rpminfo",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z"
+      "last_checked": "2026-06-01T07:58:48Z"
     },
     "selinux": {
       "dependencies": {
@@ -1640,7 +1640,7 @@
       "pecl_name": "selinux",
       "track_url": "https://github.com/php/pecl-security-selinux",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v0.6.1"
     },
     "simdjson": {
@@ -1657,7 +1657,7 @@
       "pecl_name": "simdjson",
       "track_url": "https://github.com/crazyxman/simdjson_php",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "3.0.0"
     },
     "simdutf": {
@@ -1674,7 +1674,7 @@
       "pecl_name": "simdutf",
       "track_url": "https://github.com/awesomized/simdutf-php-ext",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "1.0.0"
     },
     "smbclient": {
@@ -1699,7 +1699,7 @@
       "pecl_name": "smbclient",
       "track_url": "https://github.com/eduardok/libsmbclient-php",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "1.1.2"
     },
     "snappy": {
@@ -1717,7 +1717,7 @@
       "pecl_name": "snappy",
       "track_url": "https://github.com/kjdev/php-ext-snappy",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "0.2.3"
     },
     "solr": {
@@ -1749,7 +1749,7 @@
       "pecl_name": "solr",
       "track_url": "https://github.com/php/pecl-search_engine-solr",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "2.9.3"
     },
     "spi": {
@@ -1770,7 +1770,7 @@
       "pecl_name": "spi",
       "track_url": "https://github.com/embedded-php/ext-spi",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z"
+      "last_checked": "2026-06-01T07:58:48Z"
     },
     "spx": {
       "configure_options": [
@@ -1797,7 +1797,7 @@
       "pecl_name": "spx",
       "track_url": "https://github.com/NoiseByNorthwest/php-spx",
       "type": "git",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v0.4.22"
     },
     "stomp": {
@@ -1822,7 +1822,7 @@
       "pecl_name": "stomp",
       "track_url": "https://github.com/php/pecl-tools-stomp",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "release_2_0_3"
     },
     "swoole": {
@@ -1872,7 +1872,7 @@
       "pecl_name": "swoole",
       "track_url": "https://github.com/swoole/swoole-src",
       "type": "pecl",
-      "last_checked": "2026-05-18T05:29:39Z",
+      "last_checked": "2026-06-01T07:58:48Z",
       "latest_version": "v6.2.1"
     },
     "taint": {
