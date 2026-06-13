@@ -161,11 +161,14 @@ esac
 # Check if this combination is excluded
 EXCLUSION_CHECK="${SCRIPT_DIR}/check-exclusion.sh"
 if [[ -f "${EXCLUSION_CHECK}" ]]; then
-    EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "${EXTENSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${CONFIG_FILE}" 2>&1)
-    EXCLUSION_EXIT=$?
-    if [[ $EXCLUSION_EXIT -eq 0 ]]; then
+    if EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "${EXTENSION}" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${CONFIG_FILE}" 2>&1); then
         echo "Build excluded: ${EXCLUSION_REASON}"
         generate_skip_report "${EXCLUSION_REASON}"
+    else
+        case $? in
+            1) ;; # allowed, continue
+            *) echo "Error: exclusion check failed unexpectedly" >&2; exit 1 ;;
+        esac
     fi
 fi
 
@@ -249,6 +252,11 @@ fi
 
 if [[ -n "${EXTENSION_VERSION}" ]]; then
     BUILD_ARGS+=(--build-arg "EXTENSION_VERSION=${EXTENSION_VERSION}")
+fi
+
+# For dev builds (dev-<sha>), extract the commit SHA for precise checkout inside Docker
+if [[ "${EXTENSION_VERSION}" == dev-* ]]; then
+    BUILD_ARGS+=(--build-arg "COMMIT_SHA=${EXTENSION_VERSION#dev-}")
 fi
 
 if [[ "${EXTERNAL_LIBS}" != "[]" ]]; then

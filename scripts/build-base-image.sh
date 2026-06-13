@@ -115,12 +115,15 @@ fi
 # Check for platform/architecture exclusions (supports wildcards via check-exclusion.sh)
 EXCLUSION_CHECK="${SCRIPT_DIR}/check-exclusion.sh"
 if [[ -f "${EXCLUSION_CHECK}" ]]; then
-    EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "__none__" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${OS_VERSIONS_FILE}" 2>&1)
-    EXCLUSION_EXIT=$?
-    if [[ $EXCLUSION_EXIT -eq 0 ]]; then
+    if EXCLUSION_REASON=$("${EXCLUSION_CHECK}" "__none__" "${PLATFORM}" "${PLATFORM_VERSION}" "${ARCH}" "${OS_VERSIONS_FILE}" 2>&1); then
         echo "Error: ${PLATFORM} ${PLATFORM_VERSION} on ${ARCH} is excluded by configuration: ${EXCLUSION_REASON}"
         echo "See os-versions.json for exclusion rules"
         exit 1
+    else
+        case $? in
+            1) ;; # allowed, continue
+            *) echo "Error: exclusion check failed unexpectedly" >&2; exit 1 ;;
+        esac
     fi
 fi
 
