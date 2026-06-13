@@ -360,12 +360,12 @@
     "total": 145
   },
   "msgpack": {
-    "path": "history/2026/02/14/msgpack-3.0.0-21998018011.json",
-    "version": "3.0.0",
-    "updated_at": "2026-02-14T08:16:09Z",
-    "pass": 122,
-    "fail": 23,
-    "total": 145
+    "path": "history/2026/06/13/msgpack-3.0.1-27470295758.json",
+    "version": "3.0.1",
+    "updated_at": "2026-06-13T16:29:02Z",
+    "pass": 105,
+    "fail": 20,
+    "total": 125
   },
   "oqs": {
     "path": "history/2026/02/14/oqs-0.3.2-21998026705.json",
