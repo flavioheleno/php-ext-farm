@@ -33,7 +33,7 @@ jobs:
           ALPINE_RELEASES=$(curl -fsSL https://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/x86_64/latest-releases.yaml)
 
           # Get the latest stable version
-          LATEST_STABLE=$(echo "$ALPINE_RELEASES" | grep -A 10 'flavor: alpine-standard' | grep 'version:' | head -1 | awk '{print $2}' | cut -d. -f1,2)
+          LATEST_STABLE=$(echo "$ALPINE_RELEASES" | yq -r '([.[] | select(.flavor == "alpine-standard") | .version][0] // "" | tostring | split(".") | .[0:2] | join("."))')
 
           if [[ -n "$LATEST_STABLE" ]]; then
             echo "Latest stable Alpine: $LATEST_STABLE"
@@ -65,8 +65,8 @@ jobs:
           # Check Debian stable releases
           echo "Fetching Debian releases..."
 
-          # Get current stable codename from Debian
-          CURRENT_STABLE=$(curl -fsSL https://www.debian.org/releases/stable/ | grep -oP 'Debian [0-9]+ <em>\K[a-z]+' | head -1)
+          # Get current stable codename from Debian repository metadata
+          CURRENT_STABLE=$(curl -fsSL https://deb.debian.org/debian/dists/stable/Release | sed -n 's/^Codename: //p' | head -1)
 
           if [[ -n "$CURRENT_STABLE" ]]; then
             echo "Current stable Debian: $CURRENT_STABLE"
