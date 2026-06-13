@@ -10,23 +10,24 @@ Detect new OS versions (Alpine stable and Debian stable codename), and open a PR
 - `workflow_dispatch`
 
 ## Inputs
-- `runner` (optional): `ubuntu-latest`, `ubuntu-slim`, or `self-hosted`
+- None
 
 ## Permissions
-- `contents: write`
-- `pull-requests: write`
+- Default workflow permission: `contents: read`
+- `create-pr` job: `contents: write`, `pull-requests: write`
 
 ## Concurrency
 - `group: check-os-releases`
 
 ## Jobs
 ### 1) `check-alpine-releases`
-- Fetches Alpine `latest-releases.yaml`
-- Extracts latest stable major.minor
+- Fetches Alpine `latest-stable/releases/x86_64/latest-releases.yaml`
+- Uses `yq` to select the `alpine-standard` entry and extract latest stable `major.minor`
 - If not present in `os-versions.json`, outputs an update entry
 
 ### 2) `check-debian-releases`
-- Scrapes Debian stable releases page for current stable codename
+- Fetches Debian repository metadata from `dists/stable/Release`
+- Extracts the current stable codename from the `Codename:` field
 - If not present in `os-versions.json`, outputs an update entry
 
 ### 3) `create-pr`

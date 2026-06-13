@@ -125,8 +125,8 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 - **PHP next** (bleeding-edge from master branch)
 
 ### Platforms
-- **Alpine Linux**: 3.19, 3.20, 3.21, 3.22, 3.23
-- **Debian**: bookworm, bullseye, trixie
+- **Alpine Linux**: 3.21, 3.22, 3.23, 3.24
+- **Debian**: bullseye, bookworm, trixie
 
 ### Architectures
 - amd64 (x86_64)
@@ -452,13 +452,15 @@ Defines supported OS versions and platform-level exclusions:
 ```json
 {
   "alpine": {
-    "versions": ["3.19", "3.20", "3.21", "3.22", "3.23"],
+    "versions": ["3.21", "3.22", "3.23", "3.24"],
     "exclude": []
   },
   "debian": {
     "versions": ["bullseye", "bookworm", "trixie"],
     "exclude": [
-      {"version": "trixie", "arch": "arm32v6"}
+      {"version": "trixie", "arch": "arm32v6"},
+      {"version": "bullseye", "arch": "arm32v6"},
+      {"version": "bookworm", "arch": "arm32v6"}
     ]
   }
 }

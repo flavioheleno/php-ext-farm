@@ -7,7 +7,10 @@ Clean up GHCR packages by deleting:
 - ghost images
 - partial images
 
-Targets three package namespaces: `alpine`, `debian`, `php`.
+Targets three nested GHCR package namespaces:
+- `<repo>/alpine`
+- `<repo>/debian`
+- `<repo>/php`
 
 ## Triggers
 - `schedule` (weekly Sunday 06:00 UTC)
@@ -19,8 +22,10 @@ Targets three package namespaces: `alpine`, `debian`, `php`.
 ## Jobs
 ### `cleanup` (matrix)
 Matrix over `package: [alpine, debian, php]`.
+`fail-fast` is disabled so one cleanup target cannot cancel the others.
 
-Uses `dataaxiom/ghcr-cleanup-action` with:
+Uses `dataaxiom/ghcr-cleanup-action` with `package` set to
+`${{ github.event.repository.name }}/${{ matrix.package }}` and:
 - `delete-ghost-images: true`
 - `delete-partial-images: true`
 
