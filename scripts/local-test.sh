@@ -131,7 +131,7 @@ if [[ -f "${OUTPUT_DIR}/metadata.json" ]]; then
         echo ""
     fi
 
-    if [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
+    if [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A "${OUTPUT_DIR}/libs" 2>/dev/null)" ]]; then
         echo "  External libraries:"
         ls -lh "${OUTPUT_DIR}/libs/"
         echo ""

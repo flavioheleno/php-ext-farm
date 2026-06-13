@@ -32,9 +32,9 @@ echo
 
 run_exclusion_check() {
     local ext="$1" os="$2" ver="$3" arch="$4"
-    local reason="" excluded=""
-    if reason=$("${CHECK_EXCLUSION}" "$ext" "$os" "$ver" "$arch" \
-                "${EXTENSIONS_JSON}" "${OS_VERSIONS_JSON}" 2>&1); then
+    local excluded=""
+    if "${CHECK_EXCLUSION}" "$ext" "$os" "$ver" "$arch" \
+            "${EXTENSIONS_JSON}" "${OS_VERSIONS_JSON}" > /dev/null 2>&1; then
         excluded=yes
     else
         case $? in

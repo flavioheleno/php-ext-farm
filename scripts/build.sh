@@ -114,7 +114,7 @@ done
 
 if [[ "${PHP_SUPPORTED}" == "false" ]]; then
     echo "Error: PHP version ${PHP_VERSION} is not supported"
-    echo "Supported versions: $(echo ${SUPPORTED_PHP_VERSIONS} | tr '\n' ' ')"
+    echo "Supported versions: $(echo "${SUPPORTED_PHP_VERSIONS}" | tr '\n' ' ')"
     generate_skip_report "unsupported_php"
 fi
 
@@ -130,7 +130,7 @@ done
 
 if [[ "${PLATFORM_SUPPORTED}" == "false" ]]; then
     echo "Error: Platform ${PLATFORM} is not supported"
-    echo "Supported platforms: $(echo ${SUPPORTED_PLATFORMS} | tr '\n' ' ')"
+    echo "Supported platforms: $(echo "${SUPPORTED_PLATFORMS}" | tr '\n' ' ')"
     generate_skip_report "unsupported_platform"
 fi
 
@@ -347,8 +347,8 @@ fi
 
 # List external library files for metadata
 EXTERNAL_LIB_FILES=""
-if [[ "${BUILD_STATUS}" == "success" ]] && [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A ${OUTPUT_DIR}/libs 2>/dev/null)" ]]; then
-    EXTERNAL_LIB_FILES=$(cd "${OUTPUT_DIR}/libs" && ls -1 | jq -R -s -c 'split("\n") | map(select(length > 0))')
+if [[ "${BUILD_STATUS}" == "success" ]] && [[ -d "${OUTPUT_DIR}/libs" ]] && [[ -n "$(ls -A "${OUTPUT_DIR}/libs" 2>/dev/null)" ]]; then
+    EXTERNAL_LIB_FILES=$(find "${OUTPUT_DIR}/libs" -maxdepth 1 -type f -printf '%f\n' | sort | jq -R -s -c 'split("\n") | map(select(length > 0))')
 fi
 
 # Generate metadata

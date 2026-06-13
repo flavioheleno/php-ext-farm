@@ -97,7 +97,7 @@ check_github_release() {
     fi
 
     local repo_path
-    repo_path=$(echo "$repo_url" | sed 's|https://github.com/||')
+    repo_path="${repo_url#https://github.com/}"
 
     # Use GitHub API to get latest release
     local response
@@ -122,7 +122,7 @@ check_github_tags() {
     fi
 
     local repo_path
-    repo_path=$(echo "$repo_url" | sed 's|https://github.com/||')
+    repo_path="${repo_url#https://github.com/}"
 
     # Fetch all tags (the /tags endpoint does not guarantee date-based ordering,
     # so we retrieve them all and resolve each commit date to find the newest)
@@ -219,7 +219,7 @@ check_bitbucket_tags() {
     fi
 
     local repo_path
-    repo_path=$(echo "$repo_url" | sed 's|https://bitbucket.org/||')
+    repo_path="${repo_url#https://bitbucket.org/}"
 
     # Get latest tag from Bitbucket API
     local response

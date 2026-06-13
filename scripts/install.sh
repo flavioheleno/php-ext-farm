@@ -111,6 +111,7 @@ PLATFORM_VERSION=""
 
 detect_os() {
     if [ -f /etc/os-release ]; then
+        # shellcheck source=/dev/null
         . /etc/os-release
         case "${ID}" in
             alpine)
