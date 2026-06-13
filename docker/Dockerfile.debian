@@ -31,6 +31,7 @@ ARG RUNTIME_DEPS=""
 ARG EXTERNAL_LIBS=""
 ARG CONFIGURE_OPTIONS=""
 ARG ZEND_EXTENSION=""
+ARG COMMIT_SHA=""
 
 # Install extension-specific build and runtime dependencies
 # hadolint ignore=DL3008
@@ -68,11 +69,15 @@ RUN if [ -n "${EXTERNAL_LIBS}" ]; then \
 # Clone, build, install, verify, and cleanup in single layer
 WORKDIR /tmp/extension
 # hadolint ignore=DL3003
-RUN if [ "${EXTENSION_VERSION}" = "dev" ]; then \
-      git clone --depth 1 --recurse-submodules "${EXTENSION_REPO_URL}" .; \
-    else \
-      git clone --depth 1 --recurse-submodules ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${EXTENSION_REPO_URL}" .; \
-    fi && \
+RUN case "${EXTENSION_VERSION}" in \
+      dev|dev-*) \
+        git clone --depth 1 --recurse-submodules "${EXTENSION_REPO_URL}" . && \
+        if [ -n "${COMMIT_SHA}" ]; then git checkout "${COMMIT_SHA}"; fi; \
+        ;; \
+      *) \
+        git clone --depth 1 --recurse-submodules ${EXTENSION_VERSION:+--branch ${EXTENSION_VERSION}} "${EXTENSION_REPO_URL}" .; \
+        ;; \
+    esac && \
     if [ -n "${EXTENSION_BUILD_PATH}" ]; then cd "${EXTENSION_BUILD_PATH}"; fi && \
     phpize && \
     ./configure ${CONFIGURE_OPTIONS} && \
