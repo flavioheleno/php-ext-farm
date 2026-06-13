@@ -88,12 +88,12 @@
     "total": 145
   },
   "pg_query": {
-    "path": "history/2026/03/09/pg_query-0.32.0-22836676871.json",
-    "version": "0.32.0",
-    "updated_at": "2026-03-09T03:19:04Z",
+    "path": "history/2026/06/13/pg_query-0.39.0-27470296365.json",
+    "version": "0.39.0",
+    "updated_at": "2026-06-13T16:29:36Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 125,
+    "total": 125
   },
   "ip2location": {
     "path": "history/2026/03/15/ip2location-8.3.0-23102116534.json",
