@@ -181,6 +181,15 @@ else
 fi
 
 # Step 5: Build download URL
+# Normalize the version (strips leading v, extension-name prefix, underscores, etc.)
+NORMALIZE_SCRIPT="${SCRIPT_DIR}/normalize-version.sh"
+if [ -f "${NORMALIZE_SCRIPT}" ]; then
+    RAW_VERSION="${EXTENSION_VERSION}"
+    EXTENSION_VERSION=$("${NORMALIZE_SCRIPT}" "${EXTENSION}" "${EXTENSION_VERSION}")
+    if [ "${EXTENSION_VERSION}" != "${RAW_VERSION}" ]; then
+        log_info "Normalized version: ${RAW_VERSION} -> ${EXTENSION_VERSION}"
+    fi
+fi
 RELEASE_TAG="${EXTENSION}-${EXTENSION_VERSION}"
 ARCHIVE_NAME="${EXTENSION}-${EXTENSION_VERSION}-php${PHP_MAJOR_MINOR}-${PLATFORM}-${PLATFORM_VERSION}-${ARCH}.tar.gz"
 DOWNLOAD_URL="https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${ARCHIVE_NAME}"
