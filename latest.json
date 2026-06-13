@@ -504,12 +504,12 @@
     "total": 145
   },
   "identifier": {
-    "path": "history/2026/02/14/identifier-0.2.1-21997985824.json",
-    "version": "0.2.1",
-    "updated_at": "2026-02-14T07:43:36Z",
-    "pass": 116,
-    "fail": 29,
-    "total": 145
+    "path": "history/2026/06/13/identifier-0.4.0-27469552688.json",
+    "version": "0.4.0",
+    "updated_at": "2026-06-13T16:18:37Z",
+    "pass": 84,
+    "fail": 41,
+    "total": 125
   },
   "zip": {
     "path": "history/2026/02/23/zip-PHP.ZIP-1.12.1-22295415141.json",
