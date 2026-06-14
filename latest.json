@@ -824,12 +824,12 @@
     "total": 145
   },
   "xlswriter": {
-    "path": "history/2026/02/14/xlswriter-1.5.8-21998092212.json",
-    "version": "1.5.8",
-    "updated_at": "2026-02-14T09:10:35Z",
-    "pass": 122,
-    "fail": 23,
-    "total": 145
+    "path": "history/2026/06/14/xlswriter-2.0.3-27501766970.json",
+    "version": "2.0.3",
+    "updated_at": "2026-06-14T14:36:15Z",
+    "pass": 105,
+    "fail": 20,
+    "total": 125
   },
   "yac": {
     "path": "history/2026/02/14/yac-2.3.1-21998099209.json",
