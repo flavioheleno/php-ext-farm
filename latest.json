@@ -216,12 +216,12 @@
     "total": 145
   },
   "xdebug": {
-    "path": "history/2026/02/14/xdebug-3.5.1-21998086979.json",
-    "version": "3.5.1",
-    "updated_at": "2026-02-14T09:02:47Z",
-    "pass": 116,
-    "fail": 29,
-    "total": 145
+    "path": "history/2026/06/14/xdebug-3.5.3-27501766081.json",
+    "version": "3.5.3",
+    "updated_at": "2026-06-14T14:36:22Z",
+    "pass": 84,
+    "fail": 41,
+    "total": 125
   },
   "bitset": {
     "path": "history/2026/02/14/bitset-3.2.0+pie-21997946922.json",
