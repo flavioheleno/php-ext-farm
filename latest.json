@@ -568,12 +568,12 @@
     "total": 145
   },
   "decimal": {
-    "path": "history/2026/02/14/decimal-2.0.1-alpha-21997961816.json",
-    "version": "2.0.1-alpha",
-    "updated_at": "2026-02-14T07:01:45Z",
-    "pass": 95,
-    "fail": 50,
-    "total": 145
+    "path": "history/2026/06/14/decimal-2.0.1-27486768472.json",
+    "version": "2.0.1",
+    "updated_at": "2026-06-14T05:18:46Z",
+    "pass": 60,
+    "fail": 0,
+    "total": 60
   },
   "dio": {
     "path": "history/2026/02/14/dio-0.3.0+pie-21997963313.json",
