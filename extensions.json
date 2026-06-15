@@ -2305,7 +2305,7 @@
       "pecl_name": "yaf",
       "track_url": "https://github.com/laruence/yaf",
       "type": "pecl",
-      "last_checked": "2026-06-01T12:55:50Z",
+      "last_checked": "2026-06-15T01:12:52Z",
       "latest_version": "yaf-3.3.6"
     },
     "yaml": {
@@ -2330,7 +2330,7 @@
       "pecl_name": "yaml",
       "track_url": "https://github.com/php/pecl-file_formats-yaml",
       "type": "pecl",
-      "last_checked": "2026-06-01T12:55:50Z",
+      "last_checked": "2026-06-15T01:12:52Z",
       "latest_version": "2.3.0"
     },
     "yar": {
@@ -2358,7 +2358,7 @@
       "pecl_name": "yar",
       "track_url": "https://github.com/laruence/yar",
       "type": "pecl",
-      "last_checked": "2026-06-01T12:55:50Z",
+      "last_checked": "2026-06-15T01:12:52Z",
       "latest_version": "yar-2.3.3"
     },
     "zip": {
@@ -2390,7 +2390,7 @@
       "pecl_name": "zip",
       "track_url": "https://github.com/pierrejoye/php_zip",
       "type": "pecl",
-      "last_checked": "2026-06-01T12:55:50Z",
+      "last_checked": "2026-06-15T01:12:52Z",
       "latest_version": "PHP_ZIP-1.12.1"
     },
     "zmq": {
@@ -2415,7 +2415,7 @@
       "pecl_name": "zmq",
       "track_url": "https://github.com/zeromq/php-zmq",
       "type": "pecl",
-      "last_checked": "2026-06-01T12:55:50Z",
+      "last_checked": "2026-06-15T01:12:52Z",
       "latest_version": "1.1.2"
     },
     "zstd": {
@@ -2440,8 +2440,8 @@
       "pecl_name": "zstd",
       "track_url": "https://github.com/kjdev/php-ext-zstd",
       "type": "git",
-      "last_checked": "2026-06-01T12:55:50Z",
-      "latest_version": "0.15.2"
+      "last_checked": "2026-06-15T01:12:52Z",
+      "latest_version": "0.16.0"
     }
   }
 }
