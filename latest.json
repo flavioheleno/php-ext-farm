@@ -688,12 +688,12 @@
     "total": 145
   },
   "i2c": {
-    "path": "history/2026/03/15/i2c-dev-23102116534.json",
+    "path": "history/2026/06/21/i2c-dev-27891849079.json",
     "version": "dev",
-    "updated_at": "2026-03-15T03:48:56Z",
+    "updated_at": "2026-06-21T05:44:36Z",
     "pass": 0,
-    "fail": 118,
-    "total": 118
+    "fail": 62,
+    "total": 62
   },
   "imagick": {
     "path": "history/2026/02/14/imagick-3.8.1-21997989135.json",
