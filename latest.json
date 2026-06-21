@@ -128,12 +128,12 @@
     "total": 145
   },
   "ev": {
-    "path": "history/2026/06/14/ev-dev-27486768472.json",
+    "path": "history/2026/06/21/ev-dev-27891849079.json",
     "version": "dev",
-    "updated_at": "2026-06-14T05:20:48Z",
+    "updated_at": "2026-06-21T05:33:31Z",
     "pass": 0,
-    "fail": 60,
-    "total": 60
+    "fail": 120,
+    "total": 120
   },
   "rpminfo": {
     "path": "history/2026/02/14/rpminfo-dev-21998051343.json",
