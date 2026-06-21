@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-03-15T03:52:54Z",
+  "last_updated": "2026-06-21T05:45:37Z",
   "builds": {
     "2026": {
       "01": {
@@ -15,6 +15,9 @@
         "01": "history/2026/03/01/ip2location-8.3.0-22534663020.json",
         "08": "history/2026/03/08/ip2location-8.3.0-22812593437.json",
         "15": "history/2026/03/15/ip2location-8.3.0-23102116534.json"
+      },
+      "06": {
+        "21": "history/2026/06/21/ip2location-8.3.0-27891849079.json"
       }
     }
   }
