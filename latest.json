@@ -352,12 +352,12 @@
     "total": 145
   },
   "oauth": {
-    "path": "history/2026/02/14/oauth-2.0.10-21998022365.json",
-    "version": "2.0.10",
-    "updated_at": "2026-02-14T08:19:15Z",
-    "pass": 130,
-    "fail": 15,
-    "total": 145
+    "path": "history/2026/06/22/oauth-2.0.13-27932666661.json",
+    "version": "2.0.13",
+    "updated_at": "2026-06-22T06:19:25Z",
+    "pass": 106,
+    "fail": 19,
+    "total": 125
   },
   "msgpack": {
     "path": "history/2026/06/13/msgpack-3.0.1-27470295758.json",
