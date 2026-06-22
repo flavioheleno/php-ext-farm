@@ -728,12 +728,12 @@
     "total": 145
   },
   "parallel": {
-    "path": "history/2026/02/23/parallel-1.2.11-22291537712.json",
-    "version": "1.2.11",
-    "updated_at": "2026-02-23T04:26:52Z",
+    "path": "history/2026/06/22/parallel-1.2.15-27932667664.json",
+    "version": "1.2.15",
+    "updated_at": "2026-06-22T06:18:16Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 125,
+    "total": 125
   },
   "opentelemetry": {
     "path": "history/2026/02/14/opentelemetry-1.2.1-21998025296.json",
