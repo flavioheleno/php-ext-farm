@@ -744,12 +744,12 @@
     "total": 145
   },
   "relay": {
-    "path": "history/2026/02/14/relay-0.20.0-21998049765.json",
-    "version": "0.20.0",
-    "updated_at": "2026-02-14T08:38:16Z",
+    "path": "history/2026/06/22/relay-0.30.0-27939385605.json",
+    "version": "0.30.0",
+    "updated_at": "2026-06-22T08:29:49Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 125,
+    "total": 125
   },
   "smbclient": {
     "path": "history/2026/02/14/smbclient-1.1.2-21998058366.json",
