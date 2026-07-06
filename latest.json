@@ -232,11 +232,11 @@
     "total": 145
   },
   "brotli": {
-    "path": "history/2026/06/13/brotli-0.19.0-27469481554.json",
-    "version": "0.19.0",
-    "updated_at": "2026-06-13T14:54:05Z",
-    "pass": 105,
-    "fail": 20,
+    "path": "history/2026/07/06/brotli-0.20.0-28760959002.json",
+    "version": "0.20.0",
+    "updated_at": "2026-07-06T01:00:29Z",
+    "pass": 121,
+    "fail": 4,
     "total": 125
   },
   "apcu_bc": {
