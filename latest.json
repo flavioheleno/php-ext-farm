@@ -624,11 +624,11 @@
     "total": 145
   },
   "zstd": {
-    "path": "history/2026/06/15/zstd-0.16.0-27518275818.json",
-    "version": "0.16.0",
-    "updated_at": "2026-06-15T01:21:12Z",
-    "pass": 105,
-    "fail": 20,
+    "path": "history/2026/07/07/zstd-0.17.0-28832112244.json",
+    "version": "0.17.0",
+    "updated_at": "2026-07-07T00:20:09Z",
+    "pass": 121,
+    "fail": 4,
     "total": 125
   },
   "yaml": {
