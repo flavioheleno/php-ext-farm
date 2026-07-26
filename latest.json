@@ -312,12 +312,12 @@
     "total": 125
   },
   "gpio": {
-    "path": "history/2026/07/19/gpio-dev-29674641181.json",
+    "path": "history/2026/07/26/gpio-dev-30189440180.json",
     "version": "dev",
-    "updated_at": "2026-07-19T07:52:48Z",
+    "updated_at": "2026-07-26T07:50:38Z",
     "pass": 0,
-    "fail": 93,
-    "total": 93
+    "fail": 92,
+    "total": 92
   },
   "lzf": {
     "path": "history/2026/03/15/lzf-RELEASE.1.5.2-23102116534.json",

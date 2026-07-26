@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-07-19T07:52:48Z",
+  "last_updated": "2026-07-26T07:50:38Z",
   "builds": {
     "2026": {
       "02": {
@@ -21,7 +21,8 @@
       "07": {
         "05": "history/2026/07/05/gpio-dev-28727750783.json",
         "12": "history/2026/07/12/gpio-dev-29181109257.json",
-        "19": "history/2026/07/19/gpio-dev-29674641181.json"
+        "19": "history/2026/07/19/gpio-dev-29674641181.json",
+        "26": "history/2026/07/26/gpio-dev-30189440180.json"
       }
     }
   }
