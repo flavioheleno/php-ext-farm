@@ -296,12 +296,12 @@
     "total": 120
   },
   "fnbind": {
-    "path": "history/2026/07/19/fnbind-4.0.0a6-29674641181.json",
+    "path": "history/2026/07/26/fnbind-4.0.0a6-30189440180.json",
     "version": "4.0.0a6",
-    "updated_at": "2026-07-19T07:51:37Z",
+    "updated_at": "2026-07-26T07:50:31Z",
     "pass": 0,
-    "fail": 120,
-    "total": 120
+    "fail": 119,
+    "total": 119
   },
   "glfw": {
     "path": "history/2026/07/20/glfw-2.4.0-29722784460.json",
