@@ -64,12 +64,12 @@
     "total": 145
   },
   "cairo": {
-    "path": "history/2026/07/26/cairo-1.1.0-30189440180.json",
+    "path": "history/2026/08/02/cairo-1.1.0-30734032313.json",
     "version": "1.1.0",
-    "updated_at": "2026-07-26T07:32:39Z",
+    "updated_at": "2026-08-02T05:59:31Z",
     "pass": 0,
-    "fail": 122,
-    "total": 122
+    "fail": 121,
+    "total": 121
   },
   "yaf": {
     "path": "history/2026/02/14/yaf-3.3.7-21998102781.json",
