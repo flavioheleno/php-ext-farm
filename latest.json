@@ -320,9 +320,9 @@
     "total": 119
   },
   "lzf": {
-    "path": "history/2026/03/15/lzf-RELEASE.1.5.2-23102116534.json",
+    "path": "history/2026/08/02/lzf-RELEASE.1.5.2-30734032313.json",
     "version": "RELEASE.1.5.2",
-    "updated_at": "2026-03-15T03:59:33Z",
+    "updated_at": "2026-08-02T06:09:10Z",
     "pass": 0,
     "fail": 60,
     "total": 60
