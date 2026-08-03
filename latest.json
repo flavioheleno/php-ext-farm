@@ -744,9 +744,9 @@
     "total": 145
   },
   "relay": {
-    "path": "history/2026/06/22/relay-0.30.0-27939385605.json",
-    "version": "0.30.0",
-    "updated_at": "2026-06-22T08:29:49Z",
+    "path": "history/2026/08/03/relay-0.40.0-30809653442.json",
+    "version": "0.40.0",
+    "updated_at": "2026-08-03T11:32:48Z",
     "pass": 0,
     "fail": 125,
     "total": 125
