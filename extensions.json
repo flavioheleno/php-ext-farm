@@ -1889,7 +1889,7 @@
       "pecl_name": "taint",
       "track_url": "https://github.com/laruence/taint",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "taint-2.1.0"
     },
     "timezonedb": {
@@ -1906,7 +1906,7 @@
       "pecl_name": "timezonedb",
       "track_url": "https://github.com/php/pecl-datetime-timezonedb",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "2025.2.2"
     },
     "traitify": {
@@ -1923,7 +1923,7 @@
       "pecl_name": "traitify",
       "track_url": "https://github.com/arshidkv12/traitify",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v1.0.0"
     },
     "translit": {
@@ -1940,7 +1940,7 @@
       "pecl_name": "translit",
       "track_url": "https://github.com/derickr/pecl-translit",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "RELEASE_0_6_2"
     },
     "uart": {
@@ -1957,7 +1957,7 @@
       "pecl_name": "uart",
       "track_url": "https://github.com/embedded-php/ext-uart",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z"
+      "last_checked": "2026-08-03T14:45:58Z"
     },
     "uopz": {
       "dependencies": {
@@ -1973,7 +1973,7 @@
       "pecl_name": "uopz",
       "track_url": "https://github.com/krakjoe/uopz",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v5.1.0"
     },
     "uploadprogress": {
@@ -1990,7 +1990,7 @@
       "pecl_name": "uploadprogress",
       "track_url": "https://github.com/php/pecl-php-uploadprogress",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "uploadprogress-2.0.2"
     },
     "uuid": {
@@ -2015,7 +2015,7 @@
       "pecl_name": "uuid",
       "track_url": "https://github.com/php/pecl-networking-uuid",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v1.3.0"
     },
     "uv": {
@@ -2040,7 +2040,7 @@
       "pecl_name": "uv",
       "track_url": "https://github.com/amphp/ext-uv",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v0.3.0"
     },
     "vld": {
@@ -2057,7 +2057,7 @@
       "pecl_name": "vld",
       "track_url": "https://github.com/derickr/vld",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "tags/VLD_0_11_0"
     },
     "xattr": {
@@ -2082,7 +2082,7 @@
       "pecl_name": "xattr",
       "track_url": "https://github.com/php/pecl-file_system-xattr",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "xattr-1.4.0"
     },
     "xdebug": {
@@ -2101,7 +2101,7 @@
       "pecl_name": "xdebug",
       "track_url": "https://github.com/xdebug/xdebug",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "3.5.3",
       "zend_extension": true
     },
@@ -2143,7 +2143,7 @@
       "pecl_name": "xdiff",
       "track_url": "https://github.com/php/pecl-text-xdiff",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "2.2.0"
     },
     "xhprof": {
@@ -2160,7 +2160,7 @@
       "pecl_name": "xhprof",
       "track_url": "https://github.com/longxinH/xhprof",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v2.3.10"
     },
     "xlswriter": {
@@ -2185,7 +2185,7 @@
       "pecl_name": "xlswriter",
       "track_url": "https://github.com/viest/php-ext-xlswriter",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v3.0.0"
     },
     "xpass": {
@@ -2210,7 +2210,7 @@
       "pecl_name": "xpass",
       "track_url": "https://github.com/remicollet/php-xpass",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v1.2.1"
     },
     "xxtea": {
@@ -2227,7 +2227,7 @@
       "pecl_name": "xxtea",
       "track_url": "https://github.com/xxtea/xxtea-pecl",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "v1.0.10"
     },
     "xz": {
@@ -2254,7 +2254,7 @@
       "pecl_name": "xz",
       "track_url": "https://github.com/codemasher/php-ext-xz",
       "type": "git",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "1.2.2"
     },
     "yac": {
@@ -2271,7 +2271,7 @@
       "pecl_name": "yac",
       "track_url": "https://github.com/laruence/yac",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "yac-2.3.1"
     },
     "yaconf": {
@@ -2288,7 +2288,7 @@
       "pecl_name": "yaconf",
       "track_url": "https://github.com/laruence/yaconf",
       "type": "pecl",
-      "last_checked": "2026-07-20T15:52:30Z",
+      "last_checked": "2026-08-03T14:45:58Z",
       "latest_version": "yaconf-1.1.2"
     },
     "yaf": {
