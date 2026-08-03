@@ -592,12 +592,12 @@
     "total": 72
   },
   "excimer": {
-    "path": "history/2026/06/14/excimer-1.2.6-27486768472.json",
-    "version": "1.2.6",
-    "updated_at": "2026-06-14T05:22:13Z",
-    "pass": 60,
-    "fail": 0,
-    "total": 60
+    "path": "history/2026/08/03/excimer-1.2.7-30781543347.json",
+    "version": "1.2.7",
+    "updated_at": "2026-08-03T04:26:19Z",
+    "pass": 116,
+    "fail": 9,
+    "total": 125
   },
   "fastcsv": {
     "path": "history/2026/02/14/fastcsv-0.0.2-21997971008.json",
