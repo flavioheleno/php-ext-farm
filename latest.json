@@ -528,9 +528,9 @@
     "total": 145
   },
   "ip2proxy": {
-    "path": "history/2026/08/02/ip2proxy-3.2.0-30734032313.json",
+    "path": "history/2026/08/09/ip2proxy-3.2.0-31292806757.json",
     "version": "3.2.0",
-    "updated_at": "2026-08-02T06:09:06Z",
+    "updated_at": "2026-08-09T05:57:13Z",
     "pass": 0,
     "fail": 60,
     "total": 60
