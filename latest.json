@@ -552,12 +552,12 @@
     "total": 145
   },
   "yar": {
-    "path": "history/2026/02/14/yar-2.3.4-21998106350.json",
-    "version": "2.3.4",
-    "updated_at": "2026-02-14T09:16:43Z",
-    "pass": 115,
-    "fail": 30,
-    "total": 145
+    "path": "history/2026/08/17/yar-2.4.0-32003935587.json",
+    "version": "2.4.0",
+    "updated_at": "2026-08-17T07:10:14Z",
+    "pass": 87,
+    "fail": 38,
+    "total": 125
   },
   "dbus": {
     "path": "history/2026/02/14/dbus-0.4.1-21997960326.json",
