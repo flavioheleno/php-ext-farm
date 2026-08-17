@@ -624,9 +624,9 @@
     "total": 145
   },
   "zstd": {
-    "path": "history/2026/07/07/zstd-0.17.0-28832112244.json",
-    "version": "0.17.0",
-    "updated_at": "2026-07-07T00:20:09Z",
+    "path": "history/2026/08/17/zstd-0.18.0-32003938144.json",
+    "version": "0.18.0",
+    "updated_at": "2026-08-17T07:12:06Z",
     "pass": 121,
     "fail": 4,
     "total": 125
