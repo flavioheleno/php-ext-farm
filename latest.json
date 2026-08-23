@@ -288,9 +288,9 @@
     "total": 144
   },
   "crc_fast": {
-    "path": "history/2026/08/16/crc_fast-1.1.0-31923006661.json",
+    "path": "history/2026/08/23/crc_fast-1.1.0-32614132143.json",
     "version": "1.1.0",
-    "updated_at": "2026-08-16T05:12:38Z",
+    "updated_at": "2026-08-23T05:08:14Z",
     "pass": 0,
     "fail": 120,
     "total": 120
