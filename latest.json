@@ -312,9 +312,9 @@
     "total": 125
   },
   "gpio": {
-    "path": "history/2026/08/23/gpio-dev-32614132143.json",
+    "path": "history/2026/08/30/gpio-dev-33300046539.json",
     "version": "dev",
-    "updated_at": "2026-08-23T05:19:05Z",
+    "updated_at": "2026-08-30T10:07:01Z",
     "pass": 0,
     "fail": 95,
     "total": 95
