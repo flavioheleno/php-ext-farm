@@ -536,11 +536,11 @@
     "total": 60
   },
   "judy": {
-    "path": "history/2026/08/17/judy-2.4.2-31984933486.json",
-    "version": "2.4.2",
-    "updated_at": "2026-08-17T01:30:54Z",
-    "pass": 76,
-    "fail": 49,
+    "path": "history/2026/08/31/judy-2.7.1-33357548054.json",
+    "version": "2.7.1",
+    "updated_at": "2026-08-31T06:30:02Z",
+    "pass": 40,
+    "fail": 85,
     "total": 125
   },
   "translit": {
