@@ -832,12 +832,12 @@
     "total": 125
   },
   "yac": {
-    "path": "history/2026/02/14/yac-2.3.1-21998099209.json",
-    "version": "2.3.1",
-    "updated_at": "2026-02-14T09:15:38Z",
-    "pass": 116,
-    "fail": 29,
-    "total": 145
+    "path": "history/2026/08/31/yac-2.4.0-33449519546.json",
+    "version": "2.4.0",
+    "updated_at": "2026-08-31T23:19:32Z",
+    "pass": 121,
+    "fail": 4,
+    "total": 125
   },
   "grpc": {
     "path": "history/2026/07/26/grpc-1.82.1-30189440180.json",
