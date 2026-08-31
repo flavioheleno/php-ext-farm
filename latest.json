@@ -656,9 +656,9 @@
     "total": 145
   },
   "lz4": {
-    "path": "history/2026/08/03/lz4-0.7.0-30781545482.json",
-    "version": "0.7.0",
-    "updated_at": "2026-08-03T05:12:32Z",
+    "path": "history/2026/08/31/lz4-0.7.1-33357549782.json",
+    "version": "0.7.1",
+    "updated_at": "2026-08-31T06:29:49Z",
     "pass": 121,
     "fail": 4,
     "total": 125
