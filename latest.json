@@ -328,12 +328,12 @@
     "total": 14
   },
   "mysqlnd_ed25519": {
-    "path": "history/2026/02/14/mysqlnd_ed25519-1.0.2-21998019489.json",
+    "path": "history/2026/09/13/mysqlnd_ed25519-1.0.2-34744425271.json",
     "version": "1.0.2",
-    "updated_at": "2026-02-14T08:16:22Z",
-    "pass": 145,
+    "updated_at": "2026-09-13T10:10:43Z",
+    "pass": 5,
     "fail": 0,
-    "total": 145
+    "total": 5
   },
   "memprof": {
     "path": "history/2026/09/13/memprof-3.1.0-34744425271.json",
