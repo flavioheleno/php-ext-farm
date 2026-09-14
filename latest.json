@@ -712,12 +712,12 @@
     "total": 19
   },
   "maxminddb": {
-    "path": "history/2026/02/14/maxminddb-1.13.1-21998007543.json",
-    "version": "1.13.1",
-    "updated_at": "2026-02-14T08:04:34Z",
-    "pass": 145,
-    "fail": 0,
-    "total": 145
+    "path": "history/2026/09/14/maxminddb-1.14.0-34804733071.json",
+    "version": "1.14.0",
+    "updated_at": "2026-09-14T04:22:43Z",
+    "pass": 121,
+    "fail": 4,
+    "total": 125
   },
   "mcrypt": {
     "path": "history/2026/02/14/mcrypt-1.0.9-21998009509.json",
