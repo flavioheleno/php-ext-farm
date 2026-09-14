@@ -216,11 +216,11 @@
     "total": 125
   },
   "xdebug": {
-    "path": "history/2026/06/14/xdebug-3.5.3-27501766081.json",
-    "version": "3.5.3",
-    "updated_at": "2026-06-14T14:36:22Z",
-    "pass": 84,
-    "fail": 41,
+    "path": "history/2026/09/14/xdebug-3.6.0alpha1-34871103378.json",
+    "version": "3.6.0alpha1",
+    "updated_at": "2026-09-14T17:02:11Z",
+    "pass": 106,
+    "fail": 19,
     "total": 125
   },
   "bitset": {
