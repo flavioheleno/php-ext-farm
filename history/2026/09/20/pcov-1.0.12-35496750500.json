@@ -1,0 +1,53 @@
+[
+  {
+    "extension": "pcov",
+    "extension_version": "1.0.12",
+    "channel": "release",
+    "php_version": "8.3",
+    "platform": "alpine",
+    "platform_version": "3.21",
+    "arch": "amd64",
+    "status": "success",
+    "started_at": "2026-09-20T10:00:55Z",
+    "finished_at": "2026-09-20T10:01:09Z",
+    "workflow_run_id": 35496750500,
+    "run_attempt": 1,
+    "git_sha": "b9b4c17c9ddb645dc2552182d8813095f4d0cd9d",
+    "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/35496750500",
+    "asset_name": "pcov-1.0.12-php8.3-alpine-3.21-amd64.tar.gz"
+  },
+  {
+    "extension": "pcov",
+    "extension_version": "1.0.12",
+    "channel": "release",
+    "php_version": "next",
+    "platform": "alpine",
+    "platform_version": "3.21",
+    "arch": "amd64",
+    "status": "success",
+    "started_at": "2026-09-20T10:01:37Z",
+    "finished_at": "2026-09-20T10:01:49Z",
+    "workflow_run_id": 35496750500,
+    "run_attempt": 1,
+    "git_sha": "b9b4c17c9ddb645dc2552182d8813095f4d0cd9d",
+    "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/35496750500",
+    "asset_name": "pcov-1.0.12-phpnext-alpine-3.21-amd64.tar.gz"
+  },
+  {
+    "extension": "pcov",
+    "extension_version": "1.0.12",
+    "channel": "release",
+    "php_version": "8.4",
+    "platform": "alpine",
+    "platform_version": "3.21",
+    "arch": "arm64",
+    "status": "success",
+    "started_at": "2026-09-20T10:01:23Z",
+    "finished_at": "2026-09-20T10:01:37Z",
+    "workflow_run_id": 35496750500,
+    "run_attempt": 1,
+    "git_sha": "b9b4c17c9ddb645dc2552182d8813095f4d0cd9d",
+    "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/35496750500",
+    "asset_name": "pcov-1.0.12-php8.4-alpine-3.21-arm64.tar.gz"
+  }
+]
