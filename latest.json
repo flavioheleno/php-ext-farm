@@ -344,12 +344,12 @@
     "total": 3
   },
   "oci8": {
-    "path": "history/2026/02/14/oci8-3.4.1-21998023814.json",
+    "path": "history/2026/09/20/oci8-3.4.1-35496750500.json",
     "version": "3.4.1",
-    "updated_at": "2026-02-14T08:17:08Z",
+    "updated_at": "2026-09-20T10:30:20Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 2,
+    "total": 2
   },
   "oauth": {
     "path": "history/2026/06/22/oauth-2.0.13-27932666661.json",

@@ -1,0 +1,40 @@
+[
+  {
+    "extension": "oci8",
+    "extension_version": "3.4.1",
+    "channel": "release",
+    "php_version": "8.3",
+    "platform": "alpine",
+    "platform_version": "3.22",
+    "arch": "arm32v6",
+    "status": "failure",
+    "started_at": "2026-09-20T09:53:33Z",
+    "finished_at": "2026-09-20T09:53:44Z",
+    "workflow_run_id": 35496750500,
+    "run_attempt": 1,
+    "git_sha": "b9b4c17c9ddb645dc2552182d8813095f4d0cd9d",
+    "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/35496750500",
+    "asset_name": "oci8-3.4.1-php8.3-alpine-3.22-arm32v6.tar.gz",
+    "reason": "deps_missing",
+    "error": "Build dependencies missing or configure failed"
+  },
+  {
+    "extension": "oci8",
+    "extension_version": "3.4.1",
+    "channel": "release",
+    "php_version": "8.4",
+    "platform": "alpine",
+    "platform_version": "3.24",
+    "arch": "amd64",
+    "status": "failure",
+    "started_at": "2026-09-20T10:11:00Z",
+    "finished_at": "2026-09-20T10:11:11Z",
+    "workflow_run_id": 35496750500,
+    "run_attempt": 1,
+    "git_sha": "b9b4c17c9ddb645dc2552182d8813095f4d0cd9d",
+    "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/35496750500",
+    "asset_name": "oci8-3.4.1-php8.4-alpine-3.24-amd64.tar.gz",
+    "reason": "deps_missing",
+    "error": "Build dependencies missing or configure failed"
+  }
+]
