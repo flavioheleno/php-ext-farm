@@ -1,23 +1,23 @@
 {
   "8.2": {
-    "tag": "php-8.2.33",
+    "tag": "php-8.2.34",
     "branch": "PHP-8.2",
-    "sha256": "fbdeace9b38220436a4c8fd79b900df92878151db145e641750743a283b514c1"
+    "sha256": "5351330c54de240f54f7527c26ef292e239749e6fe11db0330acb5317e02bb39"
   },
   "8.3": {
-    "tag": "php-8.3.33",
+    "tag": "php-8.3.35",
     "branch": "PHP-8.3",
-    "sha256": "e293ed620cec74651bb4a071317892a478aa6840fab22db45c72d77cd42f9676"
+    "sha256": "ff4630fbbbd94359134b7d3c223db59329905bdc4f5a9ef93d257b48e358619a"
   },
   "8.4": {
-    "tag": "php-8.4.25",
+    "tag": "php-8.4.26",
     "branch": "PHP-8.4",
-    "sha256": "dc1ad8b4109898d9db49744450403874858c23efc685b1032a50bd1e83906848"
+    "sha256": "32a2de53862ad44ed4a5005244ce4f1b50c271e74dced215449a4443b40569f1"
   },
   "8.5": {
-    "tag": "php-8.5.10",
+    "tag": "php-8.5.11",
     "branch": "PHP-8.5",
-    "sha256": "6a8bebaa4d5a979a38db29a9373e9851f60c6b11f72172c585947e78f3081957"
+    "sha256": "d9be75c08e8c316f4c8f4194d8fbe1750a15f6a6d9d4e3fe72082abeeb800360"
   },
   "next": {
     "tag": null,
