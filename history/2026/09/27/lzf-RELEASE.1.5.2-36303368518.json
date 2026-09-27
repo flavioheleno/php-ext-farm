@@ -1,0 +1,40 @@
+[
+  {
+    "extension": "lzf",
+    "extension_version": "RELEASE.1.5.2",
+    "channel": "release",
+    "php_version": "8.4",
+    "platform": "alpine",
+    "platform_version": "3.23",
+    "arch": "arm32v6",
+    "status": "failure",
+    "started_at": "2026-09-27T09:48:06Z",
+    "finished_at": "2026-09-27T09:48:16Z",
+    "workflow_run_id": 36303368518,
+    "run_attempt": 1,
+    "git_sha": "67b7f034789fd3e9a78ac01794241889046201f5",
+    "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/36303368518",
+    "asset_name": "lzf-RELEASE.1.5.2-php8.4-alpine-3.23-arm32v6.tar.gz",
+    "reason": "compile_error",
+    "error": "Compilation failed"
+  },
+  {
+    "extension": "lzf",
+    "extension_version": "RELEASE.1.5.2",
+    "channel": "release",
+    "php_version": "8.2",
+    "platform": "alpine",
+    "platform_version": "3.22",
+    "arch": "arm32v7",
+    "status": "failure",
+    "started_at": "2026-09-27T09:51:42Z",
+    "finished_at": "2026-09-27T09:51:48Z",
+    "workflow_run_id": 36303368518,
+    "run_attempt": 1,
+    "git_sha": "67b7f034789fd3e9a78ac01794241889046201f5",
+    "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/36303368518",
+    "asset_name": "lzf-RELEASE.1.5.2-php8.2-alpine-3.22-arm32v7.tar.gz",
+    "reason": "compile_error",
+    "error": "Compilation failed"
+  }
+]
