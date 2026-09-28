@@ -784,11 +784,11 @@
     "total": 145
   },
   "swoole": {
-    "path": "history/2026/07/20/swoole-6.2.2-29745000607.json",
-    "version": "6.2.2",
-    "updated_at": "2026-07-20T13:22:11Z",
-    "pass": 56,
-    "fail": 69,
+    "path": "history/2026/09/28/swoole-6.2.3-36416218532.json",
+    "version": "6.2.3",
+    "updated_at": "2026-09-28T11:43:34Z",
+    "pass": 48,
+    "fail": 77,
     "total": 125
   },
   "timezonedb": {
