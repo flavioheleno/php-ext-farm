@@ -761,13 +761,15 @@
       "dependencies": {
         "alpine": {
           "build": [
-            "cmake"
+            "automake",
+            "libtool"
           ],
           "runtime": []
         },
         "debian": {
           "build": [
-            "cmake"
+            "automake",
+            "libtool"
           ],
           "runtime": []
         }
@@ -775,13 +777,14 @@
       "external_libs": [
         {
           "build_commands": [
-            "cmake .",
+            "autoreconf -i -v --force",
+            "./configure",
             "make -j$(nproc)",
             "make install"
           ],
           "name": "IP2Location_C",
-          "repo_url": "https://github.com/chrislim2888/IP2Location-C-Library",
-          "type": "cmake"
+          "repo_url": "https://github.com/ip2location/IP2Location-C-Library",
+          "type": "autotools"
         }
       ],
       "pecl_name": "ip2location",
