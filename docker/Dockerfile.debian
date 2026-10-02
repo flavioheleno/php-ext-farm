@@ -88,6 +88,7 @@ RUN case "${EXTENSION_VERSION}" in \
     EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
     mkdir -p /output/extension /output/libs && \
     cp "${EXT_DIR}/${EXTENSION_NAME}.so" /output/extension/ && \
+    strip --strip-unneeded "/output/extension/${EXTENSION_NAME}.so" && \
     if [ -n "${EXTERNAL_LIBS}" ]; then \
       echo "Copying external libraries..." && \
       find /usr/local/lib -name '*.so*' -type f -exec cp -P {} /output/libs/ \; 2>/dev/null || true && \
