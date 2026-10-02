@@ -26,7 +26,7 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 | decimal | [php-decimal/ext-decimal](https://github.com/php-decimal/ext-decimal) |
 | dio | [php/pecl-system-dio](https://github.com/php/pecl-system-dio) |
 | ds | [php-ds/ext-ds](https://github.com/php-ds/ext-ds) |
-| ev | [osmanov/pecl-ev](https://github.com/osmanov/pecl-ev) |
+| ev | [rosmanov/pecl-ev](https://github.com/rosmanov/pecl-ev) |
 | event | [osmanov/pecl-event](https://bitbucket.org/osmanov/pecl-event) |
 | excimer | [wikimedia/php-excimer](https://github.com/wikimedia/php-excimer) |
 | fastcsv | [csvtoolkit/FastCSV-ext](https://github.com/csvtoolkit/FastCSV-ext) |

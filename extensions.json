@@ -415,9 +415,10 @@
         }
       },
       "pecl_name": "ev",
-      "track_url": "https://github.com/osmanov/pecl-ev",
+      "track_url": "https://github.com/rosmanov/pecl-ev",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z"
+      "last_checked": "2026-09-29T00:15:25Z",
+      "latest_version": "1.2.4"
     },
     "event": {
       "dependencies": {
