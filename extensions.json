@@ -582,7 +582,9 @@
     "gpio": {
       "dependencies": {
         "alpine": {
-          "build": [],
+          "build": [
+            "coreutils"
+          ],
           "runtime": []
         },
         "debian": {
