@@ -932,7 +932,8 @@
       "track_url": "https://github.com/php/pecl-file_formats-lzf",
       "type": "pecl",
       "last_checked": "2026-09-28T04:28:25Z",
-      "latest_version": "RELEASE_1_5_2"
+      "latest_version": "1.7.0",
+      "pin_version": true
     },
     "mailparse": {
       "dependencies": {
