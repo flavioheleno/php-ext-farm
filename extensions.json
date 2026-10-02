@@ -255,24 +255,19 @@
       ],
       "dependencies": {
         "alpine": {
-          "build": [
-            "cargo",
-            "rust"
-          ],
+          "build": [],
           "runtime": []
         },
         "debian": {
-          "build": [
-            "cargo",
-            "rustc"
-          ],
+          "build": [],
           "runtime": []
         }
       },
       "external_libs": [
         {
           "build_commands": [
-            "cargo build --release --features=c-library",
+            "curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal",
+            "RUSTFLAGS='-C target-feature=-crt-static' \"$HOME/.cargo/bin/cargo\" build --release",
             "mkdir -p /usr/local/include /usr/local/lib",
             "cp target/release/libcrc_fast.so /usr/local/lib/ || cp target/release/libcrc_fast.dylib /usr/local/lib/ || true",
             "cp libcrc_fast.h /usr/local/include/"
