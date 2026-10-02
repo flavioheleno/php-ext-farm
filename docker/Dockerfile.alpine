@@ -83,7 +83,7 @@ RUN case "${EXTENSION_VERSION}" in \
     make install && \
     echo "${ZEND_EXTENSION:+zend_}extension=${EXTENSION_NAME}.so" > /usr/local/etc/php/conf.d/50-${EXTENSION_NAME}.ini && \
     php -m | grep -i "${EXTENSION_NAME}" && \
-    EXT_DIR=$(php -r "echo ini_get('extension_dir');") && \
+    EXT_DIR=$(php-config --extension-dir) && \
     mkdir -p /output/extension /output/libs && \
     cp "${EXT_DIR}/${EXTENSION_NAME}.so" /output/extension/ && \
     strip --strip-unneeded "/output/extension/${EXTENSION_NAME}.so" && \
