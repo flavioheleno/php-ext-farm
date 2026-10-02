@@ -493,7 +493,8 @@
       "track_url": "https://github.com/Danack/fnbind",
       "type": "git",
       "last_checked": "2026-09-21T10:29:16Z",
-      "latest_version": "4.0.0a6"
+      "latest_version": "dev",
+      "pin_version": true
     },
     "geospatial": {
       "dependencies": {
