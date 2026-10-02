@@ -108,46 +108,17 @@ jobs:
       - name: Test matrix generation logic
         run: |
           # Test the matrix generation from build.yml
-          MATRIX=$(jq -c -n --arg php_vers "8.3,8.4" \
+          # Matrix generation and exclusion rules live in scripts/exclusions.jq
+          MATRIX=$(jq -c -n -L scripts \
+                        --arg php_vers "8.3,8.4" \
                         --arg platforms "alpine" \
                         --arg archs "amd64" \
                         --arg ext "redis" \
                         --slurpfile php_versions php-versions.json \
                         --slurpfile os_versions os-versions.json \
-                        --slurpfile extensions extensions.json '
-            (if $php_vers == "all" then ($php_versions[0] | keys) else ($php_vers | split(",")) end) as $php_list |
-            (if $archs == "all" then $extensions[0].architectures else ($archs | split(",")) end) as $architectures |
-            (if $platforms == "all" then ["alpine", "debian"] else ($platforms | split(",")) end) as $platform_list |
-
-            def wildcard_match($pattern; $value):
-              ($pattern | gsub("\\."; "\\\\.") | gsub("\\*"; ".*")) as $re |
-              $value | test("^" + $re + "$");
-
-            def is_os_excluded($platform; $osv; $arch):
-              $os_versions[0][$platform].exclude // [] |
-              any(. as $excl |
-                wildcard_match($excl.version; $osv) and wildcard_match($excl.arch; $arch));
-
-            def is_ext_excluded($platform; $osv; $arch):
-              $extensions[0].extensions[$ext].exclude // [] |
-              any(. as $excl |
-                wildcard_match($excl.os; $platform) and
-                wildcard_match($excl.version; $osv) and
-                wildcard_match($excl.arch; $arch));
-
-            def is_excluded($platform; $osv; $arch):
-              is_os_excluded($platform; $osv; $arch) or is_ext_excluded($platform; $osv; $arch);
-
-            {include: [
-              if ($platform_list | index("alpine")) then
-                $os_versions[0].alpine.versions[] as $osv |
-                $php_list[] as $php |
-                $architectures[] as $arch |
-                select(is_excluded("alpine"; $osv; $arch) | not) |
-                {php_version: $php, platform: "alpine", platform_version: $osv, arch: $arch}
-              else empty end
-            ]}
-          ')
+                        --slurpfile extensions extensions.json \
+                        'include "exclusions";
+                         build_matrix($php_versions[0]; $os_versions[0]; $extensions[0]; $ext; $php_vers; $platforms; $archs)')
 
           COUNT=$(echo "$MATRIX" | jq '.include | length')
           echo "Generated $COUNT matrix entries"
