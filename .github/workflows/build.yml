@@ -102,6 +102,7 @@ jobs:
     name: Build ${{ inputs.extension }} ${{ needs.prepare.outputs.extension_version }} on PHP ${{ matrix.php_version }} ${{ matrix.platform }} ${{ matrix.platform_version }} (${{ matrix.arch }})
     needs: prepare
     runs-on: ${{ (matrix.arch == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm') }}
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       max-parallel: 60
