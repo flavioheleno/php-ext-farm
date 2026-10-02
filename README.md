@@ -445,6 +445,7 @@ The main configuration file defines:
   - `external_libs`: Optional array of external libraries to build (see below)
   - `configure_options`: Optional array of configure flags
   - `zend_extension`: Optional boolean, set to `true` for Zend extensions (e.g., xdebug) that require `zend_extension=` instead of `extension=` in php.ini
+  - `pin_version`: Optional boolean, set to `true` to stop `check-releases` from overwriting `latest_version` (for repos whose newest tag isn't buildable; `latest_version: "dev"` builds the default branch)
 
 ### os-versions.json
 

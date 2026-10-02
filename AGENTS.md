@@ -89,6 +89,7 @@ Central configuration for all extensions. Structure:
 - `dependencies`: Platform-specific build and runtime dependencies.
 - `configure_options`: Extra flags for `./configure`.
 - `zend_extension`: Set to `true` for Zend extensions (e.g. xdebug) so runtime config uses `zend_extension=` instead of `extension=`.
+- `pin_version`: Set to `true` so `check-releases.yml` leaves `latest_version` alone (newest upstream tag isn't buildable).
 - `build_path`: Subdirectory containing `config.m4` if not at root.
 - `external_libs`: Libraries that must be built from source.
 - `exclude`: Build combinations to skip. Wildcards (`arm32*`, `*`) are supported. Matching rules live in `scripts/exclusions.jq` and are shared by `scripts/check-exclusion.sh` and the workflow matrix generation, so platform- and extension-level excludes are filtered out of the matrix before any build is queued.
