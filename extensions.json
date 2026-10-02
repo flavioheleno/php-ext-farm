@@ -1062,15 +1062,20 @@
     "memprof": {
       "dependencies": {
         "alpine": {
-          "build": [],
-          "runtime": []
+          "build": [
+            "judy-dev",
+            "bsd-compat-headers"
+          ],
+          "runtime": [
+            "judy"
+          ]
         },
         "debian": {
           "build": [
             "libjudy-dev"
           ],
           "runtime": [
-            "libjudy1"
+            "libjudydebian1"
           ]
         }
       },
