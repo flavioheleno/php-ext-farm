@@ -1,23 +1,22 @@
 # Cleanup GHCR (`cleanup-ghcr.yml`)
 
-**Workflow file:** `.github/workflows/cleanup-ghcr.yml`
+**Workflow file:** [`.github/workflows/cleanup-ghcr.yml`](../.github/workflows/cleanup-ghcr.yml)
 
 ## Purpose
 Clean up GHCR packages by deleting:
 - ghost images
 - partial images
 
-Targets three nested GHCR package namespaces:
-- `<repo>/alpine`
-- `<repo>/debian`
-- `<repo>/php`
+Targets three packages under the repository owner. In this repository, the action's package names are `php-ext-farm/alpine`, `php-ext-farm/debian`, and `php-ext-farm/php`, corresponding to images under `ghcr.io/flavioheleno/php-ext-farm/`.
 
 ## Triggers
 - `schedule` (weekly Sunday 06:00 UTC)
 - `workflow_dispatch`
 
+There are no inputs or explicit concurrency group; overlapping cleanup runs are not serialized by this workflow.
+
 ## Permissions
-- `packages: write`
+The `cleanup` job grants `packages: write` and uses `GITHUB_TOKEN`. It runs on `ubuntu-slim`; there is no repository checkout or runner selector.
 
 ## Jobs
 ### `cleanup` (matrix)
@@ -36,3 +35,5 @@ gh workflow run cleanup-ghcr.yml
 
 ## Notes
 - This workflow affects container registry storage only; it does not touch git branches or releases.
+- The workflow configures ghost/partial-image cleanup, not an explicit age-based retention or extension-artifact pruning policy.
+- Per-architecture image tags and manifest availability should be diagnosed in the base-image workflows, not inferred from cleanup success.

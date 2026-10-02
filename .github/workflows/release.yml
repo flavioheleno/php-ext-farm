@@ -134,7 +134,11 @@ jobs:
           cat > release_notes.md << EOF
           # ${{ inputs.extension }} v${{ needs.check-release.outputs.clean_version }}
 
-          ## Supported Configurations
+          ## Configured Build Targets
+
+          These targets come from the repository configuration. Only successful builds
+          are attached as assets; excluded or failed combinations may be absent.
+          Check the attached archives for actual availability.
 
           ### PHP Versions
           $(jq -r 'keys | map("- PHP " + .) | join("\n")' php-versions.json)
@@ -149,17 +153,39 @@ jobs:
 
           ## Installation
 
-          Download the appropriate \`.tar.gz\` file for your PHP version and platform, then:
+          Choose an archive matching your PHP major/minor version, OS version, and
+          architecture. Archive names use the normalized extension version:
+
+          \`${{ inputs.extension }}-${{ needs.check-release.outputs.clean_version }}-php<php_version>-<platform>-<platform_version>-<arch>.tar.gz\`
+
+          From a repository checkout, with PHP, jq, curl or wget, and root/sudo access:
 
           \`\`\`bash
-          tar -xzf ${{ inputs.extension }}-<php_version>-<platform>-<platform_version>.tar.gz
-          cp ${{ inputs.extension }}.so \$(php -r "echo ini_get('extension_dir');")
-          echo "extension=${{ inputs.extension }}.so" >> \$(php --ini | grep "Loaded Configuration" | cut -d: -f2 | tr -d ' ')
+          ./scripts/install.sh "${{ inputs.extension }}" "${{ needs.check-release.outputs.clean_version }}"
           \`\`\`
 
-          ## Runtime Dependencies
+          The installer selects numeric PHP versions, not \`phpnext\` assets. Ubuntu
+          mappings are best-effort Debian compatibility. The farm builds non-thread-safe
+          PHP; verify that the asset matches your PHP ABI.
 
-          Check the \`metadata.json\` inside each archive for platform-specific runtime dependencies.
+          For manual installation, extract the matching archive and inspect:
+
+          \`\`\`bash
+          tar -xzf "${{ inputs.extension }}-${{ needs.check-release.outputs.clean_version }}-php<php_version>-<platform>-<platform_version>-<arch>.tar.gz"
+          jq '{pecl_name, runtime_deps, zend_extension, external_lib_files}' metadata.json
+          php --ini
+          \`\`\`
+
+          Install the space-separated packages in \`runtime_deps\` with apk or apt.
+          If \`libs/\` is present, install its files into \`/usr/local/lib\` and configure
+          the target system's library loader. Copy \`<pecl_name>.so\` to PHP's extension
+          directory and create an INI file in the existing scan directory shown by
+          \`php --ini\`. Use \`zend_extension=<pecl_name>.so\` when \`zend_extension\` is
+          true in metadata, otherwise \`extension=<pecl_name>.so\`.
+
+          Verify the loaded module with \`php --ri <module>\` and restart PHP-FPM/Apache
+          when applicable. See the [installation guide](https://github.com/${{ github.repository }}/blob/main/README.md#-installation)
+          for complete commands, dependency handling, and compatibility limits.
 
           ---
           Built on: $(date -u +"%Y-%m-%d %H:%M:%S UTC")

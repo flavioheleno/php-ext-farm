@@ -48,7 +48,7 @@ show_usage() {
     echo ""
     echo "Example:"
     echo "  $0 redis 6.3.0"
-    echo "  $0 imagick 3.7.0"
+    echo "  $0 imagick 3.8.1"
     echo ""
     echo "Supported extensions can be found in extensions.json"
     exit 1
@@ -116,7 +116,7 @@ detect_os() {
         case "${ID}" in
             alpine)
                 PLATFORM="alpine"
-                # Extract major.minor from VERSION_ID (e.g., 3.20.0 -> 3.20)
+                # Extract major.minor from VERSION_ID (e.g., 3.23.0 -> 3.23)
                 PLATFORM_VERSION=$(echo "${VERSION_ID}" | cut -d. -f1,2)
                 ;;
             debian)

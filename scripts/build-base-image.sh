@@ -3,7 +3,7 @@
 # Usage: ./build-base-image.sh <php_version> <platform> <platform_version> [arch] [--local]
 #
 # Examples:
-#   ./build-base-image.sh 8.3 alpine 3.20
+#   ./build-base-image.sh 8.3 alpine 3.23
 #   ./build-base-image.sh 8.3 debian bookworm amd64
 #   ./build-base-image.sh next alpine 3.21 arm64 --local
 
@@ -39,20 +39,22 @@ Build PHP base images locally.
 Arguments:
   php_version       PHP version (e.g., 8.3, 8.4, next)
   platform          Platform (alpine or debian)
-  platform_version  Platform version (e.g., 3.20, bookworm)
+  platform_version  Platform version (e.g., 3.23, bookworm)
   arch              Architecture (default: amd64, options: amd64, arm64, arm32v7, arm32v6)
   --local           Use local registry tag instead of GHCR
 
 Examples:
-  $0 8.3 alpine 3.20
+  $0 8.3 alpine 3.23
   $0 8.3 debian bookworm amd64
   $0 next alpine 3.21 --local
   $0 8.4 debian trixie arm64 --local
 
 Notes:
-  - Without --local: tags as ghcr.io/flavioheleno/php-ext-farm/php:8.3-alpine3.20
-  - With --local: tags as php-ext-farm/php:8.3-alpine3.20
-  - Local tags require modifying extension Dockerfiles to use local registry
+  - Without --local: loads ghcr.io/flavioheleno/php-ext-farm/php:8.3-alpine3.23-amd64
+  - With --local: loads php-ext-farm/php:8.3-alpine3.23-amd64
+  - Also creates an unsuffixed alias for the last architecture built; does not push
+  - Use scripts/build.sh --local for local PHP tags; no Dockerfile editing required
+  - PHP base builds still use the GHCR OS-image namespace
 EOF
     exit 1
 fi

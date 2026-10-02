@@ -3,7 +3,7 @@
 # Usage: ./local-test.sh <extension> <extension_version> <php_version> <platform> <platform_version> [arch]
 #
 # This script orchestrates building base images and extensions locally for testing.
-# It's designed to replicate the CI workflow in a local environment.
+# CI additionally packages artifacts and publishes reports; this script displays local output.
 
 set -euo pipefail
 
@@ -24,28 +24,33 @@ Local testing workflow that builds base images and extensions.
 
 Arguments:
   extension         Extension name (e.g., redis, imagick)
-  extension_version Extension version (e.g., 6.0.2)
+  extension_version Extension ref (e.g., 6.3.0, dev)
   php_version       PHP version (e.g., 8.3, 8.4, next)
   platform          Platform (alpine or debian)
-  platform_version  Platform version (e.g., 3.20, bookworm)
+  platform_version  Platform version (e.g., 3.23, bookworm)
   arch              Architecture (default: amd64)
 
 Examples:
-  # Test redis extension with PHP 8.3 on Alpine 3.20
-  $0 redis 6.0.2 8.3 alpine 3.20
+  # Test redis extension with PHP 8.3 on Alpine 3.23
+  $0 redis 6.3.0 8.3 alpine 3.23
 
   # Test imagick with PHP 8.4 on Debian bookworm for ARM64
-  $0 imagick 3.7.0 8.4 debian bookworm arm64
+  $0 imagick 3.8.1 8.4 debian bookworm arm64
 
   # Test with PHP next (bleeding edge)
-  $0 redis 6.0.2 next alpine 3.21
+  $0 redis 6.3.0 next alpine 3.23
 
 Workflow:
   1. Check if base image exists locally
   2. Build base image if needed (with --local flag)
   3. Build extension using local base image
-  4. Verify extension is loadable
-  5. Show output location
+  4. Display metadata and files (the Dockerfile checks module loading)
+  5. Show output location and installation pointers
+
+Notes:
+  - An existing base tag is not checked for architecture or source freshness
+  - Rebuild the PHP base image before switching architectures
+  - Reports use channel release; use build.sh directly for dev channel labels
 
 EOF
 }
@@ -147,10 +152,10 @@ echo "=========================================="
 echo ""
 echo "Extension binary: ${OUTPUT_DIR}/${EXTENSION}.so"
 echo ""
-echo "To install locally:"
-echo "  sudo cp ${OUTPUT_DIR}/${EXTENSION}.so \$(php -r 'echo ini_get(\"extension_dir\");')"
-echo "  echo \"extension=${EXTENSION}.so\" | sudo tee \$(php --ini | grep 'Scan for' | cut -d: -f2 | xargs)/99-${EXTENSION}.ini"
+echo "To install into a compatible PHP environment:"
+echo "  Review ${OUTPUT_DIR}/metadata.json for pecl_name, runtime_deps, and zend_extension."
+echo "  Follow README.md installation instructions, including libraries and the PHP INI scan directory."
 echo ""
-echo "To test:"
-echo "  php -m | grep -i ${EXTENSION}"
+echo "To verify after installation:"
+echo "  php --ri ${EXTENSION}"
 echo ""

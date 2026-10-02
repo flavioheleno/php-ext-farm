@@ -76,9 +76,9 @@ generate_skip_report() {
 
 if [[ -z "${EXTENSION}" || -z "${EXTENSION_VERSION}" || -z "${PHP_VERSION}" || -z "${PLATFORM}" || -z "${PLATFORM_VERSION}" ]]; then
     echo "Usage: $0 <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel] [--local]"
-    echo "Example: $0 redis 6.0.2 8.3 alpine 3.20 amd64 release"
-    echo "         $0 redis 6.0.2 8.3 alpine 3.20 arm64 dev"
-    echo "         $0 redis 6.0.2 8.3 alpine 3.20 --local"
+    echo "Example: $0 redis 6.3.0 8.3 alpine 3.23 amd64 release"
+    echo "         $0 redis dev 8.3 alpine 3.23 arm64 dev"
+    echo "         $0 redis 6.3.0 8.3 alpine 3.23 --local"
     echo ""
     echo "Flags:"
     echo "  --local   Use local base images (php-ext-farm/php:*) instead of GHCR"

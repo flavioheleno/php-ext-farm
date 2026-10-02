@@ -2,9 +2,13 @@
 
 PHP-Ext.com Build Farm
 
-Automated build system for pre-compiled PHP extensions across multiple PHP versions and platforms.
+Automated build system for pre-compiled PHP extensions across multiple PHP versions, Linux distributions, and CPU architectures. Builds produce `.tar.gz` archives containing the extension binary, runtime dependency metadata, and any bundled external libraries.
+
+Start with [installation](#-installation), [local building](#-local-building), or the [documentation index](#-documentation). The authoritative configuration is in [extensions.json](extensions.json), [php-versions.json](php-versions.json), and [os-versions.json](os-versions.json).
 
 ## 📦 Supported Extensions (106)
+
+These are configured build targets, not a guarantee that every extension builds on every configuration. Check the actual assets in [GitHub Releases](https://github.com/flavioheleno/php-ext-farm/releases) and the [build dataset](#-build-reports--dataset) for availability and failures.
 
 | Extension | Repository |
 |-----------|------------|
@@ -118,11 +122,16 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 ## 🎯 Supported Configurations
 
 ### PHP Versions
-- PHP 8.2
-- PHP 8.3
-- PHP 8.4
-- PHP 8.5
-- **PHP next** (bleeding-edge from master branch)
+
+| Target | Configured source |
+|--------|-------------------|
+| PHP 8.2 | `php-8.2.34` |
+| PHP 8.3 | `php-8.3.35` |
+| PHP 8.4 | `php-8.4.26` |
+| PHP 8.5 | `php-8.5.11` |
+| PHP next | `php/php-src` branch `master` |
+
+Tagged PHP sources are downloaded as `.tar.xz` files and verified against the SHA256 in `php-versions.json`. `next` is compiled from git. Patch versions change as the configuration is updated; existing image tags are not necessarily rebuilt automatically.
 
 ### Platforms
 - **Alpine Linux**: 3.21, 3.22, 3.23, 3.24
@@ -134,84 +143,135 @@ Automated build system for pre-compiled PHP extensions across multiple PHP versi
 - arm32v6 (ARM 32-bit v6)
 - arm32v7 (ARM 32-bit v7)
 
-### Build Channels
-- **release** - Stable tagged releases
-- **dev** - Development builds (see the Dev Channel section below)
+All three configured Debian versions exclude `arm32v6`. Alpine currently has no platform exclusions. With five PHP targets, four Alpine versions, and three Debian versions, the full extension matrix currently contains **125 combinations** before any extension-specific exclusions: 80 Alpine and 45 Debian builds.
 
-> **Note:** `extension_version` is treated as a git ref/tag. The special version `dev` builds from the default branch (main/master).
+### Build Channels
+- **release** - Builds from an upstream tag or branch. This is not a stability guarantee: tracked tags can include prereleases.
+- **dev** - Builds from the extension's default branch, optionally pinned to a commit (see the Dev Channel section below).
+
+`build.yml` infers the channel from the version: `dev` and `dev-*` use `dev`; other values use `release`. For local builds, pass the channel explicitly when needed; `build.sh` defaults to `release`.
+
+> **Version handling:** Ordinary versions are git tags/branches, `dev` clones the default branch, and `dev-<sha>` clones the default branch then checks out the SHA. The checkout is shallow, so an older commit that is not present in the clone can fail. Version normalization changes artifact and release names, not the upstream ref used to build.
 
 ## 📥 Installation
 
 ### Automatic Installation (Recommended)
 
-Use the install script to automatically download and install extensions:
+From a repository checkout, use the install script to download an existing release asset and install it into the PHP installation on your `PATH`:
+
+```text
+./scripts/install.sh <extension> <version>
+```
 
 ```bash
-./scripts/install.sh <extension> <version>
-
 # Examples:
 ./scripts/install.sh redis 6.3.0
-./scripts/install.sh imagick 3.7.0
-./scripts/install.sh xdebug 3.3.1
+./scripts/install.sh imagick 3.8.1
+./scripts/install.sh xdebug 3.6.0alpha1  # Example prerelease; confirm asset availability
 ```
 
 The script will:
-1. Detect your PHP version, OS (Alpine/Debian/Ubuntu), and architecture (amd64/arm64/arm32v6/arm32v7)
+1. Detect your numeric PHP major/minor version, OS, and architecture
 2. Download the appropriate pre-built extension from GitHub releases
 3. Install runtime dependencies from `metadata.json`
 4. Copy the extension to PHP's extension directory
 5. Enable it via a config file in `conf.d`
-6. Verify the installation
+6. Check whether the extension appears in `php -m`
 
-**Requirements:** `jq`, `curl` or `wget`, and `php` in PATH.
+**Requirements:** `php`, `jq`, `curl` or `wget`, `tar`, standard Unix utilities, and root access or `sudo`. PHP must have an existing INI scan directory reported by `php --ini`. The installer does not overwrite an existing `50-<pecl_name>.ini`.
+
+**Compatibility limits:**
+- Choose a release with an asset matching your PHP version, distribution version, and architecture. The farm's PHP builds are non-thread-safe (NTS); ZTS/debug builds or a different PHP ABI are not validated by the installer.
+- Ubuntu is mapped to Debian assets: 20.04-21.10 to `bullseye`, and listed releases from 22.04 through 26.04 to `bookworm`. Unknown Debian-based systems also fall back to `bookworm`; these mappings are best-effort, not separately built or guaranteed Ubuntu support. Unknown Alpine-based systems fall back to the older `3.20` target, which is no longer in the current matrix.
+- The installer does **not** map development PHP to `phpnext` assets. Install those manually using a matching PHP build.
+- A downloaded `install.sh` can run without the checkout, but then assumes the extension key is its `pecl_name`. Download `normalize-version.sh` beside it to accept raw upstream tags; otherwise supply the already-normalized release version.
+- Runtime package installation failures and an unloaded extension are reported as warnings in some paths. A zero exit status alone does not prove the module loaded. Check `php --ri <module>` and restart PHP-FPM/Apache as appropriate; their configuration may differ from CLI PHP.
 
 ### Manual Installation
 
-1. Go to [Releases](../../releases)
-2. Download the appropriate `.tar.gz` for your PHP version and platform
-3. Extract and install:
+1. Go to [Releases](https://github.com/flavioheleno/php-ext-farm/releases) and choose the exact PHP/OS/architecture asset.
+2. Extract into a dedicated directory and inspect `metadata.json`.
+3. Install the packages in `.runtime_deps` using the target system's package manager.
+4. Install bundled libraries, copy the module, and enable it in the scan directory reported by `php --ini`.
 
 ```bash
-# Extract the archive
-tar -xzf redis-6.3.0-php8.3-alpine-3.20-amd64.tar.gz
+mkdir -p redis-install
+tar -xzf redis-6.3.0-php8.3-alpine-3.23-amd64.tar.gz -C redis-install
+cd redis-install
+jq '{pecl_name, php_version, platform, platform_version, arch, runtime_deps, zend_extension}' metadata.json
 
-# If the extension has external libraries (check if libs/ directory exists)
-if [ -d libs ]; then
-    sudo cp libs/* /usr/local/lib/
-    sudo ldconfig  # Update library cache (Debian/Ubuntu) or /etc/ld.so.cache
+# Runtime packages for this Redis/Alpine example
+sudo apk add --no-cache lz4-libs zstd-libs
+
+# Install bundled libraries, if present
+if [ -d libs ] && [ -n "$(ls -A libs)" ]; then
+    sudo mkdir -p /usr/local/lib
+    sudo cp -P libs/* /usr/local/lib/
+    if command -v ldconfig >/dev/null 2>&1; then
+        sudo ldconfig
+    fi
 fi
 
-# Copy extension to PHP extension directory
-cp redis.so $(php -r "echo ini_get('extension_dir');")
+# Use the binary name and loading directive from metadata
+PECL_NAME=$(jq -r '.pecl_name' metadata.json)
+INI_KEY=$(jq -r 'if .zend_extension then "zend_extension" else "extension" end' metadata.json)
+sudo cp "${PECL_NAME}.so" "$(php -r 'echo ini_get("extension_dir");')/"
 
-# Enable the extension (using conf.d)
-echo "extension=redis.so" | sudo tee /etc/php/conf.d/50-redis.ini
+# Inspect php --ini first; this path is for the official PHP Docker images
+php --ini
+CONF_D_DIR=/usr/local/etc/php/conf.d
+printf '%s=%s.so\n' "${INI_KEY}" "${PECL_NAME}" | sudo tee "${CONF_D_DIR}/50-${PECL_NAME}.ini"
 
-# Verify
-php -m | grep redis
+php --ri "${PECL_NAME}"
 ```
+
+Change `CONF_D_DIR` for your PHP installation and inspect any existing INI file before replacing it. Use `zend_extension=` for Zend extensions such as Xdebug, not `extension=`. Do not copy a binary into a different OS, architecture, or PHP build just because its filename matches.
+
+The manual commands assume `sudo`; omit it when running as root.
 
 ### External Libraries
 
-Some extensions (like `crc_fast`) depend on external libraries. These are automatically included in the `libs/` directory within the archive. The install script handles this automatically, but for manual installation:
+`crc_fast`, `hdrhistogram`, `ip2location`, `ip2proxy`, and `xdiff` currently define source-built external libraries. Build output can include a `libs/` directory; the installer copies its files to `/usr/local/lib` and runs `ldconfig` when available.
 
-1. Check if `libs/` directory exists in the extracted archive
-2. Copy all files to `/usr/local/lib/`: `sudo cp libs/* /usr/local/lib/`
-3. Update the library cache: `sudo ldconfig` (Linux) or set `LD_LIBRARY_PATH`
+On Alpine/musl, `ldconfig` is not the usual loader configuration mechanism. Ensure `/usr/local/lib` is in the loader search path; if needed, configure `LD_LIBRARY_PATH` for the PHP process. Inspect `ldd <extension.so>` when a module cannot find a shared library.
 
 ### Runtime Dependencies
 
-Each archive contains a `metadata.json` with runtime dependencies. Install them before using the extension:
+Each successful build contains a `metadata.json`. Its `runtime_deps` is a **space-separated string**, not a JSON array. Install these packages before loading the module; they are distinct from bundled files in `libs/`.
 
 **Alpine:**
 ```bash
-apk add --no-cache <runtime_deps>
+apk add --no-cache lz4-libs zstd-libs  # Redis example; use your archive's metadata
 ```
 
 **Debian:**
 ```bash
-apt-get install -y <runtime_deps>
+apt-get update
+apt-get install -y --no-install-recommends liblz4-1 libzstd1  # Redis example
 ```
+
+Dependencies can vary by OS version. For example, `zip` uses `libzip5` on Debian trixie instead of the default `libzip4`; builds resolve `version_overrides` before writing metadata.
+
+An illustrative Redis archive contains metadata in this shape:
+
+```json
+{
+  "extension": "redis",
+  "pecl_name": "redis",
+  "extension_version": "6.3.0",
+  "php_version": "8.3",
+  "platform": "alpine",
+  "platform_version": "3.23",
+  "arch": "amd64",
+  "build_date": "2026-10-02T16:00:00Z",
+  "runtime_deps": "lz4-libs zstd-libs",
+  "zend_extension": false,
+  "external_libs": [],
+  "external_lib_files": null
+}
+```
+
+`extension_version` here is the raw build ref. `external_libs` contains the configured library definitions; `external_lib_files` lists extracted library filenames, or is `null` when none were found. Build status/channel are recorded in reports, not this metadata.
 
 ### Using in a Dockerfile
 
@@ -219,20 +279,21 @@ Install pre-built extensions directly in your Docker images:
 
 **Alpine:**
 ```dockerfile
-FROM php:8.3-cli-alpine3.20
+FROM php:8.3-cli-alpine3.23
 
 # Install dependencies for the install script
 RUN apk add --no-cache jq curl
 
-# Download and run the install script
+# Download the installer and its optional version-normalization helper
 RUN curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
-    && chmod +x /tmp/install.sh \
+    && curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/main/scripts/normalize-version.sh -o /tmp/normalize-version.sh \
+    && chmod +x /tmp/install.sh /tmp/normalize-version.sh \
     && /tmp/install.sh redis 6.3.0 \
-    && /tmp/install.sh imagick 3.7.0 \
-    && rm /tmp/install.sh
+    && /tmp/install.sh imagick 3.8.1 \
+    && rm /tmp/install.sh /tmp/normalize-version.sh
 
 # Verify extensions are loaded
-RUN php -m | grep -E "redis|imagick"
+RUN php --ri redis && php --ri imagick
 ```
 
 **Debian:**
@@ -243,37 +304,39 @@ FROM php:8.3-cli-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends jq curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and run the install script
+# Download and run the install script with normalized release versions
 RUN curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
     && chmod +x /tmp/install.sh \
     && /tmp/install.sh redis 6.3.0 \
-    && /tmp/install.sh xdebug 3.3.1 \
+    && /tmp/install.sh imagick 3.8.1 \
     && rm /tmp/install.sh
 
 # Verify extensions are loaded
-RUN php -m | grep -E "redis|xdebug"
+RUN php --ri redis && php --ri imagick
 ```
 
 **Multi-stage build (minimal final image):**
 ```dockerfile
-FROM php:8.3-cli-alpine3.20 AS builder
+FROM php:8.3-cli-alpine3.23 AS builder
 
 RUN apk add --no-cache jq curl
 RUN curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/main/scripts/install.sh -o /tmp/install.sh \
     && chmod +x /tmp/install.sh \
     && /tmp/install.sh redis 6.3.0
 
-FROM php:8.3-cli-alpine3.20
+FROM php:8.3-cli-alpine3.23
 
 # Copy extension and config from builder
 COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=builder /usr/local/etc/php/conf.d/50-redis.ini /usr/local/etc/php/conf.d/
 
-# Install only runtime dependencies (no jq/curl needed)
-RUN apk add --no-cache <runtime_deps_if_any>
+# Redis runtime packages from metadata (no jq/curl needed in the final image)
+RUN apk add --no-cache lz4-libs zstd-libs
 
-RUN php -m | grep redis
+RUN php --ri redis
 ```
+
+Keep both stages on the same PHP/OS/architecture. For extensions with bundled libraries, also copy the installed library files into the final image and configure its loader. Check release asset availability before choosing a base image tag.
 
 ## 🚀 Advanced Features
 
@@ -282,12 +345,9 @@ RUN php -m | grep redis
 Build extensions against the upcoming PHP version from the master branch of php/php-src:
 
 ```bash
-# Install extension for PHP next (auto-detects if running PHP next)
-./scripts/install.sh redis 6.3.0
-
 # Build locally
-./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 amd64
-./scripts/build.sh redis 6.0.2 next alpine 3.20 amd64  # ← PHP next
+./scripts/build.sh redis 6.3.0 8.3 alpine 3.23 amd64
+./scripts/build.sh redis 6.3.0 next alpine 3.23 amd64
 ```
 
 **Use cases:**
@@ -301,9 +361,11 @@ Build extensions against the upcoming PHP version from the master branch of php/
 - Base images are stored in `ghcr.io/flavioheleno/php-ext-farm/php`
 - PHP "next" tracks the master branch of php/php-src
 - Reported as `php_version: "next"` in build reports
-- Artifacts: `redis-6.3.0-phpnext-alpine-3.20-amd64.tar.gz`
+- Artifacts: `redis-6.3.0-phpnext-alpine-3.23-amd64.tar.gz`
+- `install.sh` only selects numeric PHP versions; `phpnext` assets require manual installation
+- A `next` image is a snapshot of master at build time, not a live PHP checkout
 
-### Dev Channel - Nightly/Weekly Builds
+### Dev Channel - Default-Branch Builds
 
 Build from the extension's default branch using the special version `dev`:
 
@@ -314,45 +376,58 @@ gh workflow run build.yml \
   -f extension_version=dev
 ```
 
-**Automatic dev builds:**
-- `build-all.yml` can attempt dev builds using `dev-{7-char-sha}` identifiers
-- Artifacts are uploaded but no GitHub releases are created
+**Batch dev builds:**
+- A manual `build-all.yml` run defaults `build_dev` to `true`
+- It discovers default-branch HEADs for **GitHub repositories only** and uses `dev-{7-char-sha}` identifiers
+- Those builds upload artifacts and reports without invoking `release.yml`
+- Scheduled runs currently skip dev builds because the `inputs.build_dev != false` gate sees no dispatch input
 
-**Important:** `dev-<sha>` values are treated as git refs (tags/branches). The workflows do not currently checkout arbitrary SHAs, so `dev-<sha>` must exist upstream to work.
+`build.sh` extracts the SHA suffix into the `COMMIT_SHA` build argument. Both extension Dockerfiles clone the default branch and run `git checkout` when that argument is set. Because the clone has `--depth 1`, a commit that has fallen behind HEAD may not be available; use `dev` for the current branch tip or a reachable HEAD SHA.
 
 ### Combining PHP next + Dev Channel
 
 Test bleeding-edge extension code against bleeding-edge PHP:
 
 ```bash
-# Build dev extension version on PHP next
-./scripts/build.sh redis dev-abc1234 next alpine 3.20 amd64 dev
-
-# Artifact: redis-dev-abc1234-phpnext-alpine-3.20-amd64.tar.gz
-# Report: {php_version: "next", channel: "dev", ...}
+# Discover the current default-branch commit, then build it on PHP next
+DEFAULT_BRANCH=$(gh api repos/phpredis/phpredis --jq '.default_branch')
+SHA=$(gh api "repos/phpredis/phpredis/commits/${DEFAULT_BRANCH}" --jq '.sha')
+./scripts/build.sh redis "dev-${SHA}" next alpine 3.23 amd64 dev
 ```
+
+The output/report version is `dev-<sha>` and the artifact target is `phpnext`. GitHub API access requires an authenticated `gh` CLI.
 
 ## 🔧 Local Building
 
 ### Prerequisites
-- Docker
+- Docker daemon with Buildx support
 - jq
 - bash
+- GNU `find` for external-library metadata collection
 
 ### Build a single extension
 
-```bash
+```text
 ./scripts/build.sh <extension> <extension_version> <php_version> <platform> <platform_version> [arch] [channel] [--local]
+```
 
+```bash
 # Examples:
-./scripts/build.sh redis 6.0.2 8.3 alpine 3.20
-./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 arm64
-./scripts/build.sh imagick 3.7.0 8.4 debian bookworm amd64
-./scripts/build.sh redis 6.0.2 8.3 alpine 3.20 --local  # Use local base images
+./scripts/build.sh redis 6.3.0 8.3 alpine 3.23
+./scripts/build.sh redis 6.3.0 8.3 alpine 3.23 arm64
+./scripts/build.sh imagick 3.8.1 8.4 debian bookworm amd64
+
+# Create the local PHP image before using --local
+./scripts/build-base-image.sh 8.3 alpine 3.23 amd64 --local
+./scripts/build.sh redis 6.3.0 8.3 alpine 3.23 amd64 release --local
 
 # Build development version (for extensions without releases)
-./scripts/build.sh corefill dev 8.3 alpine 3.20
+./scripts/build.sh corefill dev 8.3 alpine 3.23 amd64 dev
 ```
+
+`build.sh` writes unpackaged files to `output/<extension>/<php_version>/<platform>/<platform_version>/<arch>/` and JSON reports to `reports/<extension>/<raw_version>/php<php_version>/<platform>-<platform_version>/<arch>.json`. CI creates the `.tar.gz` archives; a local build does not publish a release or update the dataset.
+
+`--local` selects `php-ext-farm/php:*` images, but building those PHP images still uses GHCR OS base images. Select a Buildx builder that can resolve your local Docker image store. See [Local Testing](docs/LOCAL_TESTING.md) for architecture checks, cache behavior, and load verification.
 
 > **Note:** When using GitHub workflows, if an extension has no `latest_version` in `extensions.json` but has a `last_checked` timestamp, the build system will automatically use version `"dev"` to build from the default branch.
 
@@ -362,6 +437,8 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 ./scripts/check-releases.sh
 ```
 
+This is a read-only, network-dependent JSON report for all configured extensions. It does not update `extensions.json` or dispatch builds. The scheduled [Check Releases workflow](docs/CHECK_RELEASES.md) is a separate implementation that performs those mutations.
+
 ## 📁 Repository Structure
 
 ```
@@ -369,7 +446,7 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 ├── .github/
 │   ├── workflows/
 │   │   ├── build.yml               # Build single extension
-│   │   ├── build-all.yml           # Weekly full rebuild of all extensions
+│   │   ├── build-all.yml           # Weekly per-extension release dispatches
 │   │   ├── build-os-base-images.yml   # Build OS base images (Alpine/Debian)
 │   │   ├── build-php-base-images.yml  # Build PHP base images from source
 │   │   ├── check-releases.yml      # Check for new extension releases
@@ -399,13 +476,17 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 │   ├── check-exclusion.sh         # Check if build should be excluded
 │   ├── exclusions.jq              # Shared exclusion rules + matrix generation
 │   ├── normalize-version.sh       # Version string normalization
+│   ├── release-all.sh             # Dispatch forced releases for every extension
 │   ├── validate-config.sh         # Validate JSON configuration
 │   ├── test-check-exclusion.sh    # Unit tests for check-exclusion
 │   ├── test-normalize-version.sh  # Unit tests for normalize-version
+│   ├── test-build-smoke.sh        # Docker-free build/install regression checks
 │   └── test-version-tracking.sh   # Unit tests for version tracking
 ├── extensions.json                # Extension configuration
 ├── php-versions.json              # PHP version/tag/branch mapping
 ├── os-versions.json               # OS version configuration
+├── docs/                          # Workflow and contributor guides
+├── AGENTS.md                      # Guidance for coding agents
 └── README.md
 ```
 
@@ -434,19 +515,42 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 
 The main configuration file defines:
 
-- `base_image_registry`: Container registry for custom PHP base images
+- `base_image_registry`: PHP image repository recorded in configuration. It is currently informational: `build.sh` does not read it and uses the Dockerfiles' default registry, or `php-ext-farm` with `--local`.
 - `architectures`: List of architectures to build for (amd64, arm64, arm32v6, arm32v7)
 - `extensions`: Extension definitions including:
-  - `type`: Extension type (pecl, git, etc.)
-  - `pecl_name`: PECL package name
+  - `type`: `pecl` or `git` classification. Both currently build by cloning `track_url` and running `phpize`; there is no PECL tarball build path.
+  - `pecl_name`: Binary/configuration name used for `<pecl_name>.so` and its INI file
   - `track_url`: GitHub/GitLab/Bitbucket repository to track releases
   - `dependencies`: Build and runtime dependencies per platform
+  - `dependencies.<platform>.version_overrides`: Optional per-OS-version replacements for build/runtime package lists
+  - `build_path`: Optional directory within the source checkout containing `config.m4`
   - `exclude`: Optional array of extension-level exclusion rules (see below)
   - `external_libs`: Optional array of external libraries to build (see below)
   - `configure_options`: Optional array of configure flags
   - `zend_extension`: Optional boolean, set to `true` for Zend extensions (e.g., xdebug) that require `zend_extension=` instead of `extension=` in php.ini
-  - `pin_version`: Optional boolean, set to `true` to stop `check-releases` from overwriting `latest_version` (for repos whose newest tag isn't buildable; `latest_version: "dev"` builds the default branch)
-  - `disabled`: Optional string explaining why the extension is excluded from scheduled builds and release tracking (manual `release.yml`/`build.yml` runs still work)
+  - `latest_version`: Cached, unmodified upstream tag/ref used when a workflow version is omitted
+  - `last_checked`: Release-check timestamp; also permits the `dev` fallback when no release is known
+  - `notes`: Contributor information; not consumed by the build script
+  - `pin_version`: Optional boolean, set to `true` to stop `check-releases.yml` from overwriting `latest_version` (for repositories whose newest tag isn't buildable; `latest_version: "dev"` then builds the default branch)
+  - `disabled`: Optional string explaining why the extension is skipped by `build-all.yml` and `check-releases.yml`; manual `release.yml`/`build.yml` runs still work. Currently 7 of 106 extensions are disabled (unbuilt extension dependencies, unpackaged or non-redistributable libraries, or ZTS-only)
+
+`BASE_IMAGE_REGISTRY` is a Docker build argument for the namespace **without** `/php`; the Dockerfiles append `/php` in `FROM`. Do not pass the configuration's full PHP image repository as that argument.
+
+Architecture lists drive matrices, but Docker/uname mappings are also hardcoded in the build/base-image/installer scripts and base-image workflows. Adding an architecture requires updating those mappings and runner/emulation routing, not just the JSON list.
+
+Dependency overrides are resolved independently for `build` and `runtime`. An override array replaces the default array, including when it is empty; an omitted field inherits the default. For example, the current `.extensions.zip.dependencies.debian` is:
+
+```json
+{
+  "build": ["libzip-dev"],
+  "runtime": ["libzip4"],
+  "version_overrides": {
+    "trixie": {
+      "runtime": ["libzip5"]
+    }
+  }
+}
+```
 
 ### os-versions.json
 
@@ -471,19 +575,13 @@ Defines supported OS versions and platform-level exclusions:
 
 ### php-versions.json
 
-Maps PHP versions to their git tags and branches:
+Maps PHP target names to tags, branches, and tarball SHA256 checksums. Inspect the current source selection with:
 
-```json
-{
-  "8.2": {"tag": "php-8.2.30", "branch": "PHP-8.2", "sha256": "..."},
-  "8.3": {"tag": "php-8.3.30", "branch": "PHP-8.3", "sha256": "..."},
-  "8.4": {"tag": "php-8.4.17", "branch": "PHP-8.4", "sha256": "..."},
-  "8.5": {"tag": "php-8.5.2", "branch": "PHP-8.5", "sha256": "..."},
-  "next": {"tag": null, "branch": "master"}
-}
+```bash
+jq -r 'to_entries[] | "\(.key): \(.value.tag // .value.branch)"' php-versions.json
 ```
 
-This file is automatically updated by `check-php-releases.yml` when new PHP versions are released.
+`check-php-releases.yml` updates only existing numeric PHP entries with a configured branch. It does not add new PHP minor versions or update `next`. Tagged entries require the checksum of the `.tar.xz` artifact. A null tag selects a git branch instead.
 
 ### Exclusion Rules
 
@@ -491,15 +589,15 @@ The build system supports excluding specific OS/architecture combinations that a
 
 #### Platform-Level Exclusions (os-versions.json)
 
-Defined in `os-versions.json`, these apply to all extensions built on that platform:
+Defined in `os-versions.json`, these apply to all extensions built on that platform. This is an illustrative example, not the current platform configuration:
 
 ```json
 {
   "alpine": {
-    "versions": ["3.19", "3.20", "3.21"],
+    "versions": ["3.21", "3.22", "3.23"],
     "exclude": [
-      {"version": "3.19", "arch": "arm32*"},
-      {"version": "3.20", "arch": "arm32v6"}
+      {"version": "3.21", "arch": "arm32*"},
+      {"version": "3.22", "arch": "arm32v6"}
     ]
   },
   "debian": {
@@ -515,21 +613,14 @@ Defined in `os-versions.json`, these apply to all extensions built on that platf
 
 #### Extension-Level Exclusions (extensions.json)
 
-Defined within each extension, these override or supplement platform exclusions:
+Defined within each extension, these add exclusions to the platform rules; they cannot re-enable a platform-excluded combination. For example, add this field to an extension definition:
 
 ```json
 {
-  "extensions": {
-    "myext": {
-      "type": "pecl",
-      "pecl_name": "myext",
-      "exclude": [
-        {"os": "alpine", "version": "3.21", "arch": "amd64"},
-        {"os": "*", "version": "bullseye", "arch": "arm64"}
-      ],
-      "dependencies": { ... }
-    }
-  }
+  "exclude": [
+    {"os": "alpine", "version": "3.21", "arch": "amd64"},
+    {"os": "*", "version": "bullseye", "arch": "arm64"}
+  ]
 }
 ```
 
@@ -539,8 +630,10 @@ Defined within each extension, these override or supplement platform exclusions:
 
 - `*` matches anything (e.g., `"os": "*"` matches all OSes)
 - `arm32*` matches `arm32v6` and `arm32v7`
-- `3.*` matches `3.19`, `3.20`, `3.21`, etc.
+- `3.*` matches `3.21`, `3.22`, `3.23`, etc.
 - Literal values match exactly
+
+Extension matrix generation and per-build checks share `scripts/exclusions.jq`. Both platform- and extension-level rules are applied before jobs are queued, so excluded combinations normally produce no CI job or report. The OS/PHP base-image workflows still use their own **exact-match** platform filters; wildcard rules do not have identical behavior there.
 
 #### Validation
 
@@ -550,12 +643,20 @@ Run the validation script to check your configuration:
 ./scripts/validate-config.sh
 ```
 
-This checks for:
-- Valid JSON syntax
-- Platform excludes don't have `os` field
-- Extension excludes have required `os` field
-- Version/architecture references exist
-- No conflicting rules
+This validates JSON syntax for the extension/OS files and required exclusion fields (`version`, `arch`, and extension-level `os`). It rejects a platform-level `os` field and warns about unknown literal platform versions or architectures. It is not a full schema validator, does not validate `php-versions.json`, and does not detect conflicting rules or package availability.
+
+To run the local configuration and Docker-free regression checks:
+
+```bash
+jq empty extensions.json php-versions.json os-versions.json
+./scripts/validate-config.sh
+./scripts/test-check-exclusion.sh
+./scripts/test-normalize-version.sh
+./scripts/test-version-tracking.sh
+./scripts/test-build-smoke.sh
+```
+
+The smoke regression script exists locally but is not currently invoked by `tests.yml`. See [Tests](docs/TESTS.md) and [Lint](docs/LINT.md) for the exact CI coverage and trigger paths.
 
 ### Adding a New Extension
 
@@ -565,16 +666,16 @@ This checks for:
 {
   "extensions": {
     "myext": {
-      "type": "pecl",
+      "type": "git",
       "pecl_name": "myext",
       "track_url": "https://github.com/owner/myext",
       "dependencies": {
         "alpine": {
-          "build": ["autoconf", "gcc", "g++", "make"],
+          "build": [],
           "runtime": []
         },
         "debian": {
-          "build": ["autoconf", "gcc", "g++", "make"],
+          "build": [],
           "runtime": []
         }
       }
@@ -583,13 +684,15 @@ This checks for:
 }
 ```
 
-2. The extension will automatically be included in build-all.yml (reads from extensions.json dynamically).
+2. Set `latest_version` to a real upstream tag/branch, or pass an explicit version (including `dev`) to `build.yml` for the initial build. Add only extension-specific packages; the OS base images already contain common compilers and PHP build tools.
+3. Run the configuration checks and a local build, for example `./scripts/local-test.sh myext v1.0.0 8.3 alpine 3.23`. Replace the example name/ref with your real extension and upstream tag.
+4. Update the extension table and count in this README.
 
-The extension will automatically be built for all PHP versions, platforms, and architectures defined in `extensions.json`.
+`build-all.yml` reads every extension key without a `disabled` field dynamically and dispatches a separate `release.yml` run for each. PHP targets come from `php-versions.json`, OS versions from `os-versions.json`, and architectures from `extensions.json`; exclusions are applied when the extension matrix is generated. Compilation and load success must still be verified for each target.
 
-> **Note for extensions without releases:** If your extension repository doesn't have any tags/releases yet, simply omit the `latest_version` field but include a `last_checked` timestamp. The build system will automatically build from the default branch (main/master) using version `"dev"`.
+> **Note for extensions without releases:** If your extension repository doesn't have any tags/releases yet, simply omit the `latest_version` field but include a `last_checked` timestamp. The build system will automatically build from the default branch (main/master) using version `"dev"`. Once upstream tags exist, `check-releases.yml` will start caching them; if those tags are not buildable, set `pin_version: true` (optionally with `latest_version: "dev"`) to keep the cached ref unchanged.
 
-Example for extension without releases:
+Example for an extension that has been checked but has no release yet (merge this entry into `.extensions`):
 ```json
 {
   "myext": {
@@ -597,7 +700,10 @@ Example for extension without releases:
     "pecl_name": "myext",
     "track_url": "https://github.com/owner/myext",
     "last_checked": "2026-01-24T04:00:00Z",
-    "dependencies": { ... }
+    "dependencies": {
+      "alpine": {"build": [], "runtime": []},
+      "debian": {"build": [], "runtime": []}
+    }
   }
 }
 ```
@@ -645,13 +751,17 @@ Some extensions require external libraries (written in Rust, Go, C++, etc.) to b
 
 **Key features:**
 - `external_libs`: Array of external libraries to build before the extension
-  - `name`: Library name (for logging)
+  - `name`: Library name used for logging and the temporary checkout directory
   - `type`: Library type (rust, go, cmake, etc.) - currently informational
   - `repo_url`: Git repository URL
   - `version`: Optional git tag/branch to checkout
   - `build_commands`: Array of shell commands to build and install the library
 - `configure_options`: Array of additional options to pass to `./configure`
-- `zend_extension`: Set to `true` for extensions that must be loaded as Zend extensions (like xdebug, opcache). This uses `zend_extension=` instead of `extension=` in the generated ini file.
+- `zend_extension`: Set to `true` for extensions that must be loaded as Zend extensions. Xdebug is the currently configured example; this selects `zend_extension=` in the generated INI file and archive metadata.
+
+Libraries are built sequentially before `phpize`. Each `build_commands` entry runs in a **separate `sh -c` process** within the library checkout: `cd` or `export` in one entry does not persist into the next. Use self-contained commands or explicit build-directory arguments. `type` does not install a toolchain; list required tools in platform build dependencies.
+
+External library `version` is a tag/branch passed to a shallow clone's `--branch`; omitting it follows the library's default branch. Pin it when reproducibility matters. When external libraries are configured, the Dockerfiles copy regular `.so*`/`.dylib*` files found under `/usr/local/lib` into `libs/`; inspect the actual archive rather than assuming it contains only one named library.
 
 This approach works for any compiled library dependency. **Examples:**
 
@@ -676,45 +786,53 @@ This approach works for any compiled library dependency. **Examples:**
 **CMake library:**
 ```json
 "build_commands": [
-  "mkdir build && cd build",
-  "cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..",
-  "make -j$(nproc)",
-  "make install"
+  "cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local",
+  "cmake --build build --parallel",
+  "cmake --install build"
 ]
 ```
 
 ## 🔄 Automation
 
-### Scheduled Checks
-- `check-releases.yml` runs hourly on Mondays to detect new extension releases (batched, ~20 per run)
-- `check-php-releases.yml` runs daily at 4 AM UTC to detect new PHP releases
-- `check-os-releases.yml` runs weekly on Sundays to detect new Alpine/Debian releases
-- Automatically triggers builds when new versions are found
+### Schedules and Side Effects
 
-### Weekly Builds
-- `build-all.yml` runs weekly on Sundays at 2 AM UTC to rebuild all extensions
-- `build-os-base-images.yml` runs weekly on Saturdays at 2 AM UTC
-- `build-php-base-images.yml` runs weekly on Saturdays at 3 AM UTC
-- `cleanup-ghcr.yml` runs weekly on Sundays at 6 AM UTC to clean up container registry
-- Ensures security updates from base images are included
+All schedules are UTC and run on the repository's default branch.
+
+| Workflow | Schedule | Behavior |
+|----------|----------|----------|
+| `check-releases.yml` | Monday, hourly | Checks up to 20 eligible (not disabled or pinned) extensions, writes cached versions/timestamps directly, dispatches releases for changed tags |
+| `check-php-releases.yml` | Daily 04:00 | Updates existing PHP patch tags/checksums and dispatches PHP base-image builds |
+| `check-os-releases.yml` | Sunday 05:00 | Opens an OS-version update PR; does not directly build images |
+| `build-os-base-images.yml` | Saturday 02:00 | Builds missing OS architecture tags and publishes manifests |
+| `build-php-base-images.yml` | Saturday 03:00 | Builds missing PHP architecture tags and publishes manifests |
+| `build-all.yml` | Sunday 02:00 | Dispatches one release run per enabled extension; existing releases are skipped |
+| `cleanup-ghcr.yml` | Sunday 06:00 | Deletes ghost/partial images in the Alpine, Debian, and PHP packages |
+
+Scheduled runs do **not** force rebuild existing image tags or releases. In particular, the PHP release checker dispatches without `force_rebuild=true`, so an existing minor-version image tag can retain an older PHP patch. Force OS images, then PHP images, then extension releases when you need a complete refresh. The Saturday workflows have independent schedules, not a dependency that waits for OS builds to finish.
+
+A manual `build-all.yml` run can also build the dev channel; its current input gate skips dev builds on scheduled events. Base-image manifests refuse publication when a selected architecture tag is missing. Architecture-filtered runs publish a manifest for the selected subset, not automatically every configured architecture.
 
 ### Base Image Pipeline
 The build system uses custom base images built from source:
 
-1. **OS Base Images**: `build-os-base-images.yml` creates minimal Alpine/Debian images with build tools
-2. **PHP Release Detection**: `check-php-releases.yml` monitors php/php-src for new releases
-3. **PHP Base Images**: `build-php-base-images.yml` compiles PHP from source for all platforms/architectures
+1. **OS Base Images**: `build-os-base-images.yml` creates Alpine/Debian build environments
+2. **PHP Release Detection**: `check-php-releases.yml` monitors php.net active releases for patch-tag changes
+3. **PHP Base Images**: `build-php-base-images.yml` compiles PHP from source for configured, non-excluded targets
 4. **Image Storage**: Base images are pushed to `ghcr.io/flavioheleno/php-ext-farm/{alpine,debian,php}`
 5. **Extension Builds**: `build.yml` uses these base images to compile extensions
 
 This approach provides:
 - Full control over PHP compilation options
-- Support for all architectures (including arm32v6/arm32v7)
-- Consistent builds across all PHP versions
-- Faster detection of new PHP releases
+- Support for configured architectures, subject to platform exclusions
+- Consistent build environments across configured PHP targets
+- SHA256 verification for tagged PHP source downloads
+
+Matrix Docker builds use `ubuntu-24.04` for amd64 and `ubuntu-24.04-arm` for ARM targets. QEMU is enabled only for arm32v6/arm32v7. Lightweight preparation, dispatch, and report jobs use `ubuntu-slim`; the release publication job uses `ubuntu-24.04` because large extensions exceed `ubuntu-slim`'s 15-minute job limit. Each matrix build job has a 60-minute timeout. Build/release workflows no longer expose a `runner` input.
+
+Dependabot groups GitHub Actions updates weekly on Mondays and Docker updates weekly on Tuesdays for the OS, PHP, and extension Dockerfile directories. Its configuration is in `.github/dependabot.yml`.
 
 ### Manual Triggers
-All workflows can be triggered manually:
+Build, release, and maintenance workflows accept manual dispatches. `lint.yml` and `tests.yml` only run on matching pushes/pull requests and do not expose `workflow_dispatch`. Run these commands from a checkout with an authenticated `gh` CLI:
 
 ```bash
 # Build specific extension (all architectures)
@@ -727,66 +845,75 @@ gh workflow run build.yml -f extension=redis -f php_versions=8.3 -f architecture
 gh workflow run build.yml -f extension=corefill -f php_versions=8.3
 
 # Build specific version explicitly
-gh workflow run build.yml -f extension=redis -f extension_version=6.0.2 -f php_versions=8.3
+gh workflow run build.yml -f extension=redis -f extension_version=6.3.0 -f php_versions=8.3
 
 # Create release
-gh workflow run release.yml -f extension=redis -f extension_version=6.0.2
+gh workflow run release.yml -f extension=redis -f extension_version=6.3.0
 
-# Rebuild all extensions
+# Rebuild all enabled extensions (one dispatched release run each)
 gh workflow run build-all.yml -f force_rebuild=true
 
-# Rebuild base images for specific PHP version
+# Force OS images first; wait for completion before rebuilding PHP images
+gh workflow run build-os-base-images.yml -f force_rebuild=true
+
+# Rebuild base images for a specific PHP version
 gh workflow run build-php-base-images.yml -f php_version=8.4 -f force_rebuild=true
 ```
+
+For a forced release dispatch for every configured extension, including `disabled` ones, `./scripts/release-all.sh` invokes `release.yml` with `rebuild=true` and pauses one second between dispatches. This replaces existing releases/tags; it does not wait for builds to finish. See [Release](docs/RELEASE.md) before using it.
 
 ## 📋 Artifact Naming Convention
 
 ```
-<extension>-<extension_version>-php<php_version>-<platform>-<platform_version>-<arch>.tar.gz
+<extension>-<normalized_version>-php<php_version>-<platform>-<platform_version>-<arch>.tar.gz
 
 Examples - Release channel:
-- redis-6.3.0-php8.3-alpine-3.20-amd64.tar.gz
-- redis-6.3.0-php8.3-alpine-3.20-arm64.tar.gz
-- imagick-3.7.0-php8.4-debian-bookworm-amd64.tar.gz
+- redis-6.3.0-php8.3-alpine-3.23-amd64.tar.gz
+- redis-6.3.0-php8.3-alpine-3.23-arm64.tar.gz
+- imagick-3.8.1-php8.4-debian-bookworm-amd64.tar.gz
 
 Examples - Dev channel:
-- redis-dev-abc1234-php8.4-alpine-3.20-amd64.tar.gz
-- imagick-dev-xyz5678-php8.3-debian-bookworm-arm64.tar.gz
+- redis-dev-abc1234-php8.4-alpine-3.23-amd64.tar.gz
+- imagick-dev-def5678-php8.3-debian-bookworm-arm64.tar.gz
 
 Examples - PHP next:
-- redis-6.3.0-phpnext-alpine-3.20-amd64.tar.gz
-- imagick-3.7.0-phpnext-debian-bookworm-amd64.tar.gz
+- redis-6.3.0-phpnext-alpine-3.23-amd64.tar.gz
+- imagick-3.8.1-phpnext-debian-bookworm-amd64.tar.gz
 
 Examples - Dev channel + PHP next:
-- redis-dev-abc1234-phpnext-alpine-3.20-amd64.tar.gz
+- redis-dev-abc1234-phpnext-alpine-3.23-amd64.tar.gz
 ```
+
+The filename version is normalized by `scripts/normalize-version.sh`: it strips an extension-name prefix, `tags/`, leading `v`, and `release-`/`release_` prefixes in that order, then changes underscores to dots. For example, `v6.3.0` becomes `6.3.0`, `yar-2.3.3` becomes `2.3.3`, and `tags/VLD_0_11_0` becomes `VLD.0.11.0`. Other prefixes and casing are retained.
+
+Only the `tags/` path prefix is removed; other slash-containing refs can break artifact/release naming even when they are valid git branches.
 
 ## 🏷️ Release Naming Convention
 
 ```
-<extension>-<extension_version>
+<extension>-<normalized_version>
 
 Examples:
-- redis-6.0.2
-- imagick-3.7.0
-
-Note: Dev channel builds are not released (artifacts only)
+- redis-6.3.0
+- imagick-3.8.1
 ```
+
+`build.yml` never creates a GitHub Release, including for dev builds. `build-all.yml` dev builds only dispatch that build workflow. However, `release.yml` has no channel restriction: explicitly releasing `dev`/`dev-<sha>`, or its no-release fallback to `dev`, can create a release with that version.
 
 ## 📊 Build Reports & Dataset
 
 ### Accessing Build Data
 
-All build results are automatically collected and published to the `dataset` branch as JSON files. This provides a queryable dataset of all build statuses, timestamps, and metadata.
+CI collects the reports that were produced and publishes them to the `dataset` branch as JSON files. Collection is attempted even when matrix builds fail. Local builds only write to `reports/`; excluded CI combinations are filtered before scheduling and normally have no report. Early failures can also leave no report.
 
 #### Dataset Structure
 
 ```
 dataset (branch)
-├── latest.json                    # Summary of most recent build per extension
+├── latest.json                    # Last published summary per extension
 ├── reports/
 │   └── {extension}/
-│       └── {version}.json         # Build history index for specific version
+│       └── {version}.json         # One history-file pointer per UTC day for a version
 └── history/
     └── {year}/
         └── {month}/
@@ -794,21 +921,23 @@ dataset (branch)
                 └── {ext}-{ver}-{run_id}.json  # Detailed build reports
 ```
 
-**latest.json** - Quick lookup of most recent build per extension:
+The following JSON examples illustrate the schema, not live build results.
+
+**latest.json** - Last published entry per extension, across release/dev channels:
 ```json
 {
   "redis": {
     "path": "history/2026/01/21/redis-6.3.0-123456789.json",
     "version": "6.3.0",
     "updated_at": "2026-01-21T10:30:00Z",
-    "pass": 45,
-    "fail": 3,
-    "total": 48
+    "pass": 123,
+    "fail": 2,
+    "total": 125
   }
 }
 ```
 
-**reports/{extension}/{version}.json** - Index of all builds for a version:
+**reports/{extension}/{version}.json** - Daily index for a version:
 ```json
 {
   "last_updated": "2026-01-21T10:30:00Z",
@@ -822,22 +951,26 @@ dataset (branch)
 }
 ```
 
+The daily index replaces that day's pointer on a later write; other history files remain available by path. History filenames contain a run ID but not a run attempt, so a same-day rerun of the same run can overwrite its history file. `latest.json` is not a channel-specific or all-versions compatibility matrix, and writes do not compare run times or versions to enforce chronological ordering. Counts cover collected reports only; `total` includes skipped reports, while `pass` and `fail` do not.
+
 #### Accessing the Dataset
 
 **Get latest build summary:**
 ```bash
-curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/latest.json
+curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/latest.json
 ```
 
 **Get build history for specific extension version:**
 ```bash
-curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/reports/redis/6.3.0.json
+curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/reports/redis/6.3.0.json
 ```
 
 **Get detailed build reports:**
 ```bash
-# First, get the path from latest.json or reports/{ext}/{ver}.json
-curl https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/history/2026/01/21/redis-6.3.0-123456789.json
+# Resolve an actual history path rather than copying the illustrative dates above
+DATASET_URL=https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset
+HISTORY_PATH=$(curl -fsSL "${DATASET_URL}/latest.json" | jq -er '.redis.path')
+curl -fsSL "${DATASET_URL}/${HISTORY_PATH}" -o history-file.json
 ```
 
 **Clone dataset branch:**
@@ -857,7 +990,7 @@ Each report contains detailed build information:
   "channel": "release",
   "php_version": "8.4",
   "platform": "alpine",
-  "platform_version": "3.20",
+  "platform_version": "3.23",
   "arch": "amd64",
   "status": "success",
   "started_at": "2026-01-07T20:10:11Z",
@@ -866,7 +999,7 @@ Each report contains detailed build information:
   "run_attempt": 1,
   "git_sha": "abc123def456",
   "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/123456789",
-  "asset_name": "redis-6.3.0-php8.4-alpine-3.20-amd64.tar.gz"
+  "asset_name": "redis-6.3.0-php8.4-alpine-3.23-amd64.tar.gz"
 }
 ```
 
@@ -878,18 +1011,18 @@ Each report contains detailed build information:
   "channel": "release",
   "php_version": "8.4",
   "platform": "alpine",
-  "platform_version": "3.20",
+  "platform_version": "3.23",
   "arch": "amd64",
   "status": "failure",
   "reason": "compile_error",
-  "error": "Compilation failed: undefined reference to 'xyz'",
+  "error": "Compilation failed",
   "started_at": "2026-01-07T20:10:11Z",
   "finished_at": "2026-01-07T20:14:52Z",
   "workflow_run_id": 123456789,
   "run_attempt": 1,
   "git_sha": "abc123def456",
   "log_url": "https://github.com/flavioheleno/php-ext-farm/actions/runs/123456789",
-  "asset_name": "redis-6.3.0-php8.4-alpine-3.20-amd64.tar.gz"
+  "asset_name": "redis-6.3.0-php8.4-alpine-3.23-amd64.tar.gz"
 }
 ```
 
@@ -899,9 +1032,9 @@ Each report contains detailed build information:
   "extension": "redis",
   "extension_version": "6.3.0",
   "channel": "release",
-  "php_version": "8.5",
+  "php_version": "7.0",
   "platform": "alpine",
-  "platform_version": "3.20",
+  "platform_version": "3.23",
   "arch": "amd64",
   "status": "skipped",
   "reason": "unsupported_php",
@@ -917,47 +1050,57 @@ Each report contains detailed build information:
 
 **Status values:**
 - `success` - Build completed successfully
-- `failure` - Build failed during compilation or testing
-- `skipped` - Build was skipped due to unsupported configuration
+- `failure` - Docker build or binary extraction failed, including configure/compile/load-check failures
+- `skipped` - A direct build invocation was skipped for an unsupported PHP/platform/architecture or an exclusion rule
 
 **Reason values** (only present when status is `failure` or `skipped`):
 - `compile_error` - Compilation failed
 - `deps_missing` - Build dependencies missing or configure failed
-- `test_failed` - Extension tests failed
+- `test_failed` - Build-log classifier found test-failure text; this does not imply a test suite is run by default
 - `unsupported_php` - PHP version not supported
 - `unsupported_platform` - Platform not supported
 - `unsupported_architecture` - Architecture not supported
+- `excluded_by_platform` - Matched a platform rule
+- `excluded_by_extension` - Matched an extension rule
+
+Failure reasons are inferred from build-log text. The Dockerfiles verify loading with `php -m`; they do not run upstream extension test suites. `build.sh` exits nonzero for a failed build, but exits **zero after writing a skipped report** for unsupported targets or exclusions. Read the report status rather than using only the exit code.
 
 **Additional fields:**
 - `error` - Human-readable error message (only present when status is `failure`)
 - `reason` - Machine-readable failure/skip reason (only present when status is `failure` or `skipped`)
 - `asset_name` - Name of the build artifact (null when status is `skipped`)
+- `extension_version` - Normalized for success/failure reports; skipped reports retain the raw version
+- `workflow_run_id` - Numeric CI run ID, or `null` locally
+- `run_attempt` - CI attempt number, defaulting to `1` locally
+- `git_sha` - Commit of the farm repository, not the extension's upstream commit
+- `log_url` - CI job/run URL when available; `null` locally and in skipped reports
+
+For a failed build, `asset_name` is the intended filename, not proof that an artifact exists.
+
+A success report describes compilation/extraction, not successful artifact upload or release publication. Check the publication jobs and actual release assets before relying on a download.
 
 #### Querying Build Data
 
 **Get extension summary from latest.json:**
 ```bash
 # Get summary for a specific extension
-curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/latest.json | \
   jq '.redis'
 
 # List all extensions with their success rates
-curl -s https://raw.githubusercontent.com/.../dataset/latest.json | \
+curl -fsSL https://raw.githubusercontent.com/flavioheleno/php-ext-farm/dataset/latest.json | \
   jq 'to_entries | map({ext: .key, pass: .value.pass, fail: .value.fail, rate: (.value.pass / .value.total * 100)})'
 ```
 
 **Query detailed build reports (from history files):**
 ```bash
-# First get the history file path, then query it
-HISTORY_PATH=$(curl -s .../dataset/latest.json | jq -r '.redis.path')
-curl -s "https://raw.githubusercontent.com/.../dataset/${HISTORY_PATH}" | \
-  jq '.[] | select(.status == "success")'
+# Query the history-file.json downloaded above
+jq '.[] | select(.status == "success")' history-file.json
 ```
 
 **Find all successful PHP 8.4 builds (from history):**
 ```bash
-curl -s .../dataset/history/2026/01/21/redis-6.3.0-123456789.json | \
-  jq '.[] | select(.php_version == "8.4" and .status == "success")'
+jq '.[] | select(.php_version == "8.4" and .status == "success")' history-file.json
 ```
 
 **Filter by channel (from history):**
@@ -998,7 +1141,8 @@ jq '.[] | select(.status == "failure")' history-file.json
 
 **Group failures by reason (from history):**
 ```bash
-jq 'group_by(.reason) | map({reason: .[0].reason, count: length})' history-file.json
+jq '[.[] | select(.status == "failure")] |
+    group_by(.reason) | map({reason: .[0].reason, count: length})' history-file.json
 ```
 
 **Find compile errors (from history):**
@@ -1009,8 +1153,8 @@ jq '.[] | select(.reason == "compile_error") | {extension, php_version, platform
 **Track success rate over time:**
 ```bash
 git clone -b dataset --depth 1 https://github.com/flavioheleno/php-ext-farm.git dataset
-cd dataset/history/2026/01
-for file in */*.json; do
+cd dataset
+for file in history/*/*/*/*.json; do
   total=$(jq 'length' "$file")
   success=$(jq '[.[] | select(.status == "success")] | length' "$file")
   echo "$file: $success/$total successful"
@@ -1033,16 +1177,16 @@ done
 ### Testing Extensions Against PHP Next
 
 ```bash
-# Build all extensions on PHP next
-gh workflow run build.yml -f php_versions=next
+# Build one extension on PHP next (extension is required)
+gh workflow run build.yml -f extension=redis -f php_versions=next
 
-# Check which extensions work on PHP next (query history file)
+# Check for successful PHP next builds in this extension's run
 jq '[.[] | select(.php_version == "next" and .status == "success")] |
     unique_by(.extension) | .[].extension' history-file.json
 
-# Find extensions that need PHP next compatibility fixes
-jq '[.[] | select(.php_version == "next" and .status == "failure")] |
-    unique_by(.extension) | map({extension, reason})' history-file.json
+# Inspect failed PHP next targets; failures are not necessarily source incompatibility
+jq '.[] | select(.php_version == "next" and .status == "failure") |
+    {extension, platform, platform_version, arch, reason}' history-file.json
 ```
 
 ### Monitoring Dev Channel Builds
@@ -1069,6 +1213,8 @@ jq 'group_by(.channel) | map({
 # - 2 platforms (alpine, debian)
 # - Multiple platform versions
 # - 4 architectures (amd64, arm64, arm32v6, arm32v7)
+# Current PHP/OS/architecture matrix: 125 combinations per extension ref
+# Channels are separate builds; Debian excludes arm32v6
 
 # Example: Find best configuration for production (from history file)
 jq '[.[] | select(.status == "success" and .channel == "release")] |

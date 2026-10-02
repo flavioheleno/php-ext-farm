@@ -143,7 +143,7 @@ jobs:
 
           echo "PR_BODY<<EOF" >> $GITHUB_ENV
           echo -e "$PR_BODY" >> $GITHUB_ENV
-          echo "**Action required:** Please add these versions to \`extensions.json\` platforms section." >> $GITHUB_ENV
+          echo "**Review required:** Check architecture availability, exclusions in \`os-versions.json\`, and extension \`dependencies.<platform>.version_overrides\` before merging." >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Commit changes

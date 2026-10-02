@@ -1,75 +1,82 @@
 # Release (`release.yml`)
 
-**Workflow file:** `.github/workflows/release.yml`
+**Workflow file:** [`.github/workflows/release.yml`](../.github/workflows/release.yml)
 
 ## Purpose
-Create (or rebuild) a GitHub Release for a specific extension+version.
 
-High level:
-1. Resolve the target version
-2. Check whether the GitHub Release already exists
-3. If needed, call `build.yml` to build artifacts
-4. Publish a GitHub Release with all `.tar.gz` assets
+Resolve an extension version, skip an existing release unless forced, call [Build Extension](BUILD.md), and publish its successful `.tar.gz` archives as a GitHub Release.
 
-## Triggers
-- `workflow_dispatch`
-- `workflow_call`
-- `workflow_dispatch` (triggered per extension by `build-all.yml` and `check-releases.yml`)
+## Triggers and inputs
 
-## Inputs
-- `extension` (required)
-- `extension_version` (optional): empty resolves to `.extensions[extension].latest_version` or `dev`
-- `rebuild` (optional boolean): force rebuild/release even if it exists
-- `runner` (optional)
+The workflow supports `workflow_dispatch` and `workflow_call`. `build-all.yml`, `check-releases.yml`, and `scripts/release-all.sh` all start it as separate dispatched runs (`gh workflow run`), not reusable calls. Both triggers expose the same inputs:
 
-## Permissions
-- `contents: write` (needed for release create/delete and tag deletion)
+| Input | Type | Default | Meaning |
+|-------|------|---------|---------|
+| `extension` | String | Required | Key in `extensions.json` |
+| `extension_version` | String | `""` | Raw upstream ref, `dev`, or `dev-<sha>`; empty resolves from configuration |
+| `rebuild` | Boolean | `false` | Rebuild and replace an existing release |
 
-## Concurrency
-- `group: release-${{ inputs.extension }}-${{ inputs.extension_version || 'latest' }}`
+There are no PHP/platform/architecture filters or runner input. The reusable build uses all configured targets.
+
+Version resolution uses `latest_version`, then `dev` if `last_checked` exists without a cached release; otherwise it fails. The raw ref is passed to the build, while `normalize-version.sh` produces the release tag and asset filename version.
 
 ## Jobs
-### 1) `check-release`
-- resolves the effective `extension_version` (same logic as `build.yml`)
-- normalizes version for tag naming via `scripts/normalize-version.sh`
-- computes release tag: `${extension}-${normalized_version}`
-- checks GitHub Releases via `gh release view`
-- outputs:
-  - `should_build` (`true`/`false`)
-  - `release_tag`
-  - `clean_version` (normalized)
-  - `extension_version` (resolved input)
 
-### 2) `build` (reusable workflow)
-- calls `./.github/workflows/build.yml` when `should_build == true`
+### `check-release`
 
-### 3) `release`
-- downloads the per-build artifacts matching `${extension}-${clean_version}-php*`
-  (runs on `ubuntu-24.04`; large extensions exceed `ubuntu-slim`'s 15-minute job limit)
-- fails if no build artifacts were produced
-- generates `release_notes.md` summarizing supported configurations
-- when `rebuild=true`:
-  - deletes existing GitHub release
-  - deletes the git tag on origin
-- creates a new GitHub Release with all `release/*.tar.gz` assets
+Runs on `ubuntu-slim`, computes `<extension>-<normalized_version>`, and checks it with `gh release view`. `rebuild=true` bypasses the existence check. Outputs are `should_build`, `release_tag`, `clean_version`, and the resolved raw `extension_version`.
 
-## Outputs
-- GitHub Release tag: `${extension}-${normalized_version}`
-- Release assets: one `.tar.gz` per PHP/platform/arch combination
+An existing release is skipped as a whole; the workflow does not inspect it for missing assets or compare its binaries against newer base images.
 
-## How to run manually
+### `build`
+
+Calls `build.yml` only when `should_build` is true. That workflow uploads one archive artifact per successful target and records reports in the dataset.
+
+### `release`
+
+Runs on `ubuntu-24.04` (large extensions exceed `ubuntu-slim`'s 15-minute job limit) after the reusable build, including when some builds failed, provided the run was not cancelled. It downloads the per-target artifacts matching `<extension>-<clean_version>-php*` into `release/` and generates `release_notes.md` from the template in this workflow.
+
+Release notes list **configured build targets**, not a promise that every target succeeded. They describe exact archive naming, the installer, metadata, runtime packages, bundled libraries, and the Zend-extension directive. Actual availability is determined by attached assets and build reports.
+
+The publication step fails if no `release/*.tar.gz` archive was downloaded. Otherwise, when rebuilding, it deletes the existing GitHub Release and matching git tag, then creates the replacement with the collected archives. Because the archive check comes first, a rebuild in which every target failed leaves the existing release in place.
+
+## Outputs and partial failures
+
+Release tag:
+
+```text
+<extension>-<normalized_version>
+```
+
+Asset filenames:
+
+```text
+<extension>-<normalized_version>-php<php_version>-<platform>-<platform_version>-<arch>.tar.gz
+```
+
+A partial matrix can still be published: the release job is not restricted to an overall successful build result. If every target failed, the release job fails without publishing. Consult the [dataset](../README.md#-build-reports--dataset), not just the presence of a release.
+
+There is no dev-channel prohibition or automatic prerelease flag. Calling this workflow with `dev`/`dev-<sha>` can publish that version, and the no-cached-release fallback can create `<extension>-dev`.
+
+## Permissions and concurrency
+
+The workflow defaults to `contents: read`. The reusable `build` job and publication job elevate to `contents: write` for dataset updates and release/tag operations.
+
+Concurrency group `release-${{ inputs.extension }}-${{ inputs.extension_version || 'latest' }}` uses the supplied version or `latest`, with `cancel-in-progress: false`. Docker runner selection is controlled by `build.yml`.
+
+## Running manually
+
 ```bash
 gh workflow run release.yml \
   -f extension=redis \
   -f extension_version=6.3.0
 
-# force rebuild
 gh workflow run release.yml \
   -f extension=redis \
   -f extension_version=6.3.0 \
   -f rebuild=true
 ```
 
-## Notes
-- The release tag is based on the **normalized** version, not the raw `extension_version` input.
-- If the build produced no artifacts for a subset of the matrix, they will simply be absent from the release assets.
+**Rebuild warning:** Replacement is not atomic and has no rollback. The old release/tag are deleted before creation of the new release, and binaries at the same download URLs may change. Force base-image rebuilds separately if that is the reason for rebuilding extensions.
+
+`./scripts/release-all.sh` dispatches `release.yml` with `rebuild=true` for every configured extension, using cached version resolution and a one-second delay between dispatches. It requires authenticated `gh` access, replaces existing releases, and does not wait for completion.
