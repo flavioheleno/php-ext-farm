@@ -64,7 +64,8 @@
       "track_url": "https://github.com/krakjoe/apcu-bc",
       "type": "pecl",
       "last_checked": "2026-09-29T00:15:25Z",
-      "latest_version": "v1.0.4"
+      "latest_version": "v1.0.4",
+      "disabled": "Requires the apcu extension to be built first"
     },
     "apfd": {
       "dependencies": {
@@ -231,7 +232,8 @@
       "track_url": "https://github.com/MarcelBolten/php-cairo",
       "type": "git",
       "last_checked": "2026-09-29T00:15:25Z",
-      "latest_version": "v1.1.0"
+      "latest_version": "v1.1.0",
+      "disabled": "Requires the eos_datastructures extension to be built first"
     },
     "corefill": {
       "dependencies": {
@@ -1250,7 +1252,8 @@
       "track_url": "https://github.com/php/pecl-database-oci8",
       "type": "git",
       "last_checked": "2026-09-28T04:28:25Z",
-      "latest_version": "v3.4.1"
+      "latest_version": "v3.4.1",
+      "disabled": "Requires Oracle Instant Client, which is not redistributable"
     },
     "opentelemetry": {
       "build_path": "ext",
@@ -1292,7 +1295,8 @@
       "track_url": "https://github.com/secudoc/php-liboqs",
       "type": "git",
       "last_checked": "2026-09-28T04:28:25Z",
-      "latest_version": "v0.4.1"
+      "latest_version": "v0.4.1",
+      "disabled": "Requires liboqs >= 0.14, not packaged by Alpine or Debian"
     },
     "parallel": {
       "dependencies": {
@@ -1309,7 +1313,8 @@
       "track_url": "https://github.com/krakjoe/parallel",
       "type": "git",
       "last_checked": "2026-09-28T04:28:25Z",
-      "latest_version": "v1.2.15"
+      "latest_version": "v1.2.15",
+      "disabled": "Requires a ZTS PHP build; base images are NTS"
     },
     "pcov": {
       "dependencies": {
@@ -1352,7 +1357,8 @@
       "track_url": "https://github.com/php/pecl-database-pdo_oci",
       "type": "git",
       "last_checked": "2026-09-28T04:28:25Z",
-      "latest_version": "v1.2.0"
+      "latest_version": "v1.2.0",
+      "disabled": "Requires Oracle Instant Client, which is not redistributable"
     },
     "pecl_http": {
       "dependencies": {
@@ -1389,7 +1395,8 @@
       "track_url": "https://github.com/m6w6/ext-http",
       "type": "pecl",
       "last_checked": "2026-09-28T04:28:25Z",
-      "latest_version": "v4.3.1"
+      "latest_version": "v4.3.1",
+      "disabled": "Requires the raphf extension to be built first"
     },
     "pg_query": {
       "build_path": "ext",
