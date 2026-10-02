@@ -20,7 +20,7 @@ This workflow is rate-limited by design: each run checks up to 20 extensions and
 Steps:
 - Computes week start (Monday 00:00 UTC)
 - Iterates extensions from `extensions.json`
-  - skips those with `pin_version: true` (`latest_version` is maintained by hand)
+  - skips those with `disabled` set or `pin_version: true` (`latest_version` is maintained by hand)
   - skips those with `last_checked` after week start
   - stops after 20 extensions
 - For each extension:

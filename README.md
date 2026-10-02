@@ -446,6 +446,7 @@ The main configuration file defines:
   - `configure_options`: Optional array of configure flags
   - `zend_extension`: Optional boolean, set to `true` for Zend extensions (e.g., xdebug) that require `zend_extension=` instead of `extension=` in php.ini
   - `pin_version`: Optional boolean, set to `true` to stop `check-releases` from overwriting `latest_version` (for repos whose newest tag isn't buildable; `latest_version: "dev"` builds the default branch)
+  - `disabled`: Optional string explaining why the extension is excluded from scheduled builds and release tracking (manual `release.yml`/`build.yml` runs still work)
 
 ### os-versions.json
 

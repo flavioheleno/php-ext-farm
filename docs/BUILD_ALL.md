@@ -24,7 +24,7 @@ Weekly batch run that:
 
 ## Jobs
 ### 1) `prepare`
-- loads the full extension list from `extensions.json`
+- loads the extension list from `extensions.json`, skipping entries with `disabled` set
 - (optional) prepares dev versions for each extension:
   - determines upstream default branch via GitHub API (`gh api repos/<path>`)
   - takes HEAD SHA and uses `dev-<7charsha>`

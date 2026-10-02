@@ -40,7 +40,7 @@ jobs:
       - name: Get extension list
         id: list
         run: |
-          EXTENSIONS=$(jq -c '[.extensions | keys[]]' extensions.json)
+          EXTENSIONS=$(jq -c '[.extensions | to_entries[] | select(.value.disabled == null) | .key]' extensions.json)
           echo "extensions=${EXTENSIONS}" >> $GITHUB_OUTPUT
           echo "Extensions to build: ${EXTENSIONS}"
 
@@ -52,7 +52,7 @@ jobs:
         run: |
           DEV_BUILDS="[]"
 
-          for ext in $(jq -r '.extensions | keys[]' extensions.json); do
+          for ext in $(jq -r '.extensions | to_entries[] | select(.value.disabled == null) | .key' extensions.json); do
             TRACK_URL=$(jq -r ".extensions.${ext}.track_url" extensions.json)
 
             # Only GitHub repos are supported for dev builds via gh api

@@ -41,8 +41,8 @@ jobs:
           WEEK_START=$(date -u -d "last monday" +%Y-%m-%dT00:00:00Z 2>/dev/null || date -u -v-monday +%Y-%m-%dT00:00:00Z)
 
           for ext in $(jq -r '.extensions | keys[]' extensions.json); do
-            # Skip extensions whose latest_version is maintained by hand
-            if [[ "$(jq -r ".extensions.${ext}.pin_version // false" extensions.json)" == "true" ]]; then
+            # Skip disabled extensions and those whose latest_version is maintained by hand
+            if [[ "$(jq -r ".extensions.${ext} | .disabled != null or .pin_version == true" extensions.json)" == "true" ]]; then
               continue
             fi
 
