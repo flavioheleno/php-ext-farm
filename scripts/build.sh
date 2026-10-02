@@ -14,6 +14,17 @@ CONFIG_FILE="${ROOT_DIR}/extensions.json"
 OS_VERSIONS_FILE="${ROOT_DIR}/os-versions.json"
 PHP_VERSIONS_FILE="${ROOT_DIR}/php-versions.json"
 
+USE_LOCAL_REGISTRY=false
+POSITIONAL=()
+for arg in "$@"; do
+    if [[ "$arg" == "--local" ]]; then
+        USE_LOCAL_REGISTRY=true
+    else
+        POSITIONAL+=("$arg")
+    fi
+done
+set -- "${POSITIONAL[@]:-}"
+
 EXTENSION="${1:-}"
 EXTENSION_VERSION="${2:-}"
 PHP_VERSION="${3:-}"
@@ -21,22 +32,6 @@ PLATFORM="${4:-}"
 PLATFORM_VERSION="${5:-}"
 ARCH="${6:-amd64}"
 CHANNEL="${7:-release}"
-USE_LOCAL_REGISTRY=false
-
-# Check for --local flag in any position
-for arg in "$@"; do
-    if [[ "$arg" == "--local" ]]; then
-        USE_LOCAL_REGISTRY=true
-    fi
-done
-
-# Remove --local from args if present
-if [[ "${ARCH}" == "--local" ]]; then
-    ARCH="amd64"
-fi
-if [[ "${CHANNEL}" == "--local" ]]; then
-    CHANNEL="release"
-fi
 
 # Generate a skip report and exit
 # Usage: generate_skip_report <reason>

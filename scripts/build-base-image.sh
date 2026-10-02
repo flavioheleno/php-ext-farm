@@ -14,23 +14,21 @@ ROOT_DIR="$(dirname "${SCRIPT_DIR}")"
 PHP_VERSIONS_FILE="${ROOT_DIR}/php-versions.json"
 OS_VERSIONS_FILE="${ROOT_DIR}/os-versions.json"
 
+LOCAL_ONLY=false
+POSITIONAL=()
+for arg in "$@"; do
+    if [[ "$arg" == "--local" ]]; then
+        LOCAL_ONLY=true
+    else
+        POSITIONAL+=("$arg")
+    fi
+done
+set -- "${POSITIONAL[@]:-}"
+
 PHP_VERSION="${1:-}"
 PLATFORM="${2:-}"
 PLATFORM_VERSION="${3:-}"
 ARCH="${4:-amd64}"
-LOCAL_ONLY=false
-
-# Check for --local flag in any position
-for arg in "$@"; do
-    if [[ "$arg" == "--local" ]]; then
-        LOCAL_ONLY=true
-    fi
-done
-
-# Remove --local from args if present
-if [[ "${ARCH}" == "--local" ]]; then
-    ARCH="amd64"
-fi
 
 if [[ -z "${PHP_VERSION}" || -z "${PLATFORM}" || -z "${PLATFORM_VERSION}" ]]; then
     cat << EOF
