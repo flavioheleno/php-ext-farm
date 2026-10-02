@@ -32,6 +32,7 @@ php-ext-farm/
 │   ├── build-base-image.sh  # Builds PHP base images locally
 │   ├── install.sh           # End-user installation script
 │   ├── check-exclusion.sh   # Checks if build combo is excluded
+│   ├── exclusions.jq        # Shared exclusion rules + matrix generation
 │   ├── check-releases.sh    # Checks for new extension releases
 │   ├── normalize-version.sh # Normalizes version strings
 │   ├── validate-config.sh   # Validates JSON config files
@@ -90,7 +91,7 @@ Central configuration for all extensions. Structure:
 - `zend_extension`: Set to `true` for Zend extensions (e.g. xdebug) so runtime config uses `zend_extension=` instead of `extension=`.
 - `build_path`: Subdirectory containing `config.m4` if not at root.
 - `external_libs`: Libraries that must be built from source.
-- `exclude`: Build combinations to skip. Wildcards are supported by `scripts/check-exclusion.sh`; GitHub Actions matrix generation currently filters **only exact-match platform exclusions**.
+- `exclude`: Build combinations to skip. Wildcards (`arm32*`, `*`) are supported. Matching rules live in `scripts/exclusions.jq` and are shared by `scripts/check-exclusion.sh` and the workflow matrix generation, so platform- and extension-level excludes are filtered out of the matrix before any build is queued.
 
 **Gotchas:**
 - `normalize-version.sh` is used for **artifact/report naming**; the build itself uses the original `extension_version` as a git ref.
@@ -232,6 +233,10 @@ Determines if a build combination should be skipped:
 - Platform-level exclusions (from os-versions.json)
 - Extension-level exclusions (from extensions.json)
 - Supports wildcards (`arm32*`, `*`)
+
+Matching is implemented in `scripts/exclusions.jq`, which the build and tests
+workflows also include to generate the build matrix. Change the rules there,
+not in a workflow.
 
 ## GitHub Actions Workflows
 

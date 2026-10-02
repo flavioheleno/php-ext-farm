@@ -88,5 +88,5 @@ gh workflow run build.yml \
 ```
 
 ## Common pitfalls
-- Matrix exclude filtering only considers platform-level excludes from `os-versions.json` and only exact matches; extension-level excludes are enforced later by `scripts/check-exclusion.sh` during the build.
+- Matrix exclude filtering and the per-build check share `scripts/exclusions.jq`, so platform-level excludes (`os-versions.json`) and extension-level excludes (`extensions.json`) are both applied with wildcard matching when the matrix is generated.
 - `dev-<sha>` versions are treated as git refs; they will fail unless the upstream repo actually has that ref (tag/branch).

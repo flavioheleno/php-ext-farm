@@ -397,6 +397,7 @@ Test bleeding-edge extension code against bleeding-edge PHP:
 │   ├── local-test.sh              # Test builds locally
 │   ├── check-releases.sh          # Check upstream releases
 │   ├── check-exclusion.sh         # Check if build should be excluded
+│   ├── exclusions.jq              # Shared exclusion rules + matrix generation
 │   ├── normalize-version.sh       # Version string normalization
 │   ├── validate-config.sh         # Validate JSON configuration
 │   ├── test-check-exclusion.sh    # Unit tests for check-exclusion
