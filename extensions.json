@@ -660,15 +660,21 @@
       "dependencies": {
         "alpine": {
           "build": [
-            "linux-headers"
+            "linux-headers",
+            "i2c-tools-dev"
           ],
-          "runtime": []
+          "runtime": [
+            "i2c-tools"
+          ]
         },
         "debian": {
           "build": [
-            "linux-libc-dev"
+            "linux-libc-dev",
+            "libi2c-dev"
           ],
-          "runtime": []
+          "runtime": [
+            "libi2c0"
+          ]
         }
       },
       "pecl_name": "i2c",
