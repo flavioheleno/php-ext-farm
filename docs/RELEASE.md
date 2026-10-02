@@ -44,7 +44,9 @@ High level:
 - calls `./.github/workflows/build.yml` when `should_build == true`
 
 ### 3) `release`
-- downloads the combined artifact `${extension}-${clean_version}-all-builds`
+- downloads the per-build artifacts matching `${extension}-${clean_version}-php*`
+  (runs on `ubuntu-24.04`; large extensions exceed `ubuntu-slim`'s 15-minute job limit)
+- fails if no build artifacts were produced
 - generates `release_notes.md` summarizing supported configurations
 - when `rebuild=true`:
   - deletes existing GitHub release

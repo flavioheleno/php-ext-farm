@@ -63,8 +63,7 @@ Notes:
 - The special literal version `dev` means “clone default branch”.
 
 ### 3) `collect-artifacts`
-- downloads all build artifacts and report artifacts
-- uploads a combined artifact named `${extension}-${normalized_version}-all-builds`
+- downloads the report artifacts
 - aggregates reports into:
   - `dataset/history/YYYY/MM/DD/<extension>-<version>-<run_id>.json` (merged array)
   - `dataset/reports/<extension>/<version>.json` (index pointing to history files)
@@ -74,7 +73,6 @@ Notes:
 ## Outputs / Artifacts
 - Per-matrix `.tar.gz` build artifact (90 days)
 - Per-matrix report artifact (90 days)
-- Combined “all builds” artifact (90 days)
 - Persistent dataset JSON in the `dataset` branch
 
 ## How to run manually

@@ -115,7 +115,7 @@ jobs:
     name: Create GitHub release for ${{ inputs.extension }} ${{ needs.check-release.outputs.extension_version }}
     needs: [check-release, build]
     if: always() && needs.check-release.outputs.should_build == 'true' && !cancelled() && needs.build.result != 'cancelled'
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
@@ -124,7 +124,8 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          name: ${{ inputs.extension }}-${{ needs.check-release.outputs.clean_version }}-all-builds
+          pattern: ${{ inputs.extension }}-${{ needs.check-release.outputs.clean_version }}-php*
+          merge-multiple: true
           path: release/
 
       - name: Generate release notes
@@ -169,6 +170,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RELEASE_TAG="${{ needs.check-release.outputs.release_tag }}"
+
+          if ! ls release/*.tar.gz > /dev/null 2>&1; then
+            echo "No build artifacts found for ${RELEASE_TAG}"
+            exit 1
+          fi
 
           # Delete existing release if rebuilding
           if [[ "${{ inputs.rebuild }}" == "true" ]]; then
