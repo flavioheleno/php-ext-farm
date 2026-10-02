@@ -18,7 +18,6 @@ Weekly batch run that:
 
 ## Permissions
 - `actions: write` (to trigger workflows)
-- `contents: write`
 
 ## Concurrency
 - `group: build-all`
@@ -34,11 +33,15 @@ Outputs:
 - `extensions`: JSON array of extension keys
 - `dev_builds`: JSON array of `{extension, version}`
 
-### 2) `build-release` (matrix)
-- for each extension, calls reusable workflow `release.yml`
+### 2) `dispatch`
+- for each extension, triggers a separate `release.yml` run (`gh workflow run`)
+- (optional) for each entry in `dev_builds`, triggers a separate `build.yml` run
 
-### 3) `build-dev` (matrix, optional)
-- for each entry in `dev_builds`, calls reusable workflow `build.yml`
+Each extension gets its own workflow run rather than being called as a reusable
+workflow. A single run containing every extension produces thousands of artifacts,
+and `actions/download-artifact` only lists the first 1000, so extensions past that
+point never found their builds and were never released. `build-all` itself now
+finishes in seconds; follow progress in the individual `Release` / `Build Extension` runs.
 
 ## Outputs
 - Release channel: GitHub Releases per extension/version

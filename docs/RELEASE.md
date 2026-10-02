@@ -13,7 +13,8 @@ High level:
 
 ## Triggers
 - `workflow_dispatch`
-- `workflow_call` (used by `build-all.yml`)
+- `workflow_call`
+- `workflow_dispatch` (triggered per extension by `build-all.yml` and `check-releases.yml`)
 
 ## Inputs
 - `extension` (required)

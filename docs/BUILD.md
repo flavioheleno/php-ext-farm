@@ -10,7 +10,7 @@ Build a single PHP extension across a matrix of PHP versions, platforms, and arc
 
 ## Triggers
 - `workflow_dispatch`
-- `workflow_call` (used by `release.yml` and `build-all.yml`)
+- `workflow_call` (used by `release.yml`)
 
 ## Inputs
 ### workflow_dispatch

@@ -83,35 +83,35 @@ jobs:
           echo "dev_builds=${DEV_BUILDS}" >> $GITHUB_OUTPUT
           echo "Prepared $(echo "$DEV_BUILDS" | jq 'length') dev builds"
 
-  build-release:
-    name: Release ${{ matrix.extension }}
+  # Dispatch one workflow run per extension instead of calling reusable workflows:
+  # a single run holding every extension exceeds the 1000-artifact listing limit
+  # of actions/download-artifact, so later extensions never found their builds.
+  dispatch:
+    name: Dispatch per-extension runs
     needs: prepare
+    runs-on: ubuntu-slim
     permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      max-parallel: 10
-      matrix:
-        extension: ${{ fromJson(needs.prepare.outputs.extensions) }}
-    uses: ./.github/workflows/release.yml
-    with:
-      extension: ${{ matrix.extension }}
-      rebuild: ${{ inputs.force_rebuild || false }}
-    secrets: inherit
+      actions: write
+    steps:
+      - name: Dispatch release runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXTENSIONS: ${{ needs.prepare.outputs.extensions }}
+          REBUILD: ${{ inputs.force_rebuild || false }}
+        run: |
+          for ext in $(jq -r '.[]' <<< "${EXTENSIONS}"); do
+            gh workflow run release.yml --repo "${GITHUB_REPOSITORY}" \
+              -f extension="${ext}" -f rebuild="${REBUILD}"
+          done
 
-  build-dev:
-    name: Dev build ${{ matrix.extension }}
-    needs: prepare
-    if: inputs.build_dev != false && needs.prepare.outputs.dev_builds != '[]'
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      max-parallel: 10
-      matrix:
-        include: ${{ fromJson(needs.prepare.outputs.dev_builds) }}
-    uses: ./.github/workflows/build.yml
-    with:
-      extension: ${{ matrix.extension }}
-      extension_version: ${{ matrix.version }}
-    secrets: inherit
+      - name: Dispatch dev runs
+        if: inputs.build_dev != false && needs.prepare.outputs.dev_builds != '[]'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEV_BUILDS: ${{ needs.prepare.outputs.dev_builds }}
+        run: |
+          jq -c '.[]' <<< "${DEV_BUILDS}" | while read -r build; do
+            gh workflow run build.yml --repo "${GITHUB_REPOSITORY}" \
+              -f extension="$(jq -r '.extension' <<< "${build}")" \
+              -f extension_version="$(jq -r '.version' <<< "${build}")"
+          done
