@@ -408,12 +408,12 @@
     "total": 145
   },
   "rdkafka": {
-    "path": "history/2026/02/14/rdkafka-6.0.4-21998046314.json",
-    "version": "6.0.4",
-    "updated_at": "2026-02-14T08:36:14Z",
-    "pass": 94,
-    "fail": 51,
-    "total": 145
+    "path": "history/2026/10/04/rdkafka-6.0.5-37186738737.json",
+    "version": "6.0.5",
+    "updated_at": "2026-10-04T11:46:42Z",
+    "pass": 101,
+    "fail": 24,
+    "total": 125
   },
   "selinux": {
     "path": "history/2026/02/14/selinux-0.6.1-21998052942.json",
