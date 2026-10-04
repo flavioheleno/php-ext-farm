@@ -112,12 +112,12 @@
     "total": 145
   },
   "phreakscope": {
-    "path": "history/2026/02/14/phreakscope-dev-21998037654.json",
+    "path": "history/2026/10/04/phreakscope-dev-37186729520.json",
     "version": "dev",
-    "updated_at": "2026-02-14T08:30:46Z",
-    "pass": 145,
-    "fail": 0,
-    "total": 145
+    "updated_at": "2026-10-04T11:47:03Z",
+    "pass": 121,
+    "fail": 4,
+    "total": 125
   },
   "xz": {
     "path": "history/2026/07/20/xz-1.2.2-29757136415.json",
