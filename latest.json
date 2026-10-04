@@ -528,12 +528,12 @@
     "total": 145
   },
   "ip2proxy": {
-    "path": "history/2026/09/27/ip2proxy-3.2.0-36303368518.json",
+    "path": "history/2026/10/04/ip2proxy-3.2.0-37186696884.json",
     "version": "3.2.0",
-    "updated_at": "2026-09-27T09:59:49Z",
-    "pass": 0,
-    "fail": 49,
-    "total": 49
+    "updated_at": "2026-10-04T11:44:06Z",
+    "pass": 121,
+    "fail": 4,
+    "total": 125
   },
   "judy": {
     "path": "history/2026/08/31/judy-2.7.1-33357548054.json",
