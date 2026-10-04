@@ -792,12 +792,12 @@
     "total": 125
   },
   "timezonedb": {
-    "path": "history/2026/02/14/timezonedb-2025.2.2-21998071685.json",
+    "path": "history/2026/10/04/timezonedb-2025.2.2-37186766084.json",
     "version": "2025.2.2",
-    "updated_at": "2026-02-14T08:59:32Z",
-    "pass": 145,
-    "fail": 0,
-    "total": 145
+    "updated_at": "2026-10-04T11:49:00Z",
+    "pass": 121,
+    "fail": 4,
+    "total": 125
   },
   "vld": {
     "path": "history/2026/02/14/vld-0.19.1-21998083802.json",
