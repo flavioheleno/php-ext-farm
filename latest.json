@@ -632,12 +632,12 @@
     "total": 125
   },
   "yaml": {
-    "path": "history/2026/02/14/yaml-2.3.0-21998104656.json",
+    "path": "history/2026/10/04/yaml-2.3.0-37186800057.json",
     "version": "2.3.0",
-    "updated_at": "2026-02-14T09:19:52Z",
-    "pass": 122,
+    "updated_at": "2026-10-04T11:50:10Z",
+    "pass": 102,
     "fail": 23,
-    "total": 145
+    "total": 125
   },
   "memcache": {
     "path": "history/2026/02/14/memcache-8.2-21998011352.json",
