@@ -288,12 +288,12 @@
     "total": 144
   },
   "crc_fast": {
-    "path": "history/2026/09/27/crc_fast-1.1.0-36303368518.json",
+    "path": "history/2026/10/04/crc_fast-1.1.0-37186659516.json",
     "version": "1.1.0",
-    "updated_at": "2026-09-27T09:40:57Z",
-    "pass": 0,
-    "fail": 110,
-    "total": 110
+    "updated_at": "2026-10-04T09:04:43Z",
+    "pass": 70,
+    "fail": 55,
+    "total": 125
   },
   "fnbind": {
     "path": "history/2026/09/27/fnbind-4.0.0a6-36303368518.json",
