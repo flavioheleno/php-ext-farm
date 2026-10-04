@@ -8,12 +8,12 @@
     "total": 145
   },
   "pcov": {
-    "path": "history/2026/09/20/pcov-1.0.12-35496750500.json",
+    "path": "history/2026/10/04/pcov-1.0.12-37186724257.json",
     "version": "1.0.12",
-    "updated_at": "2026-09-20T10:33:42Z",
-    "pass": 3,
-    "fail": 0,
-    "total": 3
+    "updated_at": "2026-10-04T11:46:51Z",
+    "pass": 116,
+    "fail": 9,
+    "total": 125
   },
   "apcu": {
     "path": "history/2026/02/14/apcu-5.1.28-21997938462.json",
