@@ -460,7 +460,7 @@
       "pecl_name": "excimer",
       "track_url": "https://github.com/wikimedia/php-excimer",
       "type": "pecl",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "1.2.7"
     },
     "fastcsv": {
@@ -477,7 +477,7 @@
       "pecl_name": "fastcsv",
       "track_url": "https://github.com/csvtoolkit/FastCSV-ext",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v0.0.2"
     },
     "fnbind": {
@@ -512,7 +512,7 @@
       "pecl_name": "geospatial",
       "track_url": "https://github.com/php-geospatial/geospatial",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "0.3.3"
     },
     "glfw": {
@@ -554,7 +554,7 @@
       "pecl_name": "glfw",
       "track_url": "https://github.com/mario-deluna/php-glfw",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v2.4.0"
     },
     "gnupg": {
@@ -579,7 +579,7 @@
       "pecl_name": "gnupg",
       "track_url": "https://github.com/php-gnupg/php-gnupg",
       "type": "pecl",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "gnupg-1.5.4"
     },
     "gpio": {
@@ -598,7 +598,7 @@
       "pecl_name": "gpio",
       "track_url": "https://github.com/embedded-php/ext-gpio",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z"
+      "last_checked": "2026-10-05T04:47:14Z"
     },
     "grpc": {
       "dependencies": {
@@ -623,7 +623,7 @@
       "pecl_name": "grpc",
       "track_url": "https://github.com/grpc/grpc",
       "type": "pecl",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v1.84.0"
     },
     "hdrhistogram": {
@@ -658,7 +658,7 @@
       "pecl_name": "hdrhistogram",
       "track_url": "https://github.com/beberlei/hdrhistogram-php",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v0.5.0"
     },
     "i2c": {
@@ -685,7 +685,7 @@
       "pecl_name": "i2c",
       "track_url": "https://github.com/embedded-php/ext-i2c",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z"
+      "last_checked": "2026-10-05T04:47:14Z"
     },
     "identifier": {
       "dependencies": {
@@ -701,7 +701,7 @@
       "pecl_name": "identifier",
       "track_url": "https://github.com/castor-labs/php-ext-identifier",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v0.4.0"
     },
     "igbinary": {
@@ -718,7 +718,7 @@
       "pecl_name": "igbinary",
       "track_url": "https://github.com/igbinary/igbinary",
       "type": "pecl",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "3.2.15"
     },
     "imagick": {
@@ -743,7 +743,7 @@
       "pecl_name": "imagick",
       "track_url": "https://github.com/Imagick/imagick",
       "type": "pecl",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "3.8.1"
     },
     "inotify": {
@@ -760,7 +760,7 @@
       "pecl_name": "inotify",
       "track_url": "https://github.com/arnaud-lb/php-inotify",
       "type": "pecl",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "3.0.1"
     },
     "ip2location": {
@@ -796,7 +796,7 @@
       "pecl_name": "ip2location",
       "track_url": "https://github.com/chrislim2888/IP2Location-PECL-Extension",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "8.3.0"
     },
     "ip2proxy": {
@@ -832,7 +832,7 @@
       "pecl_name": "ip2proxy",
       "track_url": "https://github.com/ip2location/ip2proxy-pecl",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "3.2.0"
     },
     "json_post": {
@@ -850,7 +850,7 @@
       "pecl_name": "json_post",
       "track_url": "https://github.com/m6w6/ext-json_post",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v1.1.0"
     },
     "jsonpath": {
@@ -867,7 +867,7 @@
       "pecl_name": "jsonpath",
       "track_url": "https://github.com/supermetrics-public/pecl-jsonpath",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v3.1.0"
     },
     "judy": {
@@ -892,7 +892,7 @@
       "pecl_name": "judy",
       "track_url": "https://github.com/orieg/php-judy",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "v2.7.1"
     },
     "lz4": {
@@ -917,7 +917,7 @@
       "pecl_name": "lz4",
       "track_url": "https://github.com/kjdev/php-ext-lz4",
       "type": "git",
-      "last_checked": "2026-09-21T10:29:16Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "0.7.1"
     },
     "lzf": {
@@ -2329,7 +2329,7 @@
       "pecl_name": "yaf",
       "track_url": "https://github.com/laruence/yaf",
       "type": "pecl",
-      "last_checked": "2026-09-21T16:51:40Z",
+      "last_checked": "2026-10-05T04:47:14Z",
       "latest_version": "3.3.8"
     },
     "yaml": {
