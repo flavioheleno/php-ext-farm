@@ -29,7 +29,7 @@
       "pecl_name": "amqp",
       "track_url": "https://github.com/php-amqp/php-amqp",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v2.2.0"
     },
     "apcu": {
@@ -46,7 +46,7 @@
       "pecl_name": "apcu",
       "track_url": "https://github.com/krakjoe/apcu",
       "type": "pecl",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v5.1.28"
     },
     "apcu_bc": {
@@ -81,7 +81,7 @@
       "pecl_name": "apfd",
       "track_url": "https://github.com/m6w6/ext-apfd",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v1.0.3"
     },
     "aspect": {
@@ -98,7 +98,7 @@
       "pecl_name": "aspect",
       "track_url": "https://github.com/SolidWorx/aspect",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "0.1.1"
     },
     "ast": {
@@ -115,7 +115,7 @@
       "pecl_name": "ast",
       "track_url": "https://github.com/nikic/php-ast",
       "type": "pecl",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v1.1.3"
     },
     "bitset": {
@@ -132,7 +132,7 @@
       "pecl_name": "bitset",
       "track_url": "https://github.com/php/pecl-numbers-bitset",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "3.2.0"
     },
     "blake3": {
@@ -149,7 +149,7 @@
       "pecl_name": "blake3",
       "track_url": "https://github.com/cypherbits/php-blake3",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v2026.9.13.1"
     },
     "brotli": {
@@ -174,7 +174,7 @@
       "pecl_name": "brotli",
       "track_url": "https://github.com/kjdev/php-ext-brotli",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "0.21.0"
     },
     "bzip3": {
@@ -192,7 +192,7 @@
       "pecl_name": "bzip3",
       "track_url": "https://github.com/kjdev/php-ext-bzip3",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "0.1.2"
     },
     "cairo": {
@@ -249,7 +249,7 @@
       "pecl_name": "corefill",
       "track_url": "https://github.com/mailmug/corefill",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z"
+      "last_checked": "2026-10-06T01:43:30Z"
     },
     "crc_fast": {
       "configure_options": [
@@ -282,7 +282,7 @@
       "pecl_name": "crc_fast",
       "track_url": "https://github.com/awesomized/crc-fast-php-ext",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "1.1.0"
     },
     "csv": {
@@ -299,7 +299,7 @@
       "pecl_name": "csv",
       "track_url": "https://gitlab.com/Girgias/csv-php-extension",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "0.4.3"
     },
     "dbus": {
@@ -330,7 +330,7 @@
       "pecl_name": "dbus",
       "track_url": "https://github.com/derickr/pecl-dbus",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "0.4.1"
     },
     "decimal": {
@@ -355,7 +355,7 @@
       "pecl_name": "decimal",
       "track_url": "https://github.com/php-decimal/ext-decimal",
       "type": "pecl",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v2.0.1"
     },
     "dio": {
@@ -372,7 +372,7 @@
       "pecl_name": "dio",
       "track_url": "https://github.com/php/pecl-system-dio",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v0.3.0+pie"
     },
     "ds": {
@@ -389,7 +389,7 @@
       "pecl_name": "ds",
       "track_url": "https://github.com/php-ds/ext-ds",
       "type": "pecl",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v2.0.0"
     },
     "ev": {
@@ -414,7 +414,7 @@
       "pecl_name": "ev",
       "track_url": "https://github.com/rosmanov/pecl-ev",
       "type": "git",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "1.2.4"
     },
     "event": {
@@ -443,7 +443,7 @@
       "pecl_name": "event",
       "track_url": "https://bitbucket.org/osmanov/pecl-event",
       "type": "pecl",
-      "last_checked": "2026-09-29T00:15:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "3.1.6"
     },
     "excimer": {
@@ -952,7 +952,7 @@
       "pecl_name": "mailparse",
       "track_url": "https://github.com/php/pecl-mail-mailparse",
       "type": "pecl",
-      "last_checked": "2026-09-28T04:28:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v3.2.0"
     },
     "maxminddb": {
@@ -978,7 +978,7 @@
       "pecl_name": "maxminddb",
       "track_url": "https://github.com/maxmind/MaxMind-DB-Reader-php",
       "type": "git",
-      "last_checked": "2026-09-28T04:28:25Z",
+      "last_checked": "2026-10-06T01:43:30Z",
       "latest_version": "v1.14.0"
     },
     "mcrypt": {
