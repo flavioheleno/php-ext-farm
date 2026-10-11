@@ -480,12 +480,12 @@
     "total": 145
   },
   "xdiff": {
-    "path": "history/2026/02/14/xdiff-2.1.0-21998088739.json",
-    "version": "2.1.0",
-    "updated_at": "2026-02-14T09:07:43Z",
+    "path": "history/2026/10/11/xdiff-2.2.0-38124265100.json",
+    "version": "2.2.0",
+    "updated_at": "2026-10-11T09:02:48Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 125,
+    "total": 125
   },
   "xhprof": {
     "path": "history/2026/10/11/xhprof-2.3.10-38124266561.json",
