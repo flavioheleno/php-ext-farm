@@ -488,12 +488,12 @@
     "total": 145
   },
   "xhprof": {
-    "path": "history/2026/02/14/xhprof-2.3.10-21998090466.json",
+    "path": "history/2026/10/11/xhprof-2.3.10-38124266561.json",
     "version": "2.3.10",
-    "updated_at": "2026-02-14T09:19:30Z",
+    "updated_at": "2026-10-11T09:02:36Z",
     "pass": 0,
-    "fail": 145,
-    "total": 145
+    "fail": 125,
+    "total": 125
   },
   "xxtea": {
     "path": "history/2026/02/14/xxtea-1.0.10-21998095757.json",
