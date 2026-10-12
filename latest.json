@@ -808,11 +808,11 @@
     "total": 125
   },
   "uv": {
-    "path": "history/2026/10/04/uv-0.3.0-37186778720.json",
-    "version": "0.3.0",
-    "updated_at": "2026-10-04T11:49:55Z",
-    "pass": 97,
-    "fail": 28,
+    "path": "history/2026/10/12/uv-0.3.1-38316583552.json",
+    "version": "0.3.1",
+    "updated_at": "2026-10-12T22:31:14Z",
+    "pass": 116,
+    "fail": 9,
     "total": 125
   },
   "uuid": {
