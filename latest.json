@@ -224,12 +224,12 @@
     "total": 125
   },
   "bitset": {
-    "path": "history/2026/02/14/bitset-3.2.0+pie-21997946922.json",
-    "version": "3.2.0+pie",
-    "updated_at": "2026-02-14T06:22:41Z",
-    "pass": 145,
-    "fail": 0,
-    "total": 145
+    "path": "history/2026/10/13/bitset-3.2.1-38341563012.json",
+    "version": "3.2.1",
+    "updated_at": "2026-10-13T03:29:45Z",
+    "pass": 121,
+    "fail": 4,
+    "total": 125
   },
   "brotli": {
     "path": "history/2026/08/24/brotli-0.21.0-32679840357.json",
