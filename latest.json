@@ -88,9 +88,9 @@
     "total": 125
   },
   "pg_query": {
-    "path": "history/2026/10/12/pg_query-0.46.0-38206490428.json",
+    "path": "history/2026/10/18/pg_query-0.46.0-39105822867.json",
     "version": "0.46.0",
-    "updated_at": "2026-10-12T05:23:31Z",
+    "updated_at": "2026-10-18T07:42:57Z",
     "pass": 0,
     "fail": 125,
     "total": 125
