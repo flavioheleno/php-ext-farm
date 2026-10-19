@@ -536,9 +536,9 @@
     "total": 125
   },
   "judy": {
-    "path": "history/2026/08/31/judy-2.7.1-33357548054.json",
-    "version": "2.7.1",
-    "updated_at": "2026-08-31T06:30:02Z",
+    "path": "history/2026/10/19/judy-2.8.0-39196789790.json",
+    "version": "2.8.0",
+    "updated_at": "2026-10-19T04:03:17Z",
     "pass": 40,
     "fail": 85,
     "total": 125
