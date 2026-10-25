@@ -800,9 +800,9 @@
     "total": 125
   },
   "vld": {
-    "path": "history/2026/10/11/vld-VLD.0.11.0-38124258214.json",
+    "path": "history/2026/10/25/vld-VLD.0.11.0-40172129145.json",
     "version": "VLD.0.11.0",
-    "updated_at": "2026-10-11T09:02:34Z",
+    "updated_at": "2026-10-25T08:02:28Z",
     "pass": 0,
     "fail": 125,
     "total": 125
