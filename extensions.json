@@ -1615,8 +1615,8 @@
       "pecl_name": "relay",
       "track_url": "https://github.com/cachewerk/relay",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
-      "latest_version": "v0.50.2"
+      "last_checked": "2026-10-26T09:54:28Z",
+      "latest_version": "v0.60.0"
     },
     "rpminfo": {
       "dependencies": {
@@ -1640,7 +1640,7 @@
       "pecl_name": "rpminfo",
       "track_url": "https://github.com/remicollet/php-rpminfo",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z"
+      "last_checked": "2026-10-26T09:54:28Z"
     },
     "selinux": {
       "dependencies": {
@@ -1664,7 +1664,7 @@
       "pecl_name": "selinux",
       "track_url": "https://github.com/php/pecl-security-selinux",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "v0.6.1"
     },
     "simdjson": {
@@ -1681,7 +1681,7 @@
       "pecl_name": "simdjson",
       "track_url": "https://github.com/crazyxman/simdjson_php",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "3.0.0"
     },
     "simdutf": {
@@ -1698,7 +1698,7 @@
       "pecl_name": "simdutf",
       "track_url": "https://github.com/awesomized/simdutf-php-ext",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "1.0.0"
     },
     "smbclient": {
@@ -1723,7 +1723,7 @@
       "pecl_name": "smbclient",
       "track_url": "https://github.com/eduardok/libsmbclient-php",
       "type": "pecl",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "1.1.2"
     },
     "snappy": {
@@ -1741,7 +1741,7 @@
       "pecl_name": "snappy",
       "track_url": "https://github.com/kjdev/php-ext-snappy",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "0.2.3"
     },
     "solr": {
@@ -1773,7 +1773,7 @@
       "pecl_name": "solr",
       "track_url": "https://github.com/php/pecl-search_engine-solr",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "2.9.3"
     },
     "spi": {
@@ -1794,7 +1794,7 @@
       "pecl_name": "spi",
       "track_url": "https://github.com/embedded-php/ext-spi",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z"
+      "last_checked": "2026-10-26T09:54:28Z"
     },
     "spx": {
       "configure_options": [
@@ -1821,7 +1821,7 @@
       "pecl_name": "spx",
       "track_url": "https://github.com/NoiseByNorthwest/php-spx",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "v0.4.22"
     },
     "stomp": {
@@ -1846,7 +1846,7 @@
       "pecl_name": "stomp",
       "track_url": "https://github.com/php/pecl-tools-stomp",
       "type": "pecl",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "release_2_0_3"
     },
     "swoole": {
@@ -1896,8 +1896,8 @@
       "pecl_name": "swoole",
       "track_url": "https://github.com/swoole/swoole-src",
       "type": "pecl",
-      "last_checked": "2026-10-12T14:49:37Z",
-      "latest_version": "v6.2.3"
+      "last_checked": "2026-10-26T09:54:28Z",
+      "latest_version": "v6.2.4"
     },
     "taint": {
       "dependencies": {
@@ -1913,7 +1913,7 @@
       "pecl_name": "taint",
       "track_url": "https://github.com/laruence/taint",
       "type": "pecl",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "3.0.0"
     },
     "timezonedb": {
@@ -1930,7 +1930,7 @@
       "pecl_name": "timezonedb",
       "track_url": "https://github.com/php/pecl-datetime-timezonedb",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "2025.2.2"
     },
     "traitify": {
@@ -1947,7 +1947,7 @@
       "pecl_name": "traitify",
       "track_url": "https://github.com/arshidkv12/traitify",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "v1.0.0"
     },
     "translit": {
@@ -1964,7 +1964,7 @@
       "pecl_name": "translit",
       "track_url": "https://github.com/derickr/pecl-translit",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "RELEASE_0_6_2"
     },
     "uart": {
@@ -1981,7 +1981,7 @@
       "pecl_name": "uart",
       "track_url": "https://github.com/embedded-php/ext-uart",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z"
+      "last_checked": "2026-10-26T09:54:28Z"
     },
     "uopz": {
       "dependencies": {
@@ -1997,7 +1997,7 @@
       "pecl_name": "uopz",
       "track_url": "https://github.com/krakjoe/uopz",
       "type": "git",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "v5.1.0"
     },
     "uploadprogress": {
@@ -2014,7 +2014,7 @@
       "pecl_name": "uploadprogress",
       "track_url": "https://github.com/php/pecl-php-uploadprogress",
       "type": "pecl",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "uploadprogress-2.0.2"
     },
     "uuid": {
@@ -2039,7 +2039,7 @@
       "pecl_name": "uuid",
       "track_url": "https://github.com/php/pecl-networking-uuid",
       "type": "pecl",
-      "last_checked": "2026-10-12T14:49:37Z",
+      "last_checked": "2026-10-26T09:54:28Z",
       "latest_version": "v1.3.0"
     },
     "uv": {
