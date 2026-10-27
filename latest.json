@@ -232,9 +232,9 @@
     "total": 125
   },
   "brotli": {
-    "path": "history/2026/08/24/brotli-0.21.0-32679840357.json",
-    "version": "0.21.0",
-    "updated_at": "2026-08-24T01:34:38Z",
+    "path": "history/2026/10/27/brotli-0.21.1-40431635884.json",
+    "version": "0.21.1",
+    "updated_at": "2026-10-27T01:28:34Z",
     "pass": 121,
     "fail": 4,
     "total": 125
