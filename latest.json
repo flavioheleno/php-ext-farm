@@ -304,11 +304,11 @@
     "total": 125
   },
   "glfw": {
-    "path": "history/2026/07/20/glfw-2.4.0-29722784460.json",
-    "version": "2.4.0",
-    "updated_at": "2026-07-20T08:44:46Z",
-    "pass": 29,
-    "fail": 96,
+    "path": "history/2026/11/02/glfw-2.4.1-41392118694.json",
+    "version": "2.4.1",
+    "updated_at": "2026-11-02T06:50:56Z",
+    "pass": 91,
+    "fail": 34,
     "total": 125
   },
   "gpio": {
