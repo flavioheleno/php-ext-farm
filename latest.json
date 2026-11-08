@@ -520,9 +520,9 @@
     "total": 125
   },
   "zmq": {
-    "path": "history/2026/11/01/zmq-1.1.2-41289899469.json",
+    "path": "history/2026/11/08/zmq-1.1.2-42463423999.json",
     "version": "1.1.2",
-    "updated_at": "2026-11-01T09:26:17Z",
+    "updated_at": "2026-11-08T09:19:15Z",
     "pass": 0,
     "fail": 125,
     "total": 125
