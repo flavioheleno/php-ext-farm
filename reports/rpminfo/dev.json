@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-25T07:51:17Z",
+  "last_updated": "2026-11-08T09:18:51Z",
   "builds": {
     "2026": {
       "02": {
@@ -11,6 +11,9 @@
         "11": "history/2026/10/11/rpminfo-dev-38124219775.json",
         "18": "history/2026/10/18/rpminfo-dev-39105837007.json",
         "25": "history/2026/10/25/rpminfo-dev-40172092740.json"
+      },
+      "11": {
+        "08": "history/2026/11/08/rpminfo-dev-42463358242.json"
       }
     }
   }
