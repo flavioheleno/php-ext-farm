@@ -208,9 +208,9 @@
     "total": 145
   },
   "mongodb": {
-    "path": "history/2026/10/26/mongodb-2.5.5-40266413015.json",
-    "version": "2.5.5",
-    "updated_at": "2026-10-26T04:07:18Z",
+    "path": "history/2026/11/09/mongodb-2.5.7-42646629100.json",
+    "version": "2.5.7",
+    "updated_at": "2026-11-09T16:02:03Z",
     "pass": 101,
     "fail": 24,
     "total": 125
