@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-11-15T09:35:10Z",
+  "last_updated": "2026-11-22T10:05:29Z",
   "builds": {
     "2026": {
       "02": {
@@ -15,7 +15,8 @@
       "11": {
         "01": "history/2026/11/01/translit-RELEASE.0.6.2-41289856628.json",
         "08": "history/2026/11/08/translit-RELEASE.0.6.2-42463384124.json",
-        "15": "history/2026/11/15/translit-RELEASE.0.6.2-43696209062.json"
+        "15": "history/2026/11/15/translit-RELEASE.0.6.2-43696209062.json",
+        "22": "history/2026/11/22/translit-RELEASE.0.6.2-45006947184.json"
       }
     }
   }
