@@ -712,9 +712,9 @@
     "total": 19
   },
   "maxminddb": {
-    "path": "history/2026/09/14/maxminddb-1.14.0-34804733071.json",
-    "version": "1.14.0",
-    "updated_at": "2026-09-14T04:22:43Z",
+    "path": "history/2026/11/23/maxminddb-1.15.0-45125032383.json",
+    "version": "1.15.0",
+    "updated_at": "2026-11-23T08:32:21Z",
     "pass": 121,
     "fail": 4,
     "total": 125
